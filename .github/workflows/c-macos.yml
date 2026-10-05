@@ -1,4 +1,4 @@
-name: C Ubuntu CI
+name: C macOS CI
 
 on:
   push:
@@ -8,12 +8,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details
         run: |
+          echo "Running on operating system:"
+          sw_vers
           echo "Hardware architecture:"
           uname -m
           echo "System architecture:"
