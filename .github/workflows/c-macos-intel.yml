@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details
-        run: |
+      run: |
           echo "Running on operating system:"
           sw_vers
           echo "Hardware architecture:"

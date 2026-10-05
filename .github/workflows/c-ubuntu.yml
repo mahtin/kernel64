@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details
-        run: |
+      run: |
           echo "Hardware architecture:"
           uname -m
           echo "System architecture:"
