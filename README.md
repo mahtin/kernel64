@@ -1,2 +1,32 @@
 # kernel64
-A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.
+A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
+
+*[1]* Also some 32 bit o/s's.
+
+## Install
+
+Clone the repository and run make.
+
+### Requirements
+
+- *nix or MacOS operating system
+- the usual gcc/make tools
+
+## Changelog
+
+An automatically generated CHANGELOG is provided [here](CHANGELOG.md).
+
+## Contribute
+
+As always, open an issue or pull request should you want.
+Edits are welcome.
+
+## Notes
+
+Code is as-is and should mainly be used for education and testing purposes.
+Don't run anything critical using this code.
+
+## Author & Copyright
+
+Copyright (C) 2025-2026 Martin J Levy - W6LHI/G8LHI - @mahtin - https://github.com/mahtin
+
