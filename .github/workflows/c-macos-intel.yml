@@ -1,0 +1,25 @@
+name: C macOS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # Explicitly targets an Intel x64 macOS runner
+    runs-on: macos-26-intel
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check Environment Details
+        run: |
+          echo "Running on operating system:"
+          sw_vers
+          echo "Hardware architecture:"
+          uname -m
+          echo "System architecture:"
+          uname -s
+    - name: make
+      run: make
