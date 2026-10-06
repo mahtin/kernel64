@@ -1,5 +1,8 @@
 # Change Log
 
+ - 2026-10-06 22:48:38 +0100 [01cf827](../../commit/01cf82781c810eb446c6e7e1aadc24141afb7fdd) lots of stack saving and restoring - now works
+ - 2026-10-06 18:09:01 +0100 [d4f63ac](../../commit/d4f63acd0155639b4c3073f4a203ab5a11cc7ec2) added CI info
+ - 2026-10-06 17:58:04 +0100 [89988ef](../../commit/89988ef8e31e10423145b6c389a9b847b16ddde3) CHANGELOG
  - 2026-10-06 17:57:40 +0100 [a46ca4a](../../commit/a46ca4aa6339d59b8699d1b8375f5d4ea6658e8e) typo
  - 2026-10-06 17:56:08 +0100 [8ce7809](../../commit/8ce7809db12f7d1eff386fe61b879861f66e5ae6) more consistency in actions - and run one test
  - 2026-10-06 17:55:43 +0100 [86a71d4](../../commit/86a71d4763c9ccf3fcd426791a3e939214b4140e) cleanup k64exit() logic and debug. Add abort() to catch the final process exiting
