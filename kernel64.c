@@ -170,21 +170,11 @@ void k64init(void)
 static void k64process_bootstrap(struct proc64 *p)
 {
 	/* Called only once per process, on its first scheduling */
-	if (debug_flag) {
-		fprintf(stderr, "k64process_bootstrap(): p->pid=%d p->state=%c p->entry=0x%lx p->arg=0x%lx\n", p->pid, p->state, (unsigned long)p->entry, (unsigned long)p->arg);
-		fflush(stderr);
-	}
-
-	k64_switch_to_stack(p->stack_base, p->stack_size, p->entry, p->arg);	/* Switch to the process's stack and Now safely running on the process stack */
-
-	/* process entry() has returned - do exit for it */
-	if (debug_flag) {
-		fprintf(stderr, "k64process_bootstrap(): p->pid=%d NOW A ZOMBIE\n", p->pid);
-		fflush(stderr);
-	}
-	p->state = P_ZOMBIE;					/* When entry returns, mark process as finished */
-	k64exit();						/* Clean up and schedule next process */
+	k64_switch_to_stack(p->stack_base, p->stack_size, p->entry, p->arg);	/* Switch to the process's stack and now safely running on the process stack */
+	/* process entry(arg) returned - call exit for it */
+	k64exit();								/* Clean up and schedule next process */
 	/* Never returns */
+	abort();
 }
 
 static void k64enter(struct proc64 *next)
@@ -415,10 +405,9 @@ void k64exit(void)
 	k64schedule();
 	/* Never return */
 	/* NOTREACHED: we always longjmp into another process (idle if nothing else) */
-	fprintf(stderr, "k64exit(): k64schedule() returned - SHOULD NOT HAPPEN\n");
-#if 0
-	abort();
-#endif 
+	fprintf(stderr, "k64exit(): k64schedule() returned - SHOULD NOT HAPPEN - EXITING CLEANLY\n");
+	/* we cleanly exit becuase this only happens when someone kills the idle process */
+	exit(0);
 }
 
 /* Delay */
