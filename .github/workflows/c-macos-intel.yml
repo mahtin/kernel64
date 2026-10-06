@@ -26,4 +26,4 @@ jobs:
     - name: make
       run: make test1_idle test2_kernel
     - name: test1_idle
-      run: test1_idle
+      run: ./test1_idle
