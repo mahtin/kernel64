@@ -20,9 +20,13 @@
 #define	KERNEL64_ARCH_ARM32	1
 #endif
 
+#if defined(__i386__) || defined(_M_IX86)
+#define KERNEL64_ARCH_i386      1
+#endif
+
 #if defined(KERNEL64_ARCH_X86_64) || defined(KERNEL64_ARCH_ARM64)
 #define	KERNEL64_WORD_BITS	64
-#elif defined(KERNEL64_ARCH_ARM32)
+#elif defined(KERNEL64_ARCH_ARM32) || defined(KERNEL64_ARCH_i386)
 #define	KERNEL64_WORD_BITS	32
 #else
 #define	KERNEL64_WORD_BITS	16	/* original 8086/8088 build */
