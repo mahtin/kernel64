@@ -47,12 +47,14 @@ void k64exit(void);
 void k64delay(unsigned long msecs);
 void k64sleep(void * event);
 void k64wakeup(struct proc64 *p);
+struct proc64 *k64pid_to_proc(int pid);
+void k64kill(struct proc64 *p);
 void k64yield(void);
 int k64has_a_process_to_run(void);
 size_t k64process_count(int incl_zombie);
 size_t k64stack_used(struct proc64 *p);
 char **k64ps(void);
-void k64_switch_to_stack(void *stack_base, size_t stack_size);	/* process stack switch primitive (implemented per-arch in assembly) */
+void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
 #define	STACK_GUARD_BYTE	0xAA		/* could be nearly any random value */
 #define	PROC_MAGIC_NUMBER	0x70726f633634	/* "proc64" as hex */
