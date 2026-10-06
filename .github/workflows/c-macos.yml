@@ -21,5 +21,9 @@ jobs:
           uname -m
           echo "System architecture:"
           uname -s
+          echo "Compiler architecture:"
+          cc --version
     - name: make
       run: make test1_idle test2_kernel
+    - name: test1_idle
+      run: test1_idle
