@@ -1,5 +1,8 @@
 # Change Log
 
+ - 2026-10-06 22:55:33 +0100 [e04dd5b](../../commit/e04dd5bc0b11d8855cfffd0a2d262f29937f3ece) add test2_kernel to CI
+ - 2026-10-06 22:55:12 +0100 [b3d3ab6](../../commit/b3d3ab6cfcffb05469bfd86f384d55fbe86be4a9) exit when only idle is last running process
+ - 2026-10-06 22:49:07 +0100 [e7dff6b](../../commit/e7dff6b1086cffac4c2b0b2f10b04b21a6fafcc0) CHANGELOG
  - 2026-10-06 22:48:38 +0100 [01cf827](../../commit/01cf82781c810eb446c6e7e1aadc24141afb7fdd) lots of stack saving and restoring - now works
  - 2026-10-06 18:09:01 +0100 [d4f63ac](../../commit/d4f63acd0155639b4c3073f4a203ab5a11cc7ec2) added CI info
  - 2026-10-06 17:58:04 +0100 [89988ef](../../commit/89988ef8e31e10423145b6c389a9b847b16ddde3) CHANGELOG
