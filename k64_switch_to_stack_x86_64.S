@@ -3,31 +3,37 @@
 /* void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);
  * rdi = stack_base
  * rsi = stack_size
- * TODO !!!!
+ * rdx = entry
+ * rcx = arg
  */
 
 	.text
-	.globl _k64_switch_to_stack
-	.globl k64_switch_to_stack
+	.globl	k64_switch_to_stack
+	.globl	_k64_switch_to_stack
 
 #ifndef __APPLE__
 	/* Linux (ELF + GNU assembler) requires this */
-	.type k64_switch_to_stack, @function
+	.type	k64_switch_to_stack, @function
 #endif
 
-_k64_switch_to_stack:
 k64_switch_to_stack:
-	/* Pop original return address from old stack */
+_k64_switch_to_stack:
+	/* pop original return address from old stack */
 	popq	%rax				/* RAX = return address */
-	movq	%rdi, %rdx			/* Compute new stack top */
+	/* compute new stack top */
+	movq	%rdi, %rdx
 	addq	%rsi, %rdx
-	subq	$128, %rdx			/* Reserve red zone (128 bytes) */
-	andq	$~0xF, %rdx			/* Align to 16 bytes */
-	movq	%rdx, %rsp			/* Switch stack */
-	pushq	%rax				/* Push original return address */
-	ret					/* Return */
+	subq	$128, %rdx			/* reserve red zone */
+	andq	$~0xf, %rdx			/* align to 16 bytes */
+	movq	%rdx, %rsp			/* switch stack */
+	pushq	%rax				/* push original return address for ret back to k64process_bootstrap */
+	/* call entry(arg) on process stack */
+	movq	%rcx, %rdi			/* arg → rdi */
+	callq	*%rdx				/* entry(arg) */
+	/* return to caller */
+	ret
 
 #ifndef __APPLE__
-	.size k64_switch_to_stack, .-k64_switch_to_stack
+	.size	k64_switch_to_stack, .-k64_switch_to_stack
 	.section .note.GNU-stack,"",@progbits
 #endif

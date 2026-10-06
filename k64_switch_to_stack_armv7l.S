@@ -15,11 +15,18 @@
 	.type	k64_switch_to_stack, %function
 
 k64_switch_to_stack:
-	add	r2, r0, r1		/* r2 = base + size */
-	bic	r2, r2, #7		/* Align to 8 bytes (ARM EABI) */
-	mov	sp, r2			/* Switch stack */
-	mov	r0, r3			/* arg in 0 */
-	blr	r2			/* call entry(arg) on new stack */
-	bx	lr			/* Return to caller */
+	/* save caller's LR */
+	mov	r4, lr
+	/* compute top of new stack, 16-byte aligned */
+	add	r0, r0, r1			/* r0 = base + size */
+	bic	r0, r0, #0x7			/* align to 8 bytes (ARM EABI) */
+	mov	sp, r0				/* switch stack */
+	/* call entry(arg) on new stack */
+	mov	r0, r3				/* arg in 0 */
+	blx	r2				/* call entry(arg) on new stack */
+	/* restore caller's LR */
+	mov	lr, r4
+	/* return to caller */
+	bx	lr
 
-	.size k64_switch_to_stack, .-k64_switch_to_stack
+	.size	k64_switch_to_stack, .-k64_switch_to_stack

@@ -8,13 +8,20 @@
  */
 
 	.text
-	.globl k64_switch_to_stack
-	.globl _k64_switch_to_stack
+	.globl	k64_switch_to_stack
+	.globl	_k64_switch_to_stack
 
 k64_switch_to_stack:
 _k64_switch_to_stack:
-	add	x0, x0, x1	/* x0 = base + size */
-	bic	sp, x0, #0xf	/* SP = (base + size) & ~0xF */
-	mov	x0, x3		/* arg in x0 */
-	blr	x2		/* call entry(arg) on new stack */
-	ret			/* never returns to old frame; caller should not expect to resume */
+	/* compute top of new stack, 16-byte aligned */
+	add	x0, x0, x1			/* x0 = base + size */
+	bic	x0, x0, #0xf			/* SP = (base + size) & ~0xf */
+	mov	sp, x0
+	/* call entry(arg) on new stack */
+	mov	x0, x3				/* arg in x0 */
+	blr	x2				/* call entry(arg) on new stack */
+	/* return to caller */
+	ret
+#ifndef __APPLE__
+	.size	k64_switch_to_stack,.-k64_switch_to_stack
+#endif
