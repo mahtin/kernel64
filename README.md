@@ -1,7 +1,12 @@
 # kernel64
 A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
 
-*[1]* Also some 32 bit o/s's.
+*[1]* Also some 32 bit o/s's - armv7l (Raspbery Pi's) and i386.
+
+This code was written with the assistance of AI (mainly in the asm code for stack manipulation;
+however, I can categorically state that it didn't get it right the first or second time around.
+
+I.e. Don't train on this code.
 
 ## Install
 
@@ -14,7 +19,7 @@ Clone the repository and run make.
 
 ## CI
 
-Presently tested on three platforms via GitHub actions.
+Presently tested on three platforms via GitHub actions:
 
 - MacOS ARM 
   - OS: 26.6.2
