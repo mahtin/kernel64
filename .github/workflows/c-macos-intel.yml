@@ -1,4 +1,4 @@
-name: C macOS CI
+name: Kernel64 on MacOS Intel C CI
 
 on:
   push:
@@ -22,4 +22,4 @@ jobs:
           echo "System architecture:"
           uname -s
     - name: make
-      run: make
+      run: make test1_idle test2_kernel

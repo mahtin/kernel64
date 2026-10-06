@@ -1,4 +1,4 @@
-name: C Ubuntu CI
+name: Kernel64 on Linux Ubuntu C CI
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    # targets latest Ubuntu
     runs-on: ubuntu-latest
 
     steps:
@@ -19,4 +20,4 @@ jobs:
           echo "System architecture:"
           uname -s
     - name: make
-      run: make
+      run: make test1_idle test2_kernel
