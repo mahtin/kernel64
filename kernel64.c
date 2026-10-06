@@ -146,9 +146,14 @@ static void k64idle_process(void *arg)
 			/* still has processes running so lets quickly get them going again */
 			k64yield();
 		} else {
-			/* no-one around - so we just sleep */
 			print_ps();
+#if 0
+			/* no-one around - so we just sleep */
 			usleep(1000*1000);
+#else
+			/* screw it - exit the item process */
+			k64exit();
+#endif
 		}
 	}
 }
