@@ -1,3 +1,7 @@
+# programs built
+test1_idle
+test2_kernel
+
 # Prerequisites
 *.d
 
