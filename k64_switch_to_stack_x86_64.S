@@ -20,17 +20,25 @@ k64_switch_to_stack:
 _k64_switch_to_stack:
 	/* pop original return address from old stack */
 	popq	%rax				/* RAX = return address */
-	/* compute new stack top */
-	movq	%rdi, %rdx
-	addq	%rsi, %rdx
-	subq	$128, %rdx			/* reserve red zone */
-	andq	$~0xf, %rdx			/* align to 16 bytes */
-	movq	%rdx, %rsp			/* switch stack */
-	pushq	%rax				/* push original return address for ret back to k64process_bootstrap */
-	/* call entry(arg) on process stack */
+	/* Save original kernel stack pointer */
+	movq	%rsp, %rbx			/* RBX = old_sp */
+	/* Compute new stack top in a scratch register (r8), keep rdx = entry */
+	movq	%rdi, %r8
+	addq	%rsi, %r8
+	subq	$128, %r8			/* Reserve red zone */
+	andq	$~0xf, %r8			/* Align to 16 bytes */
+	movq	%r8, %rsp			/* Switch stack */
+	/* Save old_sp and original RA on the process stack */
+	pushq	%rbx				/* [old_sp] */
+	pushq	%rax				/* [RA_bootstrap] */
+	/* Call entry(arg) on process stack */
 	movq	%rcx, %rdi			/* arg → rdi */
 	callq	*%rdx				/* entry(arg) */
-	/* return to caller */
+	/* After entry() returns, restore RA and kernel stack */
+	popq	%rax				/* RA_bootstrap */
+	popq	%rsp				/* old_sp (kernel stack) */
+	/* Recreate caller's stack frame and return to k64process_bootstrap */
+	pushq	%rax
 	ret
 
 #ifndef __APPLE__
