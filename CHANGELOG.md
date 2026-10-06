@@ -1,5 +1,8 @@
 # Change Log
 
+ - 2026-10-06 23:32:08 +0100 [e1223ec](../../commit/e1223ece73279aa787f0e5ac85541d6ec8acbf03) more words
+ - 2026-10-06 23:28:13 +0100 [77b0ebe](../../commit/77b0ebe7c60a13df46d62cc0f4bdfd01e2f808c2) first working pass of i386 code. Makefile will still need work to automate
+ - 2026-10-06 22:55:48 +0100 [8882f58](../../commit/8882f588d8f8ff469cb1e14d00221bd3a1921e21) CHANGELOG
  - 2026-10-06 22:55:33 +0100 [e04dd5b](../../commit/e04dd5bc0b11d8855cfffd0a2d262f29937f3ece) add test2_kernel to CI
  - 2026-10-06 22:55:12 +0100 [b3d3ab6](../../commit/b3d3ab6cfcffb05469bfd86f384d55fbe86be4a9) exit when only idle is last running process
  - 2026-10-06 22:49:07 +0100 [e7dff6b](../../commit/e7dff6b1086cffac4c2b0b2f10b04b21a6fafcc0) CHANGELOG
