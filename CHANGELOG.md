@@ -1,5 +1,13 @@
 # Change Log
 
+ - 2026-10-08 00:14:58 +0100 [6caa266](../../commit/6caa266591b9ea0b3a13c2e653a00260282a893a) more Windows specific stuff
+ - 2026-10-08 00:14:22 +0100 [8b14fb3](../../commit/8b14fb3458df3f64da61309d517b7b4624549573) cleared up comment
+ - 2026-10-08 00:12:51 +0100 [64e6b84](../../commit/64e6b84379e97d8b1ba6a9384b7d29cd24993fd3) code up x86_64 on windows
+ - 2026-10-08 00:12:19 +0100 [f630027](../../commit/f630027033f5618c9aef216244e66e832163696d) windows specific code - go figure!
+ - 2026-10-07 23:32:16 +0100 [5d4ba40](../../commit/5d4ba401d622c2dc59d1d5b4300a6ad911daeaf3) on Windows you need .exe
+ - 2026-10-07 23:28:46 +0100 [c525158](../../commit/c525158c7d4217f9843a28f38e6394df740d76bb) Windows stacksize param is a weird thing
+ - 2026-10-07 23:25:21 +0100 [06bd110](../../commit/06bd11031f9907db29e5826627ead62c609e842e) forgot -m32 compile flag for i386
+ - 2026-10-07 23:20:56 +0100 [e2a0e93](../../commit/e2a0e93c893e152a35c5cdcc6a09ff2852658940) CHANGELOG
  - 2026-10-07 23:16:18 +0100 [e06a848](../../commit/e06a848527218e2af6e9af1e9569200f14535168) Windows ld need : vs ,
  - 2026-10-07 23:16:02 +0100 [02fcc22](../../commit/02fcc225a6b95332ec2166d92ca9fe3fc8e43dc1) apt-get needs sudo
  - 2026-10-07 23:05:51 +0100 [dbd9292](../../commit/dbd9292aac76e1f83c770f871c0d5dc1db231505) Windows added to workflow and Makefile - first pass
