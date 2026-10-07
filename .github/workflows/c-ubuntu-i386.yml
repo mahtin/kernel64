@@ -25,7 +25,9 @@ jobs:
           echo "Compiler architecture:"
           cc --version
     - name: specific i386 tool install
-      run: apt-get update && apt-get install -y build-essential gcc-multilib g++-multilib
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential gcc-multilib g++-multilib
     - name: make M32=-m32
       run: make M32=-m32 test1_idle test2_kernel
     - name: test1_idle
