@@ -59,8 +59,8 @@ test_proc_bad(void *arg)
 
 	/* FORCEFULLY destroy the stack via recursive calls */
 
-	if ((long)arg < 1024) {
-		printf("TESTING: [%s] test_proc_bad(%ld)\n", "bad", (long)arg);
+	if ((uintptr_t)arg < 1024) {
+		printf("TESTING: [%s] test_proc_bad(%lu)\n", "bad", (uintptr_t)arg);
 		memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
 		print_ps();
 		k64yield();
