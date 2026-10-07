@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-on-ubuntu-x86-64:
+  test-on-ubuntu-x86_64:
     # Explicitly target Ubuntu Intel x86_64
     runs-on: ubuntu-latest
     steps:

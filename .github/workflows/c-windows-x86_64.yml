@@ -1,0 +1,43 @@
+name: Kernel64 on Windows Intel x86_64
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-on-windows-x86_64:
+    # Explicitly target Windows Intel x86_64
+    runs-on: windows-latest
+    defaults:
+      run:
+        # Crucial: Forces GitHub Actions to run steps inside MSYS2 bash
+        shell: msys2 {0}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          make
+    - name: Check Environment Details
+      continue-on-error: true
+      run: |
+          echo "Running on operating system:"
+          echo $MSYSTEM
+          echo "Hardware architecture:"
+          uname -m
+          echo "System architecture:"
+          uname -s
+          echo "Compiler architecture:"
+          gcc --version
+    - name: make
+      run: make CC=gcc test1_idle test2_kernel
+    - name: test1_idle
+      run: ./test1_idle.exe
+    - name: test2_kernel
+      run: ./test2_kernel.exe

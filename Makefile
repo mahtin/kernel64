@@ -1,12 +1,18 @@
 #
 # Makefile for:
 #	MacOS (Intel and/or Arm),
-#	Ubuntu Linux X86_64 and/or i386,
+#	Ubuntu Linux x86_64 and/or i386,
 #	RPi armv7l and/or aarch64, etc
+#	Windows x86_64
 #
 
 UNAME_M := $(shell uname -m)
+
+ifeq ($(OS),Windows_NT)
+UNAME_S := Windows
+else
 UNAME_S := $(shell uname -s)
+endif
 
 # decide which CPU and which swich_to_stack code to use ...
 ifeq ($(UNAME_M),arm64)
@@ -24,7 +30,7 @@ K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
 ifeq ($(UNAME_M),x86_64)
 ifeq ($(M32),-m32)
-# cross compile from x86-64 machine to i386 target...
+# cross compile from x86_64 machine to i386 target...
 CPU=-DKERNEL64_ARCH_i386
 K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
 else
@@ -33,15 +39,25 @@ K64_SWITCH_OBJ=k64_switch_to_stack_x86_64.o
 endif
 endif
 
+# filename extension for executable
+ifeq ($(UNAME_S),Windows)
+EXT=.exe
+else
+EXT=
+endif
+
 # save this for later ...
 # $(error Error: cpu/arch not supported!)
 
 # this is mainly because of different gcc versions...
 ifeq ($(UNAME_S),Darwin)
-STACK_SIZE=	-Wl,-stack_size,0x80000
+STACK_SIZE=	-Wl,-stack_size,0x80000		# .5 MB
 endif
 ifeq ($(OS_NAME), Linux)
-STACK_SIZE=	-Wl,-z,stack_size=0x80000
+STACK_SIZE=	-Wl,-z,stack_size=0x80000	# .5 MB
+endif
+ifeq ($(UNAME_S),Windows)
+STACK_SIZE=	-Wl,--stack,0x100000,0x80000	# 1 MB with .5 MB reserve
 endif
 
 WARNINGS=	-Wno-comment \
@@ -75,10 +91,10 @@ CMDS=		test1_idle test2_kernel
 
 ALL:		$(CMDS)
 
-test1_idle:	test1_idle.o $(LIBS)
+test1_idle$(EXT):	test1_idle.o $(LIBS)
 	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
 
-test2_kernel:	test2_kernel.o $(LIBS)
+test2_kernel$(EXT):	test2_kernel.o $(LIBS)
 	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
 
 clean:
