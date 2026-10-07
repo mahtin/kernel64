@@ -36,8 +36,8 @@ jobs:
           echo "Compiler architecture:"
           gcc --version
     - name: make
-      run: make CC=gcc test1_idle test2_kernel
-    - name: test1_idle
+      run: make CC=gcc test1_idle.exe test2_kernel.exe
+    - name: test1_idle.exe
       run: ./test1_idle.exe
-    - name: test2_kernel
+    - name: test2_kernel.exe
       run: ./test2_kernel.exe

@@ -88,7 +88,7 @@ OBJS=		test1_idle.o test2_kernel.o $(LIBKERNEL64)
 
 LIBS=		libkernel64.a
 
-CMDS=		test1_idle test2_kernel
+CMDS=		test1_idle$(EXT) test2_kernel$(EXT)
 
 ALL:		$(CMDS)
 
