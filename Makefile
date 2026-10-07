@@ -35,7 +35,11 @@ CPU=-DKERNEL64_ARCH_i386 -m32
 K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
 else
 CPU=-DKERNEL64_ARCH_X86_64
+ifeq ($(UNAME_S),Windows)
+K64_SWITCH_OBJ=k64_switch_to_stack_win64.o
+else
 K64_SWITCH_OBJ=k64_switch_to_stack_x86_64.o
+endif
 endif
 endif
 
