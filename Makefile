@@ -31,7 +31,7 @@ endif
 ifeq ($(UNAME_M),x86_64)
 ifeq ($(M32),-m32)
 # cross compile from x86_64 machine to i386 target...
-CPU=-DKERNEL64_ARCH_i386
+CPU=-DKERNEL64_ARCH_i386 -m32
 K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
 else
 CPU=-DKERNEL64_ARCH_X86_64
