@@ -1,5 +1,8 @@
 # Change Log
 
+ - 2026-10-08 00:33:02 +0100 [2ad2a8e](../../commit/2ad2a8eb24a99286b59b7da70756c17b0467498b) mmap but for windows
+ - 2026-10-08 00:32:41 +0100 [db63c81](../../commit/db63c81323721a280c497532582279fc37e5c84b) simplify win build
+ - 2026-10-08 00:15:25 +0100 [dc181cf](../../commit/dc181cf6f5581064b51b6740c3c15d4c34eaa4dd) CHANGELOG
  - 2026-10-08 00:14:58 +0100 [6caa266](../../commit/6caa266591b9ea0b3a13c2e653a00260282a893a) more Windows specific stuff
  - 2026-10-08 00:14:22 +0100 [8b14fb3](../../commit/8b14fb3458df3f64da61309d517b7b4624549573) cleared up comment
  - 2026-10-08 00:12:51 +0100 [64e6b84](../../commit/64e6b84379e97d8b1ba6a9384b7d29cd24993fd3) code up x86_64 on windows
