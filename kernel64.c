@@ -245,7 +245,7 @@ static void k64switch(struct proc64 *next)
 
 	assert(next->magic == PROC_MAGIC_NUMBER);
 	if (debug_flag) {
-		fprintf(stderr, "k64switch(0x%lx) next->pid=%d next->name=%s prev->pid=%d\n", (unsigned long)next, next->pid, next->name, prev?prev->pid:-1);
+		fprintf(stderr, "k64switch(%p) next->pid=%d next->name=%s prev->pid=%d\n", next, next->pid, next->name, prev?prev->pid:-1);
 	}
 	if (next == prev) {
 		if (debug_flag) {
@@ -259,7 +259,7 @@ static void k64switch(struct proc64 *next)
 	assert(next->stack_size >= 4*1024);
 	size_t used = k64stack_used(next);
 	if (debug_flag) {
-		fprintf(stderr, "k64switch(): STACK size: %ld used: %ld\n", next->stack_size, used);
+		fprintf(stderr, "k64switch(): STACK size: %zu used: %zu\n", next->stack_size, used);
 		fflush(stderr);
 	}
 	assert(next->stack_size != used);
@@ -552,6 +552,7 @@ size_t k64stack_used(struct proc64 *p)
 	}
 	bottom = (unsigned char *)p->stack_base;		/* lowest address */
 	top = bottom + p->stack_size;				/* highest address + 1 */
+#if 0
 	if (debug_flag > 1) {
 		fprintf(stdout, "Top   : 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
 			(unsigned long)top, *(top-0), *(top-1), *(top-2), *(top-3), *(top-4), *(top-5), *(top-6), *(top-7)
@@ -560,6 +561,7 @@ size_t k64stack_used(struct proc64 *p)
 			(unsigned long)bottom, *(bottom+0), *(bottom+1), *(bottom+2), *(bottom+3), *(bottom+4), *(bottom+5), *(bottom+6), *(bottom+7)
 		);
 	}
+#endif
 	s = bottom;
 	while (s < top && *s == STACK_GUARD_BYTE)
 		s++;
@@ -570,8 +572,8 @@ char **k64ps(void)
 {
 	char **r;
 	char *format_header = "%6s %1s %5s %10s %6s %6s %14s %14s";
-	char *format_entry1 = "%6d %1c     %c %10s %6ld %6ld 0x%012lx 0x%012lx";
-	char *format_entry2 = "%6d %1c     %c %10s %6s %6s 0x%012lx 0x%012lx";
+	char *format_entry1 = "%6d %1c     %c %10s %6ld %6ld %12p %zu";
+	char *format_entry2 = "%6d %1c     %c %10s %6s %6s %12p %zu";
 	char buf[1024+1];
 	size_t nn, ii;
 
@@ -601,8 +603,8 @@ char **k64ps(void)
 				p->name?p->name:" ",
 				p->stack_size,
 				k64stack_used(p),
-				(unsigned long)p->entry,
-				(unsigned long)p->arg
+				p->entry,
+				p->arg
 			);
 		else
 			snprintf(buf, sizeof(buf), format_entry2,
@@ -612,8 +614,8 @@ char **k64ps(void)
 				p->name?p->name:" ",
 				"-",
 				"-",
-				(unsigned long)p->entry,
-				(unsigned long)p->arg
+				p->entry,
+				p->arg
 			);
 		r[ii] = malloc(strlen(buf)+1);
 		strncpy(r[ii], buf, strlen(buf));

@@ -84,19 +84,19 @@ test_kernel(void)
 	argA.name = "procA"; argA.count=5;
 	p = k64spawn(argA.name, test_proc, (void *)&argA, stack_size, NULL);
 	print_ps();
-	printf("TESTING: p = 0x%lx %d \"%s\" %c\n", (unsigned long)p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argB.name = "procB"; argB.count=7;
 	p = k64spawn(argB.name, test_proc, (void *)&argB, stack_size, NULL);
 	print_ps();
-	printf("TESTING: p = 0x%lx %d \"%s\" %c\n", (unsigned long)p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argC.name = "procC"; argC.count=11;
 	p = k64spawn(argC.name, test_proc, (void *)&argC, stack_size, NULL);
 	print_ps();
-	printf("TESTING: p = 0x%lx %d \"%s\" %c\n", (unsigned long)p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	p = k64spawn("bad", test_proc_bad, (void *)0, 0, NULL);
