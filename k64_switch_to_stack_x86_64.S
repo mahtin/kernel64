@@ -1,6 +1,9 @@
 /* k64_switch_to_stack_x86_64.S - x86_64 stack switch helper */
 
 /* void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);
+ *
+ * Linux ABI
+ *
  * rdi = stack_base
  * rsi = stack_size
  * rdx = entry
