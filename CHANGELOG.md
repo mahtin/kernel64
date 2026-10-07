@@ -1,5 +1,11 @@
 # Change Log
 
+ - 2026-10-07 23:16:18 +0100 [e06a848](../../commit/e06a848527218e2af6e9af1e9569200f14535168) Windows ld need : vs ,
+ - 2026-10-07 23:16:02 +0100 [02fcc22](../../commit/02fcc225a6b95332ec2166d92ca9fe3fc8e43dc1) apt-get needs sudo
+ - 2026-10-07 23:05:51 +0100 [dbd9292](../../commit/dbd9292aac76e1f83c770f871c0d5dc1db231505) Windows added to workflow and Makefile - first pass
+ - 2026-10-07 22:22:55 +0100 [f7b825b](../../commit/f7b825b120dfd5d6a58599ac74ad3579140f4681) added Ubuntu arm64, more cleanup of workflows
+ - 2026-10-07 21:32:22 +0100 [61b560b](../../commit/61b560b0dec32524fc6748b5964f705af5d3793e) add i386 CI, moved names to make then more obvious
+ - 2026-10-06 23:32:29 +0100 [d55ed42](../../commit/d55ed427107662d76d31a27c4edae11bce1967bd) CHANGELOG
  - 2026-10-06 23:32:08 +0100 [e1223ec](../../commit/e1223ece73279aa787f0e5ac85541d6ec8acbf03) more words
  - 2026-10-06 23:28:13 +0100 [77b0ebe](../../commit/77b0ebe7c60a13df46d62cc0f4bdfd01e2f808c2) first working pass of i386 code. Makefile will still need work to automate
  - 2026-10-06 22:55:48 +0100 [8882f58](../../commit/8882f588d8f8ff469cb1e14d00221bd3a1921e21) CHANGELOG
