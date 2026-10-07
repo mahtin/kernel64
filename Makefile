@@ -1,5 +1,8 @@
 #
-# Makefile for MacOS (Intel and/or Arm), Ubuntu Linux X86_64, RPi armv7l or aarch64, etc
+# Makefile for:
+#	MacOS (Intel and/or Arm),
+#	Ubuntu Linux X86_64 and/or i386,
+#	RPi armv7l and/or aarch64, etc
 #
 
 UNAME_M := $(shell uname -m)
@@ -8,22 +11,30 @@ UNAME_S := $(shell uname -s)
 # decide which CPU and which swich_to_stack code to use ...
 ifeq ($(UNAME_M),arm64)
 CPU=-DKERNEL64_ARCH_ARM64
-K64_SWITCH_OBJ=	k64_switch_to_stack_arm64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),aarch64)
 CPU=-DKERNEL64_ARCH_ARM64
-K64_SWITCH_OBJ=	k64_switch_to_stack_arm64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),armv7l)
 CPU=-DKERNEL64_ARCH_ARMV7L
-# $(error Error: arm 32 bit not supported!)
 CPU=-DKERNEL64_ARCH_ARM32
-K64_SWITCH_OBJ=	k64_switch_to_stack_armv7l.o
+K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
 ifeq ($(UNAME_M),x86_64)
+ifeq ($(M32),-m32)
+# cross compile from x86-64 machine to i386 target...
+CPU=-DKERNEL64_ARCH_i386
+K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
+else
 CPU=-DKERNEL64_ARCH_X86_64
-K64_SWITCH_OBJ=	k64_switch_to_stack_x86_64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_x86_64.o
 endif
+endif
+
+# save this for later ...
+# $(error Error: cpu/arch not supported!)
 
 # this is mainly because of different gcc versions...
 ifeq ($(UNAME_S),Darwin)
@@ -49,7 +60,7 @@ DEBUG=		-g
 
 CPPFLAGS=
 INCLUDES=
-CFLAGS=		$(INCLUDES) $(DEBUG) $(CPU) $(WARNINGS)
+CFLAGS=		$(DEBUG) $(CPU) $(INCLUDES) $(WARNINGS)
 ASFLAGS=	$(DEBUG) $(CPU)
 ARFLAGS=	-rv
 LDFLAGS=	$(DEBUG) $(CPU) $(STACK_SIZE)
