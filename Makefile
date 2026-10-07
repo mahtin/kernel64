@@ -57,7 +57,7 @@ ifeq ($(OS_NAME), Linux)
 STACK_SIZE=	-Wl,-z,stack_size=0x80000	# .5 MB
 endif
 ifeq ($(UNAME_S),Windows)
-STACK_SIZE=	-Wl,--stack,0x100000,0x80000	# 1 MB with .5 MB reserve
+STACK_SIZE=	-Wl,--stack,0x100000:0x80000	# 1 MB with .5 MB reserve
 endif
 
 WARNINGS=	-Wno-comment \
