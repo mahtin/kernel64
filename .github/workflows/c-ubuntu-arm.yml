@@ -1,4 +1,4 @@
-name: Kernel64 on Linux Ubuntu Intel i386
+name: Kernel64 on Linux Ubuntu arm64
 
 on:
   push:
@@ -7,11 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-on-ubuntu-i386:
-    # Explicitly target Ubuntu Intel i386
-    runs-on: ubuntu-latest
-#   container:
-#     image: i386/ubuntu:latest		# Forces the steps to run in a 32-bit envi (not used - causes issues)
+  test-on-ubuntu-arm64:
+    # Explicitly target Ubuntu arm64
+    runs-on: ubuntu-24.04-arm
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details
@@ -24,10 +22,8 @@ jobs:
           uname -s
           echo "Compiler architecture:"
           cc --version
-    - name: specific i386 tool install
-      run: apt-get update && apt-get install -y build-essential gcc-multilib g++-multilib
-    - name: make M32=-m32
-      run: make M32=-m32 test1_idle test2_kernel
+    - name: make
+      run: make test1_idle test2_kernel
     - name: test1_idle
       run: ./test1_idle
     - name: test2_kernel

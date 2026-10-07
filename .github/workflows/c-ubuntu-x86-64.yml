@@ -1,4 +1,4 @@
-name: Kernel64 on Linux Ubuntu C CI
+name: Kernel64 on Linux Ubuntu Intel x86_64
 
 on:
   push:
@@ -7,10 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    # Explicitly targets Intel x86_64 based Ubuntu runner
+  test-on-ubuntu-x86-64:
+    # Explicitly target Ubuntu Intel x86_64
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details

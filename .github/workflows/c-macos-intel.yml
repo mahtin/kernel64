@@ -1,4 +1,4 @@
-name: Kernel64 on MacOS Intel C CI
+name: Kernel64 on MacOS Intel x86_64
 
 on:
   push:
@@ -7,10 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    # Explicitly targets Intel x86_64 based MacOS runner
+  test-on-macos-intel:
+    # Explicitly target MacOS Intel x86_64
     runs-on: macos-26-intel
-
     steps:
     - uses: actions/checkout@v4
     - name: Check Environment Details
