@@ -12,6 +12,10 @@
 #define	KERNEL64_ARCH_X86_64	1
 #endif
 
+#if defined(_WIN32) || defined(__MSYS__)
+#define	KERNEL64_ARCH_X86_64	1
+#endif
+
 #if defined(__aarch64__) || defined(__arm64__)
 #define	KERNEL64_ARCH_ARM64	1
 #endif
