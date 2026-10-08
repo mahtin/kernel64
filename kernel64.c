@@ -25,7 +25,7 @@
 #define	OPTION_START_OF_LIST	0		/* 1 if process should go at begining of process list */
 #define	OPTION_DELETE_ZOMBIE	0		/* 1 if process should be deleted vs being left as zombie in process list */
 
-static int debug_flag = 1;			/* turn on for debug */
+static int debug_flag = 0;			/* turn on for debug */
 
 static struct proc64 *curproc = NULL;
 static struct proc64 *proclist = NULL;
