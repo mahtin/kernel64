@@ -15,8 +15,10 @@ jobs:
         os: [macos-latest, macos-26-intel, ubuntu-latest, ubuntu-24.04-arm]
     steps:
     - uses: actions/checkout@v4
-    - name: Run tests
+
+    - name: Display OS
       run: echo "Running on ${{ matrix.os }}"
+
     - name: Check Environment Details (macOS)
       if: runner.os == 'macOS'
       run: |
@@ -27,8 +29,7 @@ jobs:
       run: |
           echo "Running on operating system:"
           cat /etc/os-release
-    - name: Check Environment Details
-      if: runner.os == 'macOS'
+    - name: Check Environment Details (Common)
       run: |
           echo "Hardware architecture:"
           uname -m
@@ -36,6 +37,7 @@ jobs:
           uname -s
           echo "Compiler architecture:"
           cc --version
+
     - name: make
       run: make test1_idle test2_kernel
 

@@ -8,29 +8,41 @@ on:
 
 jobs:
   test-on-ubuntu-i386:
-    # Explicitly target Ubuntu Intel i386
     runs-on: ubuntu-latest
 #   container:
 #     image: i386/ubuntu:latest		# Forces the steps to run in a 32-bit envi (not used - causes issues)
     steps:
     - uses: actions/checkout@v4
-    - name: Check Environment Details
+
+    - name: Check Environment Details (macOS)
+      if: runner.os == 'macOS'
+      run: |
+          echo "Running on operating system:"
+          sw_vers
+    - name: Check Environment Details (Linux)
+      if: runner.os == 'Linux'
       run: |
           echo "Running on operating system:"
           cat /etc/os-release
+    - name: Check Environment Details (Common)
+      run: |
           echo "Hardware architecture:"
           uname -m
           echo "System architecture:"
           uname -s
           echo "Compiler architecture:"
           cc --version
+
     - name: specific i386 tool install
       run: |
           sudo apt-get update
           sudo apt-get install -y build-essential gcc-multilib g++-multilib
+
     - name: make M32=-m32
       run: make M32=-m32 test1_idle test2_kernel
+
     - name: test1_idle
       run: ./test1_idle
+
     - name: test2_kernel
       run: ./test2_kernel
