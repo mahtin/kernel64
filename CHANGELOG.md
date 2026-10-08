@@ -1,5 +1,11 @@
 # Change Log
 
+ - 2026-10-08 23:10:46 +0100 [9d4b9e1](../../commit/9d4b9e16e5e75042cf70d675de9efc9d8c9e655a) added priority to processes - first pass, added better zombie cleanup, added idle process to schedule if nothing else to run
+ - 2026-10-08 23:05:53 +0100 [f481801](../../commit/f4818011ea3ccdf4ad88b062d4c271243440c0b4) extra print_ps removed
+ - 2026-10-08 19:01:12 +0100 [e24c970](../../commit/e24c970b5bbc2925659460bd9569e24559912e0c) stddef.h is needed to be included
+ - 2026-10-08 18:02:14 +0100 [34c93bd](../../commit/34c93bd3ac860ce016f4585fb5c873864e6b82e1) forcefully debug print longjmp/setjmp to help window debug
+ - 2026-10-08 15:38:40 +0100 [dc907ab](../../commit/dc907ab0fe4b259993646d1c46291afadd965ffe) testing the stack should be done in small steps
+ - 2026-10-08 15:34:15 +0100 [618dcf5](../../commit/618dcf57356d7cfd4c41c2263fdac800fb083bde) CHANGELOG
  - 2026-10-08 15:33:31 +0100 [232848a](../../commit/232848a24c50121f25f9e6b142ca342dd1bbae30) unify test loops
  - 2026-10-08 15:23:18 +0100 [d876295](../../commit/d876295680867e41b8c826ea3b9dcd9dc91f34a0) fixed debug on enter
  - 2026-10-08 15:10:27 +0100 [25a335d](../../commit/25a335d92e04381ad0b084abbe3591baef51b1ec) corrected printf
