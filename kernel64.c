@@ -572,8 +572,8 @@ char **k64ps(void)
 {
 	char **r;
 	char *format_header = "%6s %1s %5s %10s %6s %6s %14s %14s";
-	char *format_entry1 = "%6d %1c     %c %10s %6zu %6zu %12p %p";
-	char *format_entry2 = "%6d %1c     %c %10s %6s %6s %12p %p;
+	char *format_entry1 = "%6d %1c     %c %10s %6zu %6zu %14p %14p";
+	char *format_entry2 = "%6d %1c     %c %10s %6s %6s %14p %14p";
 	char buf[1024+1];
 	size_t nn, ii;
 
