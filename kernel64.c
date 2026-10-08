@@ -239,8 +239,8 @@ static void k64enter(struct proc64 *next)
 		k64process_bootstrap(next);
 		/* never returns */
 	}
-	if (debug_flag) {
-		fprintf(stderr, "k64enter(): doing longjmp:\n");
+	if (1 || debug_flag) {
+		fprintf(stderr, "k64enter(%d): next->name=\"%s\" doing longjmp:\n", next->pid, next->name);
 		fflush(stderr);
 	}
 	longjmp(next->context, 1);
@@ -275,9 +275,13 @@ static void k64switch(struct proc64 *next)
 	assert(next->stack_size > used);
 
 	curproc = next;
+	if (1 || debug_flag) {
+		fprintf(stderr, "k64switch(%d): next->name=\"%s\" setjmp() - prev->pid=%d prev->name=\"%s\"\n", next->pid, next->name, prev?prev->pid:-1, prev?prev->name:"-");
+		fflush(stderr);
+	}
 	if (prev == NULL || setjmp(prev->context) == 0) {
-		if (debug_flag) {
-			fprintf(stderr, "k64switch(): k64enter ...\n");
+		if (1 || debug_flag) {
+			fprintf(stderr, "k64switch(): setjmp() returns 0 - next up k64enter ...\n");
 			fflush(stderr);
 		}
 		k64enter(next);
@@ -286,7 +290,7 @@ static void k64switch(struct proc64 *next)
 		fflush(stderr);
 		abort();
 	}
-	if (debug_flag) {
+	if (1 || debug_flag) {
 		fprintf(stderr, "k64switch(): returning (at end)\n");
 		fflush(stderr);
 	}
@@ -331,6 +335,10 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	}
 	memset(p->stack_base, STACK_GUARD_BYTE, p->stack_size);
 
+	if (1 || debug_flag) {
+		fprintf(stderr, "k64spawn(%d): p->name=\"%s\" setjmp() - first setup\n", p->pid, p->name);
+		fflush(stderr);
+	}
 	setjmp(p->context);			/* only save context, never run child branch */
 
 #if OPTION_START_OF_LIST == 1
