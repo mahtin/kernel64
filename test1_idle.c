@@ -69,7 +69,6 @@ test1_idle(void)
 		k64schedule();
 		printf("TESTING: k64schedule returned\n");
 		fflush(stdout);
-		print_ps();
 	}
 	print_ps();
 	printf("TESTING: scheduler returned - hence no more processes\n");
