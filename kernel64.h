@@ -20,15 +20,19 @@ typedef enum {
 	P_ZOMBIE	= 'Z',	/* proc dead/zombie */
 } proc64state;
 
+typedef unsigned long long proc64magic;
+typedef unsigned short proc64pri;
+typedef unsigned int proc64pid;
+
 struct proc64 {
-	unsigned long long magic;		/* proc64 structure magic number for sanity checks */
+	proc64magic magic;			/* proc64 structure magic number for sanity checks */
 	struct proc64 *prev;			/* processes are link listed */
 	struct proc64 *next;
 	void *v;				/* transparent pointer to calling process's structure - for tying into exiting systems */
-	unsigned int pid;			/* process ID */
+	proc64pid pid;				/* process ID */
 	char *name;				/* process name */
 	proc64state state;			/* process state */
-	unsigned char priority;			/* process priority */
+	proc64pri priority;			/* process priority */
 	jmp_buf context;			/* process stack and context for setjmp/longjmp */
 	void *stack_real_base;			/* process actual mmap base (including guard) */
 	size_t stack_real_size;			/* process total mmap size (usable + guard) */
@@ -45,10 +49,12 @@ void k64init(void);
 struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
 void k64schedule(void);
 void k64exit(void);
+void k64nice(proc64pri pri);
+void k64renice(struct proc64 *p, proc64pri pri);
 void k64delay(unsigned long msecs);
 void k64sleep(void * event);
 void k64wakeup(struct proc64 *p);
-struct proc64 *k64pid_to_proc(int pid);
+struct proc64 *k64pid_to_proc(proc64pid pid);
 void k64kill(struct proc64 *p);
 void k64yield(void);
 int k64has_a_process_to_run(void);
