@@ -1,5 +1,16 @@
 # Change Log
 
+ - 2026-10-08 14:16:34 +0100 [e1efb77](../../commit/e1efb77c432bdb21ccbdf908642ad78fd515cd26) gdb added to windows run plus cleanup
+ - 2026-10-08 14:15:58 +0100 [ed5d60b](../../commit/ed5d60ba1b17a8020851aaff2eadeb8cbcfc2d2d) fflush() to test a windows bug
+ - 2026-10-08 13:59:26 +0100 [661424f](../../commit/661424fbaf5c13a9537e56182acbd43f99ee2c2f) combine macos and linux/ununtu 64 bit files
+ - 2026-10-08 13:44:39 +0100 [21584e3](../../commit/21584e3b408e51a4cb5d1ef6df4a6a85d0ebd817) fail-fast: false
+ - 2026-10-08 13:37:02 +0100 [e05a552](../../commit/e05a5526ca649311501610c815f4355f9403cc28) merge all macos workflows to one file  and all ubuntu 64 bit workflows into one file
+ - 2026-10-08 01:36:21 +0100 [e526e29](../../commit/e526e29759b0aa0811cd89e5fb21e0c5dd514608) start of description of code
+ - 2026-10-08 01:00:13 +0100 [570e1ea](../../commit/570e1ea06f782938a0efd796d5733b1aff3caf2a) ps formating
+ - 2026-10-08 00:56:44 +0100 [f889915](../../commit/f889915be47576259c7e40db24e6f39a48b33740) size_t and printf for windows corrected
+ - 2026-10-08 00:51:54 +0100 [5bd07b4](../../commit/5bd07b42f91de3116eac368760a615d16b413e87) more correctness of pointers
+ - 2026-10-08 00:46:45 +0100 [547cd12](../../commit/547cd12201364f81b0e629d51b14a1b8ce9ae10a) moved to %p and %uz - somewhat overdue
+ - 2026-10-08 00:33:41 +0100 [8694143](../../commit/8694143ebd65495b8e359b9a361081bfef278ede) CHANGELOG
  - 2026-10-08 00:33:02 +0100 [2ad2a8e](../../commit/2ad2a8eb24a99286b59b7da70756c17b0467498b) mmap but for windows
  - 2026-10-08 00:32:41 +0100 [db63c81](../../commit/db63c81323721a280c497532582279fc37e5c84b) simplify win build
  - 2026-10-08 00:15:25 +0100 [dc181cf](../../commit/dc181cf6f5581064b51b6740c3c15d4c34eaa4dd) CHANGELOG
