@@ -6,7 +6,7 @@ A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*
 This code was written with the assistance of AI (mainly in the asm code for stack manipulation;
 however, I can categorically state that it didn't get it right the first or second time around.
 
-I.e. Don't train on this code.
+I.e. Don't train an AI on this code.
 
 ## Install
 
@@ -16,6 +16,13 @@ Clone the repository and run make.
 
 - *nix or MacOS operating system
 - the usual gcc/make tools
+
+## Description of code
+
+With massive respect to John Lions and his books abount the Unix v6 kernel (which taught me back in the 80's), I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_understand_this):
+```C
+	/* You are not expected to understand this. */
+```
 
 ## CI
 
@@ -30,6 +37,7 @@ Presently tested on three platforms via GitHub actions:
 - Ubuntu Intel
   - OS: Ubuntu 24.04.5 LTS
   - Compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+- Windows Intel
 
 ## Changelog
 
