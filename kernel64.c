@@ -578,10 +578,10 @@ size_t k64stack_used(struct proc64 *p)
 	top = bottom + p->stack_size;				/* highest address + 1 */
 #if 0
 	if (debug_flag > 1) {
-		fprintf(stdout, "Top   : 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		fprintf(stderr, "Top   : 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
 			(unsigned long)top, *(top-0), *(top-1), *(top-2), *(top-3), *(top-4), *(top-5), *(top-6), *(top-7)
 		);
-		fprintf(stdout, "Bottom: 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		fprintf(stderr, "Bottom: 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
 			(unsigned long)bottom, *(bottom+0), *(bottom+1), *(bottom+2), *(bottom+3), *(bottom+4), *(bottom+5), *(bottom+6), *(bottom+7)
 		);
 		fflush(stderr);

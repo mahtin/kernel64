@@ -56,7 +56,7 @@ test_proc(void *arg)
 static void
 test_proc_bad(void *arg)
 {
-	char on_stack_allocation[128];
+	char on_stack_allocation[1000];			/* size is a hack but works */
 
 	/* FORCEFULLY destroy the stack via recursive calls */
 
@@ -108,13 +108,15 @@ test_kernel(void)
 
 	while (k64has_a_process_to_run()) {
 		print_ps();
+		printf("TESTING: k64schedule being called ...\n");
+		fflush(stdout);
 		k64schedule();
 		printf("TESTING: k64schedule returned\n");
 		fflush(stdout);
+		print_ps();
 	}
 	print_ps();
-
-	printf("TESTING: scheduler returned\n");
+	printf("TESTING: scheduler returned - hence no more processes\n");
 	fflush(stdout);
 }
 

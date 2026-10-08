@@ -56,7 +56,11 @@ test1_idle(void)
 	fflush(stdout);
 
 	p = k64spawn("killer", test_killing, NULL, 0, NULL);
-	print_ps();
+	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
+
+	printf("TESTING: about to loop on schedule ...\n");
+	fflush(stdout);
 
 	while (k64has_a_process_to_run()) {
 		print_ps();
