@@ -593,17 +593,20 @@ size_t k64stack_used(struct proc64 *p)
 
 char **k64ps(void)
 {
+	char *buf;
 	char **r;
-	char *format_header = "%6s %1s %5s %10s %6s %6s %14s %14s";
-	char *format_entry1 = "%6d %1c     %c %10s %6zu %6zu %14p %14p";
-	char *format_entry2 = "%6d %1c     %c %10s %6s %6s %14p %14p";
-	char buf[1024+1];
+	char *format_header = "%6s %1s %5s %10s %6s %6s %16s %16s";
+	char *format_entry1 = "%6d %1c     %c %10s %6zu %6zu %16p %16p";
+	char *format_entry2 = "%6d %1c     %c %10s %6s %6s %16p %16p";
 	size_t nn, ii;
 
+	buf = (char *)malloc(1024+1);
+	assert(buf != NULL);
 	ii = 0;
 	nn = k64process_count(1);
 	r = (char **)malloc(sizeof(char *) * (nn+1+1));
-	snprintf(buf, sizeof(buf), format_header,
+	assert(r != NULL);
+	snprintf(buf, 1024, format_header,
 		"PID",
 		"*",
 		"STATE",
@@ -619,7 +622,7 @@ char **k64ps(void)
 		assert(p->magic == PROC_MAGIC_NUMBER);
 		ii++;
 		if (p->stack_base)
-			snprintf(buf, sizeof(buf), format_entry1,
+			snprintf(buf, 1024, format_entry1,
 				p->pid,
 				p == curproc? '*':' ',
 				p->state,
@@ -630,7 +633,7 @@ char **k64ps(void)
 				p->arg
 			);
 		else
-			snprintf(buf, sizeof(buf), format_entry2,
+			snprintf(buf, 1024, format_entry2,
 				p->pid,
 				p == curproc? '*':' ',
 				p->state,
@@ -641,10 +644,12 @@ char **k64ps(void)
 				p->arg
 			);
 		r[ii] = malloc(strlen(buf)+1);
+		assert(r[ii] != NULL);
 		strncpy(r[ii], buf, strlen(buf));
 	}
 	ii++;
 	r[ii] = NULL;
+	free(buf);
 	return r;
 }
 
