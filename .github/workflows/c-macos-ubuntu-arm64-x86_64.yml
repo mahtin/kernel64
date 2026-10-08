@@ -1,4 +1,4 @@
-name: Kernel64 on macOS arm64 and Intel x86_64
+name: Kernel64 on macOS arm64 and Intel x86_64, Linux Ubuntu Intel x86_64 & arm64
 
 on:
   push:
@@ -7,20 +7,29 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-on-macos-arm:
+  test-on-various-os-and-arch:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, macos-26-intel]
+        os: [macos-latest, macos-26-intel, ubuntu-latest, ubuntu-24.04-arm]
     steps:
     - uses: actions/checkout@v4
     - name: Run tests
       run: echo "Running on ${{ matrix.os }}"
-    - name: Check Environment Details
+    - name: Check Environment Details (macOS)
+      if: runner.os == 'macOS'
       run: |
           echo "Running on operating system:"
           sw_vers
+    - name: Check Environment Details (Linux)
+      if: runner.os == 'Linux'
+      run: |
+          echo "Running on operating system:"
+          cat /etc/os-release
+    - name: Check Environment Details
+      if: runner.os == 'macOS'
+      run: |
           echo "Hardware architecture:"
           uname -m
           echo "System architecture:"
@@ -29,7 +38,9 @@ jobs:
           cc --version
     - name: make
       run: make test1_idle test2_kernel
+
     - name: test1_idle
       run: ./test1_idle
+
     - name: test2_kernel
       run: ./test2_kernel
