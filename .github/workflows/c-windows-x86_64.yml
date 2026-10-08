@@ -58,10 +58,10 @@ jobs:
             -ex "thread apply all bt" \
             ./test1_idle.exe
 
-    - name: gdb test2_idle.exe
+    - name: gdb test2_kernel.exe
       continue-on-error: true
       run: |
         gdb -batch \
             -ex "run" \
             -ex "thread apply all bt" \
-            ./test2_idle.exe
+            ./test2_kernel.exe
