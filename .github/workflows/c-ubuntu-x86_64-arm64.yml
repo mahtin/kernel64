@@ -10,6 +10,7 @@ jobs:
   test-on-ubuntu-arm64:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     steps:

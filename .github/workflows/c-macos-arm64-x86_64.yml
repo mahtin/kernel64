@@ -10,6 +10,7 @@ jobs:
   test-on-macos-arm:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, macos-26-intel]
     steps:
