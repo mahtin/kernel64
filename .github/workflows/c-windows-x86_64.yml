@@ -20,7 +20,7 @@ jobs:
       if: ${{ runner.os == 'Windows' }}
       uses: msys2/setup-msys2@v2
       with:
-        msystem: UCRT64		# vs older MINGW64
+        msystem: UCRT64		# Universal C Runtime (UCRT) vs the older MINGW64
         update: true
         install: >-
           mingw-w64-ucrt-x86_64-gcc
@@ -30,6 +30,8 @@ jobs:
       if: ${{ runner.os == 'Windows' }}
       run: |
           echo "Running on operating system:"
+          cmd //c ver
+          echo "Running via:"
           echo $MSYSTEM
     - name: Check Environment Details
       run: |
