@@ -56,7 +56,7 @@ test_proc(void *arg)
 static void
 test_proc_bad(void *arg)
 {
-	char on_stack_allocation[1000];			/* size is a hack but works */
+	char on_stack_allocation[100];			/* size is a hack but works - slowly eat up the stack */
 
 	/* FORCEFULLY destroy the stack via recursive calls */
 
