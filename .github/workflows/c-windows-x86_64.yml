@@ -25,7 +25,7 @@ jobs:
         install: >-
           mingw-w64-ucrt-x86_64-gcc
           mingw-w64-ucrt-x86_64-gdb
-          # make
+          make
     - name: Check Environment Details (Windows)
       if: ${{ runner.os == 'Windows' }}
       run: |
