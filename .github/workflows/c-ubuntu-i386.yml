@@ -12,7 +12,7 @@ jobs:
 #   container:
 #     image: i386/ubuntu:latest		# Forces the steps to run in a 32-bit envi (not used - causes issues)
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Check Environment Details (macOS)
       if: runner.os == 'macOS'
