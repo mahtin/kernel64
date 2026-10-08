@@ -272,15 +272,17 @@ static void k64switch(struct proc64 *next)
 		fprintf(stderr, "k64switch(): STACK size: %zu used: %zu\n", next->stack_size, used);
 		fflush(stderr);
 	}
-	assert(next->stack_size != used);
+	assert(next->stack_size > used);
 
 	curproc = next;
 	if (prev == NULL || setjmp(prev->context) == 0) {
-		fprintf(stderr, "k64switch(): k64enter ...\n");
-		fflush(stderr);
+		if (debug_flag) {
+			fprintf(stderr, "k64switch(): k64enter ...\n");
+			fflush(stderr);
+		}
 		k64enter(next);
 		/* never returns */
-		fprintf(stderr, "k64switch(): k64enter returned - SHOULD NOT HAPPEN\n");
+		fprintf(stderr, "k64switch(): k64enter returned - SHOULD NOT HAPPEN (ABORTING!)\n");
 		fflush(stderr);
 		abort();
 	}
