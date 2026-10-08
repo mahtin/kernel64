@@ -7,6 +7,7 @@
 #include "port.h"
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
+#include <stddef.h>
 #include <setjmp.h>
 
 /* state of process (as a single character to make life easy) */
