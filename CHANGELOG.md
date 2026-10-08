@@ -1,5 +1,10 @@
 # Change Log
 
+ - 2026-10-08 15:33:31 +0100 [232848a](../../commit/232848a24c50121f25f9e6b142ca342dd1bbae30) unify test loops
+ - 2026-10-08 15:23:18 +0100 [d876295](../../commit/d876295680867e41b8c826ea3b9dcd9dc91f34a0) fixed debug on enter
+ - 2026-10-08 15:10:27 +0100 [25a335d](../../commit/25a335d92e04381ad0b084abbe3591baef51b1ec) corrected printf
+ - 2026-10-08 15:09:58 +0100 [6cab93d](../../commit/6cab93d10e1152900631769b60facf422052fd11) more info
+ - 2026-10-08 14:51:47 +0100 [cf3074e](../../commit/cf3074e906218f43394dca4bf13142679cb122c0) CHANGELOG
  - 2026-10-08 14:51:28 +0100 [804ff41](../../commit/804ff417f81899cbd3159f4dbe822d612e13f542) name and ps strings were sometimes missing a 0 terminator - a bug
  - 2026-10-08 14:49:08 +0100 [db74308](../../commit/db7430833a5b1d5720f8b946454728e7cab46183) v4 to v5
  - 2026-10-08 14:44:22 +0100 [49e856f](../../commit/49e856f34eb6ffd41ed2e897244ff656d15e157a) remove debug
