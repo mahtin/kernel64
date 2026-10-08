@@ -1,5 +1,13 @@
 # Change Log
 
+ - 2026-10-08 14:51:28 +0100 [804ff41](../../commit/804ff417f81899cbd3159f4dbe822d612e13f542) name and ps strings were sometimes missing a 0 terminator - a bug
+ - 2026-10-08 14:49:08 +0100 [db74308](../../commit/db7430833a5b1d5720f8b946454728e7cab46183) v4 to v5
+ - 2026-10-08 14:44:22 +0100 [49e856f](../../commit/49e856f34eb6ffd41ed2e897244ff656d15e157a) remove debug
+ - 2026-10-08 14:43:25 +0100 [043b781](../../commit/043b7817a1912968eb2e86ccbffdd5f2b8c11cb1) changed string buffer setup
+ - 2026-10-08 14:42:38 +0100 [8441986](../../commit/84419864cdfcddacc0d95c49ac35ea1f02bfec50) typo
+ - 2026-10-08 14:30:14 +0100 [ecea09a](../../commit/ecea09abb675c719e6a0d821564db53de0cb303f) brings x86_64, arm64, and i386 files closer - but not merged yet
+ - 2026-10-08 14:22:33 +0100 [113650e](../../commit/113650e83c94e66954cc12ef0c1f0e9565a8c016) make - I goofed!
+ - 2026-10-08 14:16:52 +0100 [c1c9e9c](../../commit/c1c9e9c2a39b0af401c667c36534df1530f81f68) CHANGELOG
  - 2026-10-08 14:16:34 +0100 [e1efb77](../../commit/e1efb77c432bdb21ccbdf908642ad78fd515cd26) gdb added to windows run plus cleanup
  - 2026-10-08 14:15:58 +0100 [ed5d60b](../../commit/ed5d60ba1b17a8020851aaff2eadeb8cbcfc2d2d) fflush() to test a windows bug
  - 2026-10-08 13:59:26 +0100 [661424f](../../commit/661424fbaf5c13a9537e56182acbd43f99ee2c2f) combine macos and linux/ununtu 64 bit files
