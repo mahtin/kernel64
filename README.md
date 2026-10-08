@@ -3,14 +3,23 @@ A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*
 
 *[1]* Also some 32 bit o/s's - armv7l (Raspbery Pi's) and i386.
 
-This code was written with the assistance of AI (mainly in the asm code for stack manipulation;
+NOTE: This code was written with the assistance of AI (mainly in the asm code for stack manipulation);
 however, I can categorically state that it didn't get it right the first or second time around.
 
 I.e. Don't train an AI on this code.
 
 ## Install
 
-Clone the repository and run make.
+Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/actions) and should be cloned locally.
+
+All platforms (except i386) should build with:
+``` bash
+$ make
+```
+For i386 platform, cross compile on Intel x86_64 via:
+``` bash
+$ make M32=-m32
+```
 
 ## Requirements
 
@@ -31,13 +40,12 @@ However, this code is simpler; but thinks in the same way (but we modern code).
 There's a build in ps command which can show the state of all the proceses:
 
 ```
-   PID * STATE       NAME  STACK   USED            ENTRY              ARG
-     1 *     R     [idle]  16384   2944      0x100ac4e90              0x0
-     2       Z      procA      -      -      0x100ac47a8      0x16f33af80
-     3       R      procB  16384   2976      0x1044807a8      0x16b97ef70
-     4       R      procC  16384   2976      0x1044807a8      0x16b97ef60
-     5       K        bad      -      -      0x100ac4988              0x0
-
+   PID * STATE       NAME PRI  STACK   USED            ENTRY              ARG
+     1 *     R     [idle] 255  16384   3040      0x104b4cf08              0x0
+     2       Z      procA  80  16384   3120      0x104b4c7c8      0x16b2b2f80
+     3       Z      procB  80  16384   3120      0x104b4c7c8      0x16b2b2f70
+     4       Z      procC  80  16384   3120      0x104b4c7c8      0x16b2b2f60
+     5       K        bad  80      -      -      0x104b4c9a8              0x0
 ```
 
 The * shows which process is presently running.
