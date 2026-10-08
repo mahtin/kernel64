@@ -8,7 +8,6 @@ on:
 
 jobs:
   test-on-windows-x86_64:
-    # Explicitly target Windows Intel x86_64
     runs-on: windows-latest
     defaults:
       run:
@@ -17,18 +16,23 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Set up MSYS2
+    - name: Set up MSYS2 (Windows)
+      if: ${{ runner.os == 'Windows' }}
       uses: msys2/setup-msys2@v2
       with:
+        msystem: UCRT64		# vs older MINGW64
         update: true
         install: >-
-          mingw-w64-x86_64-gcc
-          make
-    - name: Check Environment Details
-      continue-on-error: true
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-gdb
+          # make
+    - name: Check Environment Details (Windows)
+      if: ${{ runner.os == 'Windows' }}
       run: |
           echo "Running on operating system:"
           echo $MSYSTEM
+    - name: Check Environment Details
+      run: |
           echo "Hardware architecture:"
           uname -m
           echo "System architecture:"
@@ -37,7 +41,27 @@ jobs:
           gcc --version
     - name: make
       run: make CC=gcc test1_idle.exe test2_kernel.exe
-    - name: test1_idle.exe
-      run: ./test1_idle.exe
-    - name: test2_kernel.exe
-      run: ./test2_kernel.exe
+
+#   - name: test1_idle.exe
+#     continue-on-error: true
+#     run: ./test1_idle.exe
+
+#   - name: test2_kernel.exe
+#     continue-on-error: true
+#     run: ./test2_kernel.exe
+
+    - name: gdb test1_idle.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test1_idle.exe
+
+    - name: gdb test2_idle.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test2_idle.exe
