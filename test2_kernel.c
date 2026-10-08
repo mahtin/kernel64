@@ -19,6 +19,7 @@ print_ps(void)
 	char **r = k64ps();
 	for (int ii=0;r[ii];ii++) {
 		printf("%s\n", r[ii]);
+		fflush(stdout);
 		free(r[ii]);
 	}
 	free(r);
@@ -61,6 +62,7 @@ test_proc_bad(void *arg)
 
 	if ((uintptr_t)arg < 1024) {
 		printf("TESTING: [%s] test_proc_bad(%lu)\n", "bad", (uintptr_t)arg);
+		fflush(stdout);
 		memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
 		print_ps();
 		k64yield();
