@@ -1,4 +1,4 @@
-name: Kernel64 on macOS arm64
+name: Kernel64 on macOS arm64 and Intel x86_64
 
 on:
   push:
@@ -8,10 +8,14 @@ on:
 
 jobs:
   test-on-macos-arm:
-    # Explicitly target MacOS arm64
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, macos-26-intel]
     steps:
     - uses: actions/checkout@v4
+    - name: Run tests
+      run: echo "Running on ${{ matrix.os }}"
     - name: Check Environment Details
       run: |
           echo "Running on operating system:"

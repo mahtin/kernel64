@@ -1,4 +1,4 @@
-name: Kernel64 on Linux Ubuntu Intel x86_64
+name: Kernel64 on Linux Ubuntu Intel x86_64 & arm64
 
 on:
   push:
@@ -7,11 +7,15 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-on-ubuntu-x86_64:
-    # Explicitly target Ubuntu Intel x86_64
-    runs-on: ubuntu-latest
+  test-on-ubuntu-arm64:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
     steps:
     - uses: actions/checkout@v4
+    - name: Run tests
+      run: echo "Running on ${{ matrix.os }}"
     - name: Check Environment Details
       run: |
           echo "Running on operating system:"
