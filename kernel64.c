@@ -318,7 +318,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 		free(p);
 		return NULL;
 	}
-	strncpy(p->name, name, strlen(name));
+	strncpy(p->name, name, strlen(name)+1);
 
 	if (stack_size == 0)
 		stack_size = 64 * 1024;
@@ -617,7 +617,7 @@ char **k64ps(void)
 		"ARG"
 	);
 	r[ii] = malloc(strlen(buf)+1);
-	strncpy(r[ii], buf, strlen(buf));
+	strncpy(r[ii], buf, strlen(buf)+1);
 	for (struct proc64 *p=proclist;p!=NULL;p=p->next) {
 		assert(p->magic == PROC_MAGIC_NUMBER);
 		ii++;
@@ -645,7 +645,7 @@ char **k64ps(void)
 			);
 		r[ii] = malloc(strlen(buf)+1);
 		assert(r[ii] != NULL);
-		strncpy(r[ii], buf, strlen(buf));
+		strncpy(r[ii], buf, strlen(buf)+1);
 	}
 	ii++;
 	r[ii] = NULL;
