@@ -48,7 +48,7 @@ Once all processes are setup, calling `k64schedule()` will kick everything off.
 Each process is provided with its own stack and if the processor and operating system provide,
 a guard band is added to the stack in order to detect stack overflow.
 The nternal scheduler also double-checks the stack for both overflow and overwrite.
-If a process exceedes its stack allocation, it will be killed by the scheduler.
+If a process exceedes its stack allocation, it will be destroyed by the scheduler.
 
 ## C routines
 
@@ -74,7 +74,7 @@ If a process exceedes its stack allocation, it will be killed by the scheduler.
 	void k64wakeup(struct proc64 *p);
 
 	/* maliciously destroy a process */
-	void k64kill(struct proc64 *p);
+	void k64destroy(struct proc64 *p);
 
 	/* random functions */
 	struct proc64 *k64pid_to_proc(proc64pid pid);
@@ -96,11 +96,11 @@ There's a build in ps command which can show the state of all the proceses:
      2       Z      procA  80  16384   3120      0x104b4c7c8      0x16b2b2f80
      3       Z      procB  80  16384   3120      0x104b4c7c8      0x16b2b2f70
      4       Z      procC  80  16384   3120      0x104b4c7c8      0x16b2b2f60
-     5       K        bad  80      -      -      0x104b4c9a8              0x0
+     5       D      procS  80      -      -      0x104b4c9a8              0x0
 ```
 
 The * shows which process is presently running.
-The state can be R for runing, Z for zombie, K for killed, plus others.
+The state can be R for runing, Z for zombie, D for destroy, S for sleeping, plus others.
 The stack usage is down for running processes.
 The entry and are are how the process is spawned.
 

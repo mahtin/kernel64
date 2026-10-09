@@ -22,19 +22,19 @@ print_ps(void)
 	fflush(stdout);
 }
 
-static void test_killing(void *arg)
+static void test_destroy_idle_processs(void *arg)
 {
-	printf("TESTING: killing idle starting...\n");
+	printf("TESTING: destroy_idle_processs starting...\n");
 	fflush(stdout);
 	for (int ii=0;ii<3;ii++) {
 		printf("LOOP ... %d\n", ii);
 		k64yield();
 		print_ps();
 	}
-	printf("TESTING: killing idle process...\n");
+	printf("TESTING: destroy_idle_processs process...\n");
 	fflush(stdout);
-	k64kill(k64pid_to_proc(1));
-	printf("TESTING: killing idle continuing...\n");
+	k64destroy(k64pid_to_proc(1));
+	printf("TESTING: destroy_idle_processs continuing...\n");
 	fflush(stdout);
 	for (int ii=0;ii<3;ii++) {
 		printf("LOOP ... %d\n", ii);
@@ -55,7 +55,7 @@ test1_idle(void)
 	printf("k64init() done\n");
 	fflush(stdout);
 
-	p = k64spawn("killer", test_killing, NULL, 0, NULL);
+	p = k64spawn("testD", test_destroy_idle_processs, NULL, 0, NULL);
 	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 

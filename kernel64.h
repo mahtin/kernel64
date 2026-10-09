@@ -15,8 +15,8 @@ typedef enum {
 	P_GO		= 'G',	/* proc setup but never run yet */
 	P_RUNNING	= 'R',	/* proc up and running */
 	P_WAITING	= 'W',	/* proc waiting (for wakeup) */
-	P_DELAY		= 'D',	/* proc delayed */
-	P_KILLED	= 'K',	/* proc killed (because error) */
+	P_SLEEPING	= 'S',	/* proc delayed/sleeping */
+	P_DESTROYED	= 'D',	/* proc destroyed (because error) */
 	P_ZOMBIE	= 'Z',	/* proc dead/zombie */
 } proc64state;
 
@@ -55,7 +55,7 @@ void k64delay(unsigned long msecs);
 void k64sleep(void * event);
 void k64wakeup(struct proc64 *p);
 struct proc64 *k64pid_to_proc(proc64pid pid);
-void k64kill(struct proc64 *p);
+void k64destroy(struct proc64 *p);
 void k64yield(void);
 int k64has_a_process_to_run(void);
 size_t k64process_count(int incl_zombie);

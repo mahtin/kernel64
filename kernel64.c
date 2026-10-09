@@ -170,7 +170,7 @@ static void k64zombies_reap(void)
 
 	while (p) {
 		next = p->next;
-		if (p->pid > 1 && p != curproc && p->stack_base != NULL && (p->state == P_ZOMBIE || p->state == P_KILLED)) {
+		if (p->pid > 1 && p != curproc && p->stack_base != NULL && (p->state == P_ZOMBIE || p->state == P_DESTROYED)) {
 			if (debug_flag) {
 				fprintf(stderr, "k64zombies_reap(%d) p->name=\"%s\", p->state=%c\n", p->pid, p->name, p->state);
 				fflush(stderr);
@@ -307,7 +307,7 @@ static void k64switch(struct proc64 *next)
 	}
 }
 
-/* Spawn */
+/* Spawn a new process */
 struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v)
 {
 	struct proc64 *p;
@@ -403,7 +403,7 @@ void k64schedule(void)
 		}
 #endif
 		/* while we are here - deal with delayed process */
-		if (p->state == P_DELAY) {
+		if (p->state == P_SLEEPING) {
 			/* is it time to wake up */
 			/* TODO */
 			p->duration -= 1;
@@ -451,7 +451,7 @@ void k64schedule(void)
 		size_t used = k64stack_used(p);
 		fprintf(stderr, "k64schedule(%d): name=%s stack_used=%zu / %zu STACK CORRUPT\n", p->pid, p->name, used, p->stack_size);
 		fflush(stderr);
-		p->state = P_KILLED;
+		p->state = P_DESTROYED;
 		if (p == curproc) {
 			curproc = NULL;
 		}
@@ -466,7 +466,7 @@ void k64schedule(void)
 	k64switch(p);
 }
 
-/* Exit */
+/* Exit this process */
 void k64exit(void)
 {
 	struct proc64 *p;
@@ -513,11 +513,11 @@ void k64exit(void)
 	/* NOTREACHED: we always longjmp into another process (idle if nothing else) */
 	fprintf(stderr, "k64exit(): k64schedule() returned - SHOULD NOT HAPPEN - EXITING CLEANLY\n");
 	fflush(stderr);
-	/* we cleanly exit becuase this only happens when someone kills the idle process */
+	/* we cleanly exit becuase this only happens when someone destroyed the idle process */
 	exit(0);
 }
 
-/* Nice */
+/* Nice this process */
 void k64nice(proc64pri pri)
 {
 	if (curproc == NULL)
@@ -526,7 +526,7 @@ void k64nice(proc64pri pri)
 	k64schedule();
 }
 
-/* Renice */
+/* Renice another process */
 void k64renice(struct proc64 *p, proc64pri pri)
 {
 	assert(p->magic == PROC_MAGIC_NUMBER);
@@ -534,17 +534,17 @@ void k64renice(struct proc64 *p, proc64pri pri)
 	k64schedule();
 }
 
-/* Delay */
+/* Delay this process */
 void k64delay(unsigned long msecs)
 {
 	if (curproc == NULL)
 		return;
-	curproc->state = P_DELAY;
+	curproc->state = P_SLEEPING;
 	curproc->duration = msecs;
 	k64schedule();
 }
 
-/* Sleep */
+/* Sleep this process */
 void k64sleep(void * event)
 {
 	if (curproc == NULL)
@@ -554,7 +554,7 @@ void k64sleep(void * event)
 	k64schedule();
 }
 
-/* Wakeup */
+/* Wakeup another process */
 void k64wakeup(struct proc64 *p)
 {
 	assert(p->magic == PROC_MAGIC_NUMBER);
@@ -575,13 +575,13 @@ struct proc64 *k64pid_to_proc(proc64pid pid)
 	return NULL;
 }
 
-/* Kill */
-void k64kill(struct proc64 *p)
+/* Destroy another process */
+void k64destroy(struct proc64 *p)
 {
 	assert(p->magic == PROC_MAGIC_NUMBER);
 
-	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_DELAY || p->state == P_WAITING) {
-		p->state = P_KILLED;
+	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING) {
+		p->state = P_DESTROYED;
 	}
 	if (p == curproc) {
 		curproc = NULL;
@@ -589,7 +589,7 @@ void k64kill(struct proc64 *p)
 	/* k64kyelid(); */
 }
 
-/* Yield */
+/* Yield this process */
 void k64yield(void)
 {
 	if (curproc == NULL)
@@ -602,7 +602,7 @@ int k64has_a_process_to_run(void)
 {
 	struct proc64 *p;
 	for (p=proclist;p!=NULL;p=p->next) {
-		if (p->state == P_GO || p->state == P_RUNNING || p->state == P_DELAY || p->state == P_WAITING)
+		if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING)
 			return 1;
 	}
 	return 0;
@@ -615,7 +615,7 @@ size_t k64process_count(int incl_zombie)
 	nn = 0;
 	for (struct proc64 *p=proclist;p!=NULL;p=p->next) {
 		nn++;
-		if ((p->state == P_ZOMBIE || p->state == P_KILLED) && !incl_zombie)
+		if ((p->state == P_ZOMBIE || p->state == P_DESTROYED) && !incl_zombie)
 			nn--;
 	}
 	return nn;

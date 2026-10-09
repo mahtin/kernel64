@@ -54,20 +54,20 @@ test_proc(void *arg)
 }
 
 static void
-test_proc_bad(void *arg)
+test_proc_stack(void *arg)
 {
-	char on_stack_allocation[100];			/* size is a hack but works - slowly eat up the stack */
+	char on_stack_allocation[512];			/* size is a hack but works - slowly eat up the stack */
 
 	/* FORCEFULLY destroy the stack via recursive calls */
 
 	if ((uintptr_t)arg < 1024) {
-		printf("TESTING: [%s] test_proc_bad(%lu)\n", "bad", (long)(uintptr_t)arg);
+		printf("TESTING: [%s] test_proc_stack(%lu)\n", "procS", (long)(uintptr_t)arg);
 		fflush(stdout);
 		memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
 		print_ps();
 		k64yield();
 		arg += 1;
-		test_proc_bad(arg);
+		test_proc_stack(arg);
 	}
 	k64exit();
 }
@@ -101,7 +101,7 @@ test_kernel(void)
 	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
-	p = k64spawn("bad", test_proc_bad, (void *)0, 0, NULL);
+	p = k64spawn("procS", test_proc_stack, (void *)0, 0, NULL);
 
 	printf("TESTING: about to loop on schedule ...\n");
 	fflush(stdout);
