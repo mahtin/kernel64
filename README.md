@@ -50,6 +50,8 @@ a guard band is added to the stack in order to detect stack overflow.
 The nternal scheduler also double-checks the stack for both overflow and overwrite.
 If a process exceedes its stack allocation, it will be destroyed by the scheduler.
 
+Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
+
 ## C routines
 
 ```C
