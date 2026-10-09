@@ -1,248 +1,500 @@
-# Theory of Operation
+# Kernel Design / Theory of Operation
 
-##Overview
+## Overview
 
-Kernel64 implements a lightweight cooperative multitasking environment inspired by many other user-level kernels.
+Kernel64 is a portable cooperative multitasking kernel inspired by many other schedulers found online.
+The implementation is written primarily in C and uses:
 
-Process scheduling is performed entirely in user space using:
-
-- setjmp()
-- longjmp()
+- `setjmp()`
+- `longjmp()`
 - per-process stacks
-- cooperative yielding
+- architecture-specific stack-switch primitives
 
-The design is portable across:
+to provide lightweight processes without requiring operating system threads.
+Kernel64 currently supports:
 
-- Linux x86_64 & ARM64
-- Linux i386 (via 32 bit toolset)
-- Linux ARMv7 (on RPi)
-- macOS Apple Silicon & Intel
-- Windows x64 (work in progress - nearly working)
+- Linux x86_64
+- Linux i386
+- Linux ARM64 (AArch64)
+- Linux ARMv7
+- macOS Apple Silicon
+- macOS Intel
+- Windows x64 (work in progress)
 
-No operating-system threads are used for process scheduling.
+The scheduler is entirely cooperative. Processes execute until they voluntarily yield, sleep, exit, or are destroyed.
 
-## Process Control Blocks
+## Process Architecture
 
 Each process is represented by a `struct proc64`.
+A process contains:
 
-A process control block contains:
+- Process identifier (`pid`)
+- Process name
+- Scheduler state
+- Priority
+- Execution context (`jmp_buf`)
+- Process stack
+- Entry function
+- Entry argument
+- Sleep/wakeup information
 
-- process identification
-- scheduling state
-- entry function
-- entry argument
-- process stack information
-- saved execution context
+Processes are linked together in a doubly-linked process list.
 
-The scheduler operates entirely through these structures.
+The currently executing process is tracked by:
+
+```c
+	struct proc64 *curproc;
+```
+
+and the complete process list is tracked by:
+
+```c
+	struct proc64 *proclist;
+```
 
 ## Process States
 
-Typical process states include:
+Kernel64 represents process state as a single character value.
 
-State	Description
-GO	Runnable but not started yet
-RUNNING	Runnable and eligible for scheduling
-WAITING	Waiting for a wakeup event
-SLEEPING	Waiting for a timer expiry
-DESTROYED	Kernel has destroyed the process (stack overflow?)
-ZOMBIE	Process has exited
+| State | Character | Description |
+|---------|---------|---------|
+| `P_GO` | `G` | Process created but never executed |
+| `P_RUNNING` | `R` | Runnable process |
+| `P_WAITING` | `W` | Waiting for wakeup event |
+| `P_SLEEPING` | `S` | Sleeping for a timed delay |
+| `P_DESTROYED` | `D` | Process destroyed because of error |
+| `P_ZOMBIE` | `Z` | Process exited and awaiting cleanup |
 
-Processes transition between these states through the scheduler APIs.
+The scheduler considers the following states runnable:
 
-## Cooperative Scheduling
-
-Kernel64 uses cooperative scheduling.
-
-A running process yields voluntarily by calling:
-
-```C
-	k64yield();
+```c
+	P_GO
+	P_RUNNING
 ```
 
-The scheduler then:
+A process in any other state will not be selected for execution.
 
-Saves the current process context with setjmp().
-Selects the next READY process.
-Restores that process context with longjmp().
+## Process Creation
 
-Because scheduling is cooperative:
+Processes are created with:
 
-No timer interrupts are required.
-No preemption occurs.
-A process runs until it yields, sleeps, or exits.
-Context Switching
-
-The actual context switch is performed by:
-
-```C
-	setjmp();
-	longjmp();
+```c
+	k64spawn(name, entry, arg, stack_size, v);
 ```
 
-A process context (a setjmp context) contains:
+During creation Kernel64:
 
-- stack pointer
-- instruction pointer
-- preserved registers
+1. Allocates a process control block.
+2. Assigns a process identifier.
+3. Allocates a stack.
+4. Initializes the stack guard pattern.
+5. Stores the process entry function and argument.
+6. Captures an initial scheduler context using `setjmp()`.
+7. Adds the process to the process list.
+8. Marks the process state as `P_GO`.
 
-Each processor, operating system, architecture will decide how information is stored and is external to this code.
+A newly created process does not begin execution immediately.
+Execution starts when the scheduler first selects the process.
 
-When a process yields:
+## Stack Allocation
 
-```C
-	setjmp(curproc->context);
-```
+Each process owns its own private stack.
+Stacks are allocated using virtual memory rather than standard heap allocation.
 
-This stores the current execution state.
-
-When another process is selected:
-
-```C
-	longjmp(next->context, 1);
-```
-
-This restores that state and resumes execution.
-
-The scheduler therefore operates entirely in user space.
-
-## Process Stacks
-
-Each process owns its own stack.
-
-Stacks are allocated dynamically and are independent of the scheduler's internal stack.
-
-Typical stack sizes are (but not limited too):
-
-Process type	Stack
-Idle process	8 KB
-Normal process	16 KB
-Test process	16 KB+
-
-To detect stack overflow, stacks are allocated with a guard page.
-Size is processor, operating system, architecture dependent.
-
-## POSIX systems
+## POSIX Platforms
 
 Linux and macOS use:
 
-```C
+```c
 	mmap();
 	mprotect();
 ```
 
-The first page of the allocation is marked:
+The lowest page of each stack allocation is marked:
 
-```C
+```c
 	PROT_NONE
 ```
 
-Any stack overflow into that page immediately generates a fault.
+to act as a guard page.
 
 ## Windows
 
 Windows uses:
 
-```C
+```c
 	VirtualAlloc();
 	VirtualProtect();
 ```
 
-with:
+The lowest page of the allocation is marked:
 
-```C
+```c
 	PAGE_NOACCESS
 ```
 
-on the guard page.
+to provide the same protection.
 
-This provides equivalent behavior.
+## Guard Pages
 
-## Stack Usage Tracking
+All process stacks contain an inaccessible guard page at the bottom of the stack.
+Normal stack growth proceeds downward toward the guard page.
+If a process overflows its stack, the CPU immediately generates a fault upon entering the guard page.
+This provides deterministic stack overflow detection.
 
-Newly allocated stacks are initialized with a known fill byte:
+## Stack Usage Measurement
 
-```C
+After allocation, every usable byte of stack memory is initialized with:
+
+```c
 	STACK_GUARD_BYTE
 ```
 
-This allows Kernel64 to calculate stack consumption by scanning the stack and locating the highest overwritten byte.
+currently:
 
-The result provides:
+```c
+	0xAA
+```
 
-- current stack usage
-- historical high-water mark
+The function:
+
+```c
+	k64stack_used()
+```
+
+measures stack usage by scanning upward through the stack until the first modified byte is located.
+This permits:
+
+- stack utilization reporting
+- high-water mark measurement
 - overflow diagnostics
 
 without platform-specific APIs.
 
-## Temporary Stack Switching
+---
 
-Some process initialization operations execute code on a process stack while preserving the scheduler's stack.
+# Idle Process
 
-This is performed by:
+Kernel64 always creates an idle process during initialization.
+The idle process becomes PID 1.
+Initialization is performed by:
 
-```C
-	k64_switch_to_stack()
+```c
+	k64init();
 ```
 
-Architecture-specific implementations in assembly code exist for:
+which internally creates:
 
-- x86_64 on Linux/macOS
-- ARM64 on Linux/macOS and Raspberry PI's (64 bit versions)
-- x86_64 on Windows (ABI is different)
-- i386 (for 32 bit Intel devices)
-- ARMv7 on Raspberry Pi's (32 bit versions)
+```text
+	[idle]
+```
 
-The helper:
+The idle process serves several purposes:
 
- - Saves the current stack pointer.
- - Switches to the process stack.
- - Executes the target routine.
- - Restores the original stack.
- - Returns normally.
+- Provides a runnable process when no others are available.
+- Reaps zombie process resources.
+- Performs scheduler housekeeping.
+- Prevents the scheduler from running out of executable processes.
 
-This mechanism allows process code to execute using its own stack without disturbing the scheduler's execution environment.
+The idle process runs at the lowest priority value used by the scheduler.
 
-## Idle Process
+## Context Switching
 
-Kernel64 maintains an idle process.
+Kernel64 performs scheduling through:
 
-The idle process:
+```c
+	setjmp();
+	longjmp();
+```
 
--- never exits
--- guarantees a runnable process always exists
--- provides a safe execution context when no user process is runnable
+A context switch occurs in two stages.
+This code does not work fully on Windows. i.e. work in progress.
 
-Future timer and sleep management facilities may also execute from the idle process context.
+## Saving State
+
+When a running process yields:
+
+```c
+	setjmp(curproc->context);
+```
+
+stores:
+
+- stack pointer
+- instruction pointer
+- preserved registers
+
+inside the process control block.
+Each processor, operating system, architecture will decide how information is stored and is external to this code.
+
+## Restoring State
+
+When the scheduler selects a process:
+
+```c
+	longjmp(next->context, 1);
+```
+
+restores the saved execution state and resumes execution exactly where that process last yielded.
+No operating system thread context switching occurs.
+All scheduling remains inside user space.
+
+## First Process Execution
+
+A newly created process begins in state:
+
+```c
+	P_GO
+```
+
+The first time the scheduler selects such a process:
+
+```c
+	k64process_bootstrap();
+```
+
+is invoked.
+
+The bootstrap routine:
+
+1. Switches to the process stack using an architecture-specific assembly helper.
+2. Executes the process entry routine.
+3. Calls `k64exit()` when the process entry routine returns.
+
+The bootstrap function never returns.
+
+## Stack Switching
+
+Kernel64 contains architecture-specific assembly routines named:
+
+```c
+	k64_switch_to_stack();
+```
+
+Implementations exist for:
+
+- x86_64
+- i386
+- ARM64
+- ARMv7
+- x86_64 specific to Windows (ABI is different)
+
+The purpose of the routine is:
+
+1. Save the current kernel stack.
+2. Switch to the target process stack.
+3. Execute code on that process stack.
+4. Restore the original stack.
+5. Return to the caller.
+
+Only this small assembly component is architecture-specific.
+All scheduling logic remains portable C code.
+
+## Scheduling
+
+Scheduling is performed by:
+
+```c
+	k64schedule();
+```
+
+Kernel64 performs a circular scan of the process list.
+
+During the scan it:
+
+1. Wakes expired sleeping processes.
+2. Examines runnable processes.
+3. Selects the runnable process with the highest scheduling priority.
+
+Priority values are interpreted as:
+
+```text
+	Lower value = Higher priority
+```
+
+For example:
+
+```text
+	Priority 10  > Priority 50
+	Priority 50  > Priority 100
+```
+
+where ">" means "runs before".
+
+The selected process is activated using:
+
+```c
+	k64switch();
+```
+
+## Yielding
+
+A process voluntarily relinquishes execution by calling:
+
+```c
+	k64yield();
+```
+
+This keep the process in a runnable state:
+
+```c
+	P_RUNNING
+```
+
+and then invokes the scheduler.
+
+Because Kernel64 is cooperative:
+
+- No timer interrupt is required.
+- No preemption occurs.
+- A process runs until it explicitly yields.
+
+## Sleeping
+
+Timed delays are implemented with:
+
+```c
+	k64delay(milliseconds);
+```
+
+This places the process into:
+
+```c
+	P_SLEEPING
+```
+
+and stores a countdown value.
+The scheduler decrements the remaining duration on each scheduling pass.
+When the countdown reaches zero, the process becomes runnable again.
+
+## Waiting and Wakeup
+
+Processes may block waiting for an event.
+Waiting is performed with:
+
+```c
+	k64sleep(event);
+```
+
+The process enters state:
+
+```c
+	P_WAITING
+```
+
+Another process may resume it by calling:
+
+```c
+	k64wakeup(process);
+```
+
+which returns the process to:
+
+```c
+	P_RUNNING
+```
+
+and makes it eligible for scheduling again.
 
 ## Process Exit
 
-A process terminates by calling:
+A process terminates itself by calling:
 
-```C
+```c
 	k64exit();
 ```
 
+or by returning from its entry function.
+
 Exit processing:
 
-- Marks the process as ZOMBIE.
-- Removes it from scheduling.
-- Releases associated resources.
-- Transfers control back to the scheduler.
+1. Marks the process as `P_ZOMBIE`.
+2. Clears the current process pointer.
+3. Invokes the scheduler.
+4. Never returns.
 
-Exited processes are never scheduled again.
+Zombie processes remain in the process list until the idle process reaps their resources.
 
-## Portability
+## Process Destruction
 
-Architecture-dependent functionality is intentionally isolated.
+Kernel64 can force the removal of a process by calling:
 
-Per-architecture assembly code exists only for:
+```c
+	k64destroy(process);
+```
 
-- temporary stack switching
-- ABI-specific stack handling
+A destroyed process enters state:
 
-All scheduling logic remains in portable C.
+```c
+	P_DESTROYED
+```
 
-This allows the same scheduler implementation to operate across multiple CPU architectures and operating systems with minimal platform-specific code.
+Destroyed processes are eventually cleaned up by the idle process.
+This mechanism is used primarily when stack corruption or internal errors are detected.
 
+## Stack Corruption Detection
+
+Prior to scheduling a process, Kernel64 performs:
+
+```c
+	k64stack_sanity_check();
+```
+
+and
+
+```c
+	k64stack_overflowed();
+```
+
+checks.
+
+If corruption is detected:
+
+1. Diagnostic information is printed.
+2. The process state becomes:
+
+```c
+	P_DESTROYED
+```
+
+3. The scheduler selects another runnable process.
+
+This prevents a corrupted process from continuing execution.
+
+## Process Listing
+
+Kernel64 provides:
+
+```c
+	k64ps();
+```
+
+which generates a textual snapshot of all processes.
+
+Displayed information includes:
+
+- PID
+- Current process indicator
+- State
+- Name
+- Priority
+- Stack size
+- Stack usage
+- Entry function
+- Entry argument
+
+This facility serves as the primary scheduler debugging and monitoring tool.
+
+## Design Goals
+
+Kernel64 attempts to preserve the simplicity of classic cooperative process systems while remaining portable across modern architectures.
+Key goals include:
+
+- Minimal architecture-specific code.
+- Portable scheduler implementation.
+- Deterministic process behavior.
+- Detectable stack overflow conditions.
+- No dependency on operating system threads.
+- Easy integration into existing applications.
+
+The resulting design provides a lightweight process environment suitable for experimentation, embedded systems, network services, and educational operating system development.
