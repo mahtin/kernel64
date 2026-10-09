@@ -38,8 +38,9 @@ I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_under
 
 However, this code is simpler; but, it thinks in the same way (but as modern code running at userlevel).
 
-The `k64init() call should be called first to enable the code.
-The core idea is that a process can call `k64spawn()` to start a process. That process can either exit cleanly or call `k64exit()` to finish.
+The `k64init()` call should be called first to enable the code.
+The core idea is that a process can call `k64spawn()` to start a process.
+That process can either exit cleanly or call `k64exit()` to finish.
 As this is a's non-preemptive system, all processes should be polite and call k64yield() often.
 Additionally, a process can call `k64nice()` to adjust it priority (0-255 with 0 being the higest priority).
 Once all processes are setup, calling `k64schedule()` will kick everything off.
@@ -51,7 +52,7 @@ If a process exceedes its stack allocation, it will be killed by the scheduler.
 
 ## C routines
 
-```
+```C
 	/* Basic calls */
 	void k64init(void);
 	struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
