@@ -24,18 +24,68 @@ $ make M32=-m32
 ## Requirements
 
 - *nix or MacOS operating system
-- the usual gcc/make tools
+- Windows with msys2 and UCRT64 (via GitHub Workflows)
+- the usual gcc/make/gdb tools
 
 ## Theory of operations
 
-With massive respect to John Lions and his books abount the Unix v6 kernel (which taught me back in the 80's), I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_understand_this):
+With massive respect to John Lions and his books abount the [Unix v6 kernel](https://en.wikipedia.org/wiki/A_Commentary_on_the_UNIX_Operating_System),
+(which taught me tons back in the 80's),
+I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_understand_this) seminal piece:
 ```C
 	/* You are not expected to understand this. */
 ```
 
-However, this code is simpler; but thinks in the same way (but we modern code).
+However, this code is simpler; but, it thinks in the same way (but as modern code running at userlevel).
 
-## ps command
+The `k64init() call should be called first to enable the code.
+The core idea is that a process can call `k64spawn()` to start a process. That process can either exit cleanly or call `k64exit()` to finish.
+As this is a's non-preemptive system, all processes should be polite and call k64yield() often.
+Additionally, a process can call `k64nice()` to adjust it priority (0-255 with 0 being the higest priority).
+Once all processes are setup, calling `k64schedule()` will kick everything off.
+
+Each process is provided with its own stack and if the processor and operating system provide,
+a guard band is added to the stack in order to detect stack overflow.
+The nternal scheduler also double-checks the stack for both overflow and overwrite.
+If a process exceedes its stack allocation, it will be killed by the scheduler.
+
+## C routines
+
+```
+	/* Basic calls */
+	void k64init(void);
+	struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
+	void k64exit(void);
+
+	/* Yielding is vital as this is a non-preemptive os  */
+	void k64yield(void);
+
+	/* Starting the scheduler */
+	void k64schedule(void);
+
+	/* process priority functions */
+	void k64nice(proc64pri pri);
+	void k64renice(struct proc64 *p, proc64pri pri);
+
+	/* delays, sleeps, and wakeups for timing or interrupt processing */
+	void k64delay(unsigned long msecs);
+	void k64sleep(void * event);
+	void k64wakeup(struct proc64 *p);
+
+	/* maliciously destroy a process */
+	void k64kill(struct proc64 *p);
+
+	/* random functions */
+	struct proc64 *k64pid_to_proc(proc64pid pid);
+	int k64has_a_process_to_run(void);
+	size_t k64process_count(int incl_zombie);
+	size_t k64stack_used(struct proc64 *p);
+
+	/* emulating the classic ps command */
+	char **k64ps(void);
+```
+
+## The ps command
 
 There's a build in ps command which can show the state of all the proceses:
 
