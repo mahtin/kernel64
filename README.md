@@ -1,7 +1,7 @@
 # kernel64
 A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
 
-*[1]* Also some 32 bit o/s's - armv7l (Raspbery Pi's) and i386.
+*[1]* Also some 32 bit o/s's - armv7l (Raspberry Pi's) and Intel i386.
 
 NOTE: This code was written with the assistance of AI (mainly in the asm code for stack manipulation);
 however, I can categorically state that it didn't get it right the first or second time around.
@@ -29,26 +29,26 @@ $ make M32=-m32
 
 ## Theory of operations
 
-With massive respect to John Lions and his books abount the [Unix v6 kernel](https://en.wikipedia.org/wiki/A_Commentary_on_the_UNIX_Operating_System),
+With massive respect to John Lions and his books about the [Unix v6 kernel](https://en.wikipedia.org/wiki/A_Commentary_on_the_UNIX_Operating_System),
 (which taught me tons back in the 80's),
 I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_understand_this) seminal piece:
 ```C
 	/* You are not expected to understand this. */
 ```
 
-However, this code is simpler; but, it thinks in the same way (but as modern code running at userlevel).
+However, this code is simpler; but, it thinks in the same way (but as modern code running at user level).
 
 The `k64init()` call should be called first to enable the code.
 The core idea is that a process can call `k64spawn()` to start a process.
 That process can either exit cleanly or call `k64exit()` to finish.
 As this is a's non-preemptive system, all processes should be polite and call k64yield() often.
-Additionally, a process can call `k64nice()` to adjust it priority (0-255 with 0 being the higest priority).
+Additionally, a process can call `k64nice()` to adjust it priority (0-255 with 0 being the highest priority).
 Once all processes are setup, calling `k64schedule()` will kick everything off.
 
 Each process is provided with its own stack and if the processor and operating system provide,
 a guard band is added to the stack in order to detect stack overflow.
-The nternal scheduler also double-checks the stack for both overflow and overwrite.
-If a process exceedes its stack allocation, it will be destroyed by the scheduler.
+The internal scheduler also double-checks the stack for both overflow and overwrite.
+If a process exceeds its stack allocation, it will be destroyed by the scheduler.
 
 Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 
@@ -90,7 +90,7 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 
 ## The ps command
 
-There's a build in ps command which can show the state of all the proceses:
+There's a build in ps command which can show the state of all the process:
 
 ```
    PID * STATE       NAME PRI  STACK   USED            ENTRY              ARG
@@ -102,7 +102,7 @@ There's a build in ps command which can show the state of all the proceses:
 ```
 
 The * shows which process is presently running.
-The state can be R for runing, Z for zombie, D for destroy, S for sleeping, plus others.
+The state can be R for running, Z for zombie, D for destroy, S for sleeping, plus others.
 The stack usage is down for running processes.
 The entry and are are how the process is spawned.
 
