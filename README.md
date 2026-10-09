@@ -124,7 +124,7 @@ Presently tested on three platforms via GitHub actions:
   - OS: Ubuntu 24.04.5 LTS
   - Compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 - Windows Intel x86_64
-  - OS: MINGW64_NT-10.0-26100
+  - OS: Microsoft Windows [Version 10.0.26100.33438] & UCRT64
   - Compiler: gcc.exe (Rev4, Built by MSYS2 project) 16.2.0
 
 ## Changelog
