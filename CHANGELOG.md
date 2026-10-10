@@ -1,5 +1,18 @@
 # Change Log
 
+ - 2026-10-10 18:26:48 +0100 [f3b3b9e](../../commit/f3b3b9e6e68c8283952f1f306dface57ca5b65f1) first pass a generalizing setjmp/longjmp for windows
+ - 2026-10-10 17:57:31 +0100 [c8f0805](../../commit/c8f0805e372d7113cbb9878720d3425a9a2f5aad) move parts to util and ps files
+ - 2026-10-10 16:54:08 +0100 [0e9c697](../../commit/0e9c697d2828b89c752071d3d5b2b83577897ba9) change debug messages around setjmp()
+ - 2026-10-09 21:44:40 +0100 [2f53e0b](../../commit/2f53e0b44bca549b042b0eabe9132452852e1d9f) spell checked
+ - 2026-10-09 15:53:04 +0100 [5306671](../../commit/530667185e9f828363db4ad2d34eba2148340ca0) rewrite
+ - 2026-10-09 15:29:38 +0100 [1ecbf35](../../commit/1ecbf3509ec2254f4ea80317dcc31dad0bef9d34) first theory of operations text
+ - 2026-10-09 14:50:34 +0100 [4b227da](../../commit/4b227da7a1ee6c47991e699f4d0eda112848670b) renamed functions - k65destroy() now used vs previous
+ - 2026-10-09 14:33:46 +0100 [75abe2e](../../commit/75abe2e43e2a710f5b6054b2c08a46feeee85e2e) more words
+ - 2026-10-09 14:31:30 +0100 [026fdfc](../../commit/026fdfc49c9a8388e886c7a1ff2269fe20b6a7cf) more words
+ - 2026-10-09 14:29:26 +0100 [3a27bf8](../../commit/3a27bf8d881f07321f7aed259cf6f0473e7b50e9) more words
+ - 2026-10-08 23:40:41 +0100 [21a89c6](../../commit/21a89c6a000de14dbecf6b75988db40082993694) add some useful windows stuff
+ - 2026-10-08 23:16:38 +0100 [fcc637d](../../commit/fcc637d90bc7cf33c50728fdbc1a79a88ef22f6a) more verbage
+ - 2026-10-08 23:11:03 +0100 [b1f334e](../../commit/b1f334e36df52a8e08cedcdd7dd9c855ab30936f) CHANGELOG
  - 2026-10-08 23:10:46 +0100 [9d4b9e1](../../commit/9d4b9e16e5e75042cf70d675de9efc9d8c9e655a) added priority to processes - first pass, added better zombie cleanup, added idle process to schedule if nothing else to run
  - 2026-10-08 23:05:53 +0100 [f481801](../../commit/f4818011ea3ccdf4ad88b062d4c271243440c0b4) extra print_ps removed
  - 2026-10-08 19:01:12 +0100 [e24c970](../../commit/e24c970b5bbc2925659460bd9569e24559912e0c) stddef.h is needed to be included
