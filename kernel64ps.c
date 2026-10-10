@@ -26,11 +26,26 @@ void k64print_ps(void)
 	fflush(stdout);
 }
 
+static char *format_tick_count(size_t tick_count)
+{
+	static char buf[2+1+2+1+2+1];
+
+	tick_count /= 50;
+
+	int hours = tick_count / 3600;
+	int minutes = (tick_count % 3600) / 60;
+	int seconds = tick_count % 60;
+
+	// %02d ensures at least 2 digits are printed, padded with a leading zero if needed
+	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+	return (buf);
+}
+
 char **k64ps(void)
 {
-	const static char *format_header = "%6s %1s %5s %10s %3s %6s %6s %16s %16s";
-	const static char *format_entry1 = "%6d %1c     %c %10s %3d %6zu %6zu %16p %16p";
-	const static char *format_entry2 = "%6d %1c     %c %10s %3s %6s %6s %16p %16p";
+	const static char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
+	const static char *format_entry1 = "%6d %1c     %c %10s %3d %10s %6zu %6zu %16p %16p";
+	const static char *format_entry2 = "%6d %1c     %c %10s %3s %10s %6s %6s %16p %16p";
 	char **r;
 	char *buf;
 	size_t nn, ii;
@@ -47,6 +62,7 @@ char **k64ps(void)
 		"STATE",
 		"NAME",
 		"PRI",
+		"TIME",
 		"STACK",
 		"USED",
 		"ENTRY",
@@ -64,6 +80,7 @@ char **k64ps(void)
 				p->state,
 				p->name?p->name:" ",
 				p->priority,
+				format_tick_count(p->tick_count),
 				p->stack_size,
 				k64stack_used(p),
 				p->entry,
@@ -76,6 +93,7 @@ char **k64ps(void)
 				p->state,
 				p->name?p->name:" ",
 				"-",
+				format_tick_count(p->tick_count),
 				"-",
 				"-",
 				p->entry,

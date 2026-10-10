@@ -14,6 +14,7 @@
 
 #include "kernel64.h"
 #include "kernel64util.h"
+#include "kernel64timer.h"
 
 #define	OPTION_START_OF_LIST	0		/* 1 if process should go at begining of process list */
 #define	OPTION_DELETE_ZOMBIE	0		/* 1 if process should be deleted vs being left as zombie in process list */
@@ -24,6 +25,8 @@ struct proc64 *curproc = NULL;
 struct proc64 *proclist = NULL;
 
 static proc64pid pid_number = 1;		/* start with process id 1 */
+
+static int timer_started = 0;			/* only start the timer once */
 
 int k64stack_overflowed(struct proc64 *p)
 {
@@ -118,6 +121,15 @@ static void k64idle_process(void *arg)
 	}
 }
 
+static void k64timer_expired(void)
+{
+	/* timer has gone off! */
+	if (curproc) {
+		/* this process has accumulated time */
+		curproc->tick_count++;
+	}
+}
+
 /* Init */
 void k64init(void)
 {
@@ -152,6 +164,12 @@ static void k64enter(struct proc64 *next)
 		fflush(stderr);
 	}
 	if (next->state == P_GO) {
+		/* as P_GO to P_RUNNING is indication of a process start; now's a good time to get timers going. */
+		if (!timer_started) {
+			/* only happens once! */
+			k64timer_init(&k64timer_expired);
+			timer_started = 1;
+		}
 		/* first startup of process */
 		next->state = P_RUNNING;
 		k64process_bootstrap(next);
@@ -226,6 +244,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->priority = 80;			/* mimic (somewhat) the norms for priority values */
 	p->duration = 0;
 	p->pid = pid_number++;
+	p->tick_count = 0;
 	p->entry = entry;			/* entry point for new process */
 	p->arg = arg;				/* args for new process */
 	name = name ? name : "[proc]";
