@@ -271,6 +271,7 @@ static void k64enter(struct proc64 *next)
 static void k64switch(struct proc64 *next)
 {
 	struct proc64 *prev = curproc;
+	int r = -1;
 
 	assert(next->magic == PROC_MAGIC_NUMBER);
 	if (next == prev) {
@@ -287,10 +288,10 @@ static void k64switch(struct proc64 *next)
 
 	curproc = next;
 	if (1 || debug_flag) {
-		fprintf(stderr, "k64switch(%d): next->name=\"%s\" setjmp() prev->pid=%d prev->name=\"%s\"\n", next->pid, next->name, prev?prev->pid:-1, prev?prev->name:"-");
+		fprintf(stderr, "k64switch(%d): next->name=\"%s\" setjmp() prev->pid=%d prev->name=\"%s\" rsp=%p\n", next->pid, next->name, prev?prev->pid:-1, prev?prev->name:"-", __builtin_frame_address(0));
 		fflush(stderr);
 	}
-	if (prev == NULL || setjmp(prev->context) == 0) {
+	if (prev == NULL || (r=setjmp(prev->context)) == 0) {
 		if (1 || debug_flag) {
 			fprintf(stderr, "k64switch(): setjmp() returns 0 - next up k64enter ...\n");
 			fflush(stderr);
@@ -311,6 +312,7 @@ static void k64switch(struct proc64 *next)
 struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v)
 {
 	struct proc64 *p;
+	int r;
 
 	if (debug_flag) {
 		fprintf(stderr, "k64spawn(\"%s\")\n", name?name:"null");
@@ -346,11 +348,15 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	}
 	memset(p->stack_base, STACK_GUARD_BYTE, p->stack_size);
 
-	if (1 || debug_flag) {
-		fprintf(stderr, "k64spawn(%d): p->name=\"%s\" setjmp() - first setup\n", p->pid, p->name);
+	if (debug_flag) {
+		fprintf(stderr, "k64spawn(%d): p->name=\"%s\" setjmp() - first setup - rsp=%p\n", p->pid, p->name, __builtin_frame_address(0));
 		fflush(stderr);
 	}
-	setjmp(p->context);			/* only save context, never run child branch */
+	r = setjmp(p->context);				/* only save context, never run child branch */
+	if (debug_flag) {
+		fprintf(stderr, "k64spawn(): SAVE p->pid=%d return=%d\n", p->pid, r);
+		fflush(stderr);
+	}
 
 #if OPTION_START_OF_LIST == 1
 	/* add to start of list */
