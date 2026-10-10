@@ -1,5 +1,9 @@
 # Change Log
 
+ - 2026-10-10 22:51:35 +0100 [a1181eb](../../commit/a1181ebdacce43be3204c40a71c48695fe8f8212) test3_nothing - not perfect, but shows timers work
+ - 2026-10-10 22:49:10 +0100 [20a6412](../../commit/20a6412a74d008ccadc51f4a74b1d148a26dbf51) timers - first pass
+ - 2026-10-10 21:26:40 +0100 [9712f1b](../../commit/9712f1b13f0cab035adcd0ebe550cb4e117243a8) get workflows ready for more in the Makefile
+ - 2026-10-10 18:42:10 +0100 [0c8ae7f](../../commit/0c8ae7f7999a6532d2a8422ccb614641a505ddaa) CHANGELOG
  - 2026-10-10 18:26:48 +0100 [f3b3b9e](../../commit/f3b3b9e6e68c8283952f1f306dface57ca5b65f1) first pass a generalizing setjmp/longjmp for windows
  - 2026-10-10 17:57:31 +0100 [c8f0805](../../commit/c8f0805e372d7113cbb9878720d3425a9a2f5aad) move parts to util and ps files
  - 2026-10-10 16:54:08 +0100 [0e9c697](../../commit/0e9c697d2828b89c752071d3d5b2b83577897ba9) change debug messages around setjmp()
