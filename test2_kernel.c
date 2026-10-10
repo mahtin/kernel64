@@ -14,20 +14,6 @@ struct _a {
 };
 
 static void
-print_ps(void)
-{
-	char **r = k64ps();
-	for (int ii=0;r[ii];ii++) {
-		printf("%s\n", r[ii]);
-		fflush(stdout);
-		free(r[ii]);
-	}
-	free(r);
-	printf("\n");
-	fflush(stdout);
-}
-
-static void
 test_proc(void *arg)
 {
 	const char *name = ((struct _a *)arg)->name;
@@ -40,12 +26,12 @@ test_proc(void *arg)
 		printf("TESTING: [%s] iteration %d\n", name, ii);
 		fflush(stdout);
 		if (ii == 0)
-			print_ps();
+			k64print_ps();
 		/* be nice - yield to other processes */
 		k64yield();
 	}
 
-	print_ps();
+	k64print_ps();
 	printf("TESTING: [%s] now exiting...\n", name);
 	fflush(stdout);
 	k64exit();
@@ -64,7 +50,7 @@ test_proc_stack(void *arg)
 		printf("TESTING: [%s] test_proc_stack(%lu)\n", "procS", (long)(uintptr_t)arg);
 		fflush(stdout);
 		memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
-		print_ps();
+		k64print_ps();
 		k64yield();
 		arg += 1;
 		test_proc_stack(arg);
@@ -85,19 +71,19 @@ test_kernel(void)
 
 	argA.name = "procA"; argA.count=5;
 	p = k64spawn(argA.name, test_proc, (void *)&argA, stack_size, NULL);
-	print_ps();
+	k64print_ps();
 	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argB.name = "procB"; argB.count=7;
 	p = k64spawn(argB.name, test_proc, (void *)&argB, stack_size, NULL);
-	print_ps();
+	k64print_ps();
 	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argC.name = "procC"; argC.count=11;
 	p = k64spawn(argC.name, test_proc, (void *)&argC, stack_size, NULL);
-	print_ps();
+	k64print_ps();
 	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
@@ -107,15 +93,15 @@ test_kernel(void)
 	fflush(stdout);
 
 	while (k64has_a_process_to_run()) {
-		print_ps();
+		k64print_ps();
 		printf("TESTING: k64schedule being called ...\n");
 		fflush(stdout);
 		k64schedule();
 		printf("TESTING: k64schedule returned\n");
 		fflush(stdout);
-		print_ps();
+		k64print_ps();
 	}
-	print_ps();
+	k64print_ps();
 	printf("TESTING: scheduler returned - hence no more processes\n");
 	fflush(stdout);
 }

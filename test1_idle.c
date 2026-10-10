@@ -8,20 +8,6 @@
 
 #include "kernel64.h"
 
-static void
-print_ps(void)
-{
-	char **r = k64ps();
-	for (int ii=0;r[ii];ii++) {
-		printf("%s\n", r[ii]);
-		fflush(stdout);
-		free(r[ii]);
-	}
-	free(r);
-	printf("\n");
-	fflush(stdout);
-}
-
 static void test_destroy_idle_processs(void *arg)
 {
 	printf("TESTING: destroy_idle_processs starting...\n");
@@ -29,7 +15,7 @@ static void test_destroy_idle_processs(void *arg)
 	for (int ii=0;ii<3;ii++) {
 		printf("LOOP ... %d\n", ii);
 		k64yield();
-		print_ps();
+		k64print_ps();
 	}
 	printf("TESTING: destroy_idle_processs process...\n");
 	fflush(stdout);
@@ -40,7 +26,7 @@ static void test_destroy_idle_processs(void *arg)
 		printf("LOOP ... %d\n", ii);
 		fflush(stdout);
 		k64yield();
-		print_ps();
+		k64print_ps();
 	}
 
 	k64exit();
@@ -63,14 +49,14 @@ test1_idle(void)
 	fflush(stdout);
 
 	while (k64has_a_process_to_run()) {
-		print_ps();
+		k64print_ps();
 		printf("TESTING: k64schedule being called ...\n");
 		fflush(stdout);
 		k64schedule();
 		printf("TESTING: k64schedule returned\n");
 		fflush(stdout);
 	}
-	print_ps();
+	k64print_ps();
 	printf("TESTING: scheduler returned - hence no more processes\n");
 	fflush(stdout);
 }

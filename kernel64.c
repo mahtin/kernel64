@@ -11,122 +11,19 @@
 #include <string.h>
 #include <setjmp.h>
 #include <assert.h>
-#include <errno.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/mman.h>
-#endif
 
 #include "kernel64.h"
+#include "kernel64util.h"
 
 #define	OPTION_START_OF_LIST	0		/* 1 if process should go at begining of process list */
 #define	OPTION_DELETE_ZOMBIE	0		/* 1 if process should be deleted vs being left as zombie in process list */
 
 static int debug_flag = 0;			/* turn on for debug */
 
-static struct proc64 *curproc = NULL;
-static struct proc64 *proclist = NULL;
+struct proc64 *curproc = NULL;
+struct proc64 *proclist = NULL;
 
 static proc64pid pid_number = 1;		/* start with process id 1 */
-
-static void
-print_ps(void)
-{
-	char **r = k64ps();
-	for (size_t ii=0;r[ii];ii++) {
-		printf("%s\n", r[ii]);
-		fflush(stdout);
-		free(r[ii]);
-	}
-	free(r);
-	printf("\n");
-	fflush(stdout);
-}
-
-static size_t k64pagesize(void)
-{
-#ifdef _WIN32
-	SYSTEM_INFO si;
-	GetSystemInfo(&si);
-	return (size_t)si.dwPageSize;
-#else
-	return (size_t)sysconf(_SC_PAGESIZE);
-#endif
-}
-
-static void k64stack_alloc(struct proc64 *p, size_t stack_size)
-{
-	size_t pagesize = k64pagesize();
-	/* round usable size up to page multiple */
-	size_t usable = (stack_size + pagesize - 1) & ~(pagesize - 1);
-	size_t total = usable + pagesize;		/* +1 guard page */
-	void *base;
-
-#ifdef _WIN32
-	base = VirtualAlloc(NULL, total, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
-	if (base == NULL) {
-		fprintf(stderr, "VirtualAlloc() failed, error=%lu\n", (unsigned long)GetLastError());
-		fflush(stderr);
-		return;
-	}
-	{
-	DWORD oldprot;
-	if (!VirtualProtect(base, pagesize, PAGE_NOACCESS, &oldprot)) {
-		fprintf(stderr, "VirtualProtect() failed, error=%lu\n", (unsigned long)GetLastError());
-		fflush(stderr);
-		VirtualFree(base, 0, MEM_RELEASE);
-		return;
-	}
-	}
-#else
-	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-	if (base == MAP_FAILED) {
-		p->stack_base = NULL;
-		p->stack_size = 0;
-		return;
-	}
-	/* Make the lowest page (overflow direction) non-accessible */
-	if (mprotect(base, pagesize, PROT_NONE) != 0) {
-		munmap(base, total);
-		p->stack_base = NULL;
-		p->stack_size = 0;
-		return;
-	}
-#endif
-	p->stack_real_base = base;
-	p->stack_real_size = total;
-	p->stack_base = (void *)((unsigned char *)base + pagesize);
-	p->stack_size = usable;
-}
-
-static void k64stack_free(struct proc64 *p)
-{
-	/* never remove the stack from the current process! */
-	if (p == curproc)
-		return;
-	if (!p->stack_real_base || !p->stack_real_size)
-		return;
-#ifdef _WIN32
-	if (!VirtualFree(p->stack_real_base, 0, MEM_RELEASE)) {
-		fprintf(stderr, "VirtualFree() failed, error=%lu\n", (unsigned long)GetLastError());
-		fflush(stderr);
-		return;
-	}
-#else
-	if (munmap(p->stack_real_base, p->stack_real_size) != 0) {
-		fprintf(stderr, "munmap() failed. %d\n", errno);
-		fflush(stderr);
-		return;
-	}
-#endif
-	p->stack_real_base = NULL;
-	p->stack_real_size = 0;
-	p->stack_base = NULL;
-	p->stack_size = 0;
-}
 
 int k64stack_overflowed(struct proc64 *p)
 {
@@ -170,14 +67,14 @@ static void k64zombies_reap(void)
 
 	while (p) {
 		next = p->next;
+		/* dont prune pid 1 or current process or something already pruned */
 		if (p->pid > 1 && p != curproc && p->stack_base != NULL && (p->state == P_ZOMBIE || p->state == P_DESTROYED)) {
 			if (debug_flag) {
 				fprintf(stderr, "k64zombies_reap(%d) p->name=\"%s\", p->state=%c\n", p->pid, p->name, p->state);
 				fflush(stderr);
 			}
 			/* remove stack memory as a zombie can never run anymore */
-			if (!p->stack_base || !p->stack_size)
-				k64stack_free(p);
+			k64stack_free(p);
 #if OPTION_DELETE_ZOMBIE == 1
 			/* unlink from list */
 			if (p->prev)
@@ -205,7 +102,7 @@ static void k64idle_process(void *arg)
 		k64zombies_reap();
 		/* Optional: low-power hint, logging, etc. */
 		/* k64sleep(event); or k64yield(); depending on your design */
-		print_ps();
+		k64print_ps();
 		if (k64process_count(0) > 1) {
 			/* still has processes running so lets quickly get them going again */
 			k64yield();
@@ -461,7 +358,7 @@ void k64schedule(void)
 		if (p == curproc) {
 			curproc = NULL;
 		}
-		print_ps();
+		k64print_ps();
 		/* TODO - not really true - we may have another process ready to fly */
 		p = pidle;
 	}
@@ -652,71 +549,6 @@ size_t k64stack_used(struct proc64 *p)
 	while (s < top && *s == STACK_GUARD_BYTE)
 		s++;
 	return top - s;
-}
-
-char **k64ps(void)
-{
-	const static char *format_header = "%6s %1s %5s %10s %3s %6s %6s %16s %16s";
-	const static char *format_entry1 = "%6d %1c     %c %10s %3d %6zu %6zu %16p %16p";
-	const static char *format_entry2 = "%6d %1c     %c %10s %3s %6s %6s %16p %16p";
-	char **r;
-	char *buf;
-	size_t nn, ii;
-
-	buf = (char *)malloc(1024+1);
-	assert(buf != NULL);
-	ii = 0;
-	nn = k64process_count(1);
-	r = (char **)malloc(sizeof(char *) * (nn+1+1));
-	assert(r != NULL);
-	snprintf(buf, 1024, format_header,
-		"PID",
-		"*",
-		"STATE",
-		"NAME",
-		"PRI",
-		"STACK",
-		"USED",
-		"ENTRY",
-		"ARG"
-	);
-	r[ii] = malloc(strlen(buf)+1);
-	strncpy(r[ii], buf, strlen(buf)+1);
-	for (struct proc64 *p=proclist;p!=NULL;p=p->next) {
-		assert(p->magic == PROC_MAGIC_NUMBER);
-		ii++;
-		if (p->stack_base)
-			snprintf(buf, 1024, format_entry1,
-				p->pid,
-				p == curproc? '*':' ',
-				p->state,
-				p->name?p->name:" ",
-				p->priority,
-				p->stack_size,
-				k64stack_used(p),
-				p->entry,
-				p->arg
-			);
-		else
-			snprintf(buf, 1024, format_entry2,
-				p->pid,
-				p == curproc? '*':' ',
-				p->state,
-				p->name?p->name:" ",
-				"-",
-				"-",
-				"-",
-				p->entry,
-				p->arg
-			);
-		r[ii] = malloc(strlen(buf)+1);
-		assert(r[ii] != NULL);
-		strncpy(r[ii], buf, strlen(buf)+1);
-	}
-	ii++;
-	r[ii] = NULL;
-	free(buf);
-	return r;
 }
 
 #endif	/* KERNEL64_WORD_BITS */

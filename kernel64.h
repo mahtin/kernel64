@@ -2,8 +2,8 @@
  * kernel64.h for modern 64 bit arch's (aarch64 & arm64) plus armv7l (32 bit)
  */
 
-#ifndef	_KERNEL_H
-#define	_KERNEL_H
+#ifndef	_KERNEL64_H
+#define	_KERNEL64_H
 #include "port.h"
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
@@ -45,7 +45,10 @@ struct proc64 {
 	unsigned long expiration;		/* process clock time at expiration */
 };
 
-void k64init(void);
+extern struct proc64 *curproc;
+extern struct proc64 *proclist;
+
+extern void k64init(void);
 struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
 void k64schedule(void);
 void k64exit(void);
@@ -60,11 +63,14 @@ void k64yield(void);
 int k64has_a_process_to_run(void);
 size_t k64process_count(int incl_zombie);
 size_t k64stack_used(struct proc64 *p);
-char **k64ps(void);
+
 void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
+
+void k64print_ps(void);
+char **k64ps(void);
 
 #define	STACK_GUARD_BYTE	0xAA		/* could be nearly any random value */
 #define	PROC_MAGIC_NUMBER	0x70726f633634	/* "proc64" as hex */
 
 #endif	/* KERNEL64_WORD_BITS */
-#endif	/* _KERNEL_H */
+#endif	/* _KERNEL64_H */
