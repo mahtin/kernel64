@@ -8,7 +8,6 @@
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
 #include <stddef.h>
-#include <setjmp.h>
 
 /* state of process (as a single character to make life easy) */
 typedef enum {
@@ -24,6 +23,9 @@ typedef unsigned long long proc64magic;
 typedef unsigned short proc64pri;
 typedef unsigned int proc64pid;
 
+#include <setjmp.h>
+typedef jmp_buf proc64context;
+
 struct proc64 {
 	proc64magic magic;			/* proc64 structure magic number for sanity checks */
 	struct proc64 *prev;			/* processes are link listed */
@@ -33,7 +35,7 @@ struct proc64 {
 	char *name;				/* process name */
 	proc64state state;			/* process state */
 	proc64pri priority;			/* process priority */
-	jmp_buf context;			/* process stack and context for setjmp/longjmp */
+	proc64context context;			/* process stack and context for setjmp/longjmp */
 	void *stack_real_base;			/* process actual mmap base (including guard) */
 	size_t stack_real_size;			/* process total mmap size (usable + guard) */
 	void *stack_base;			/* process stack */
