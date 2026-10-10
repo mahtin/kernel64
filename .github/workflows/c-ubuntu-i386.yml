@@ -39,7 +39,7 @@ jobs:
           sudo apt-get install -y build-essential gcc-multilib g++-multilib
 
     - name: make M32=-m32
-      run: make M32=-m32 test1_idle test2_kernel
+      run: make M32=-m32
 
     - name: test1_idle
       run: ./test1_idle

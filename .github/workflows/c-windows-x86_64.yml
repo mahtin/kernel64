@@ -42,7 +42,7 @@ jobs:
           echo "Compiler architecture:"
           gcc --version
     - name: make
-      run: make CC=gcc test1_idle.exe test2_kernel.exe
+      run: make CC=gcc
 
 #   - name: test1_idle.exe
 #     continue-on-error: true
