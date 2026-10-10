@@ -52,6 +52,10 @@ jobs:
 #     continue-on-error: true
 #     run: ./test2_kernel.exe
 
+#   - name: test3_nothing
+#     continue-on-error: true
+#     run: ./test3_nothing
+
     - name: gdb test1_idle.exe
       continue-on-error: true
       run: |
@@ -67,3 +71,11 @@ jobs:
             -ex "run" \
             -ex "thread apply all bt" \
             ./test2_kernel.exe
+
+    - name: gdb test3_nothing.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test3_nothing.exe

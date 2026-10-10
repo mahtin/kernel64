@@ -46,3 +46,6 @@ jobs:
 
     - name: test2_kernel
       run: ./test2_kernel
+
+    - name: test3_nothing
+      run: ./test3_nothing
