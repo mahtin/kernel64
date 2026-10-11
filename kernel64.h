@@ -44,8 +44,7 @@ struct proc64 {
 	void (*entry)(void *);			/* store entry function and argument */
 	void *arg;
 	void *event;				/* process wait event */
-	unsigned long duration;			/* process duration of timer, in ticks */
-	unsigned long expiration;		/* process clock time at expiration */
+	size_t expiration;			/* process clock time at expiration of sleep */
 };
 
 extern struct proc64 *curproc;
@@ -57,9 +56,10 @@ void k64schedule(void);
 void k64exit(void);
 void k64nice(proc64pri pri);
 void k64renice(struct proc64 *p, proc64pri pri);
-void k64delay(unsigned long msecs);
+void k64delay(size_t msecs);
 void k64sleep(void * event);
 void k64wakeup(struct proc64 *p);
+void k64pause(void);
 struct proc64 *k64pid_to_proc(proc64pid pid);
 void k64destroy(struct proc64 *p);
 void k64yield(void);

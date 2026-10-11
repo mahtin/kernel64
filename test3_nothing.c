@@ -39,25 +39,17 @@ static void print_time(void)
 
 static void do_nothing(void *arg)
 {
-	static int count = 0;
-
 	printf("TESTING: do_nothing() starting...\n");
 	fflush(stdout);
 	k64print_ps();
-	while (1) {
-		pause();
-		count++;
-		// printf("TESTING: pause() returned\n");
-		// fflush(stdout);
-		k64yield();
+	for (int count=0;count<=250;count++) {
 		if ((count % 50) == 0) {
 			printf("%3d ", count);
 			print_time();
 		}
-		if (count > 250) {
-			printf("\n");
-			break;
-		}
+		k64delay(20);
+		// k64print_ps();
+		// k64yield();
 	}
 	k64print_ps();
 	k64exit();

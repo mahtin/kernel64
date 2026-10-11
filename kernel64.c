@@ -101,23 +101,23 @@ static void k64zombies_reap(void)
 static void k64idle_process(void *arg)
 {
 	for (;;) {
+		if (k64process_count(0) <= 1) {
+			/* all processes exited (except idle) - so exit the idle process and end everything */
+			k64exit();
+		}
+
 		/* cleanup any zombie process stack allocations - only do this is init processs */
 		k64zombies_reap();
+
 		/* Optional: low-power hint, logging, etc. */
-		/* k64sleep(event); or k64yield(); depending on your design */
-		k64print_ps();
-		if (k64process_count(0) > 1) {
-			/* still has processes running so lets quickly get them going again */
-			k64yield();
-		} else {
-#if 0
-			/* no-one around - so we just sleep */
-			usleep(1000*1000);
-#else
-			/* screw it - exit the item process */
-			k64exit();
-#endif
+
+		// k64print_ps();
+		if (debug_flag) {
+			fprintf(stderr, "k64idle_process(): pause!\n");
+			fflush(stderr);
 		}
+		k64timer_pause();
+		k64yield();
 	}
 }
 
@@ -175,7 +175,7 @@ static void k64enter(struct proc64 *next)
 		k64process_bootstrap(next);
 		/* never returns */
 	}
-	if (1 || debug_flag) {
+	if (debug_flag) {
 		fprintf(stderr, "k64enter(%d): next->name=\"%s\" doing longjmp:\n", next->pid, next->name);
 		fflush(stderr);
 	}
@@ -202,12 +202,12 @@ static void k64switch(struct proc64 *next)
 	}
 
 	curproc = next;
-	if (1 || debug_flag) {
+	if (debug_flag) {
 		fprintf(stderr, "k64switch(%d): next->name=\"%s\" setjmp() prev->pid=%d prev->name=\"%s\" rsp=%p\n", next->pid, next->name, prev?prev->pid:-1, prev?prev->name:"-", __builtin_frame_address(0));
 		fflush(stderr);
 	}
 	if (prev == NULL || (r=setjmp(prev->context)) == 0) {
-		if (1 || debug_flag) {
+		if (debug_flag) {
 			fprintf(stderr, "k64switch(): setjmp() returns 0 - next up k64enter ...\n");
 			fflush(stderr);
 		}
@@ -217,7 +217,7 @@ static void k64switch(struct proc64 *next)
 		fflush(stderr);
 		abort();
 	}
-	if (1 || debug_flag) {
+	if (debug_flag) {
 		fprintf(stderr, "k64switch(): returning (at end)\n");
 		fflush(stderr);
 	}
@@ -242,7 +242,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->magic = PROC_MAGIC_NUMBER;
 	p->state = P_GO;
 	p->priority = 80;			/* mimic (somewhat) the norms for priority values */
-	p->duration = 0;
+	p->expiration = 0;
 	p->pid = pid_number++;
 	p->tick_count = 0;
 	p->entry = entry;			/* entry point for new process */
@@ -327,19 +327,24 @@ void k64schedule(void)
 		/* while we are here - deal with delayed process */
 		if (p->state == P_SLEEPING) {
 			/* is it time to wake up */
-			/* TODO */
-			p->duration -= 1;
-			if (p->duration <= 0)
+			if (p->expiration <= k64timer_ticks()) {
 				p->state = P_RUNNING;
+				if (debug_flag) {
+					fprintf(stderr, "k64schedule: wakeup p->pid=%d p->name=\"%s\"\n", p->pid, p->name);
+					fflush(stderr);
+				}
+			}
 		}
 		/* only consider runnable processes */
 		if (p->state == P_GO || p->state == P_RUNNING) {
-			if (p->pid == 1)
+			if (p->pid == 1) {
 				pidle = p;
-			if (phighest == NULL)
-				phighest = p;
-			if (p->priority < phighest->priority)
-				phighest = p;
+			} else {
+				if (phighest == NULL)
+					phighest = p;
+				if (p->priority < phighest->priority)
+					phighest = p;
+			}
 		}
 		p = p->next;
 		if (p == NULL) {
@@ -357,10 +362,16 @@ void k64schedule(void)
 				p = pidle;
 				break;
 			}
-			/* if possible select the process with the highest priorty - which will be idle if nothing else around */
-			p = phighest?phighest:NULL;
-			if (p == NULL)
+			/* if possible select the process with the highest priorty */
+			p = phighest ? phighest : NULL;
+			if (p == NULL) {
+				/* this could mean only idle process is left - we need to sleep */
+				if (debug_flag) {
+					fprintf(stderr, "k64schedule: only idle ready to run\n");
+					fflush(stderr);
+				}
 				p = pidle;
+			}
 			break;
 		}
 	}
@@ -444,7 +455,7 @@ void k64nice(proc64pri pri)
 {
 	if (curproc == NULL)
 		return;
-	curproc->priority = pri<255?pri:255;
+	curproc->priority = pri < 255 ? pri : 255;
 	k64schedule();
 }
 
@@ -452,17 +463,17 @@ void k64nice(proc64pri pri)
 void k64renice(struct proc64 *p, proc64pri pri)
 {
 	assert(p->magic == PROC_MAGIC_NUMBER);
-	p->priority = pri<255?pri:255;
+	p->priority = pri < 255 ? pri : 255;
 	k64schedule();
 }
 
 /* Delay this process */
-void k64delay(unsigned long msecs)
+void k64delay(size_t msecs)
 {
 	if (curproc == NULL)
 		return;
 	curproc->state = P_SLEEPING;
-	curproc->duration = msecs;
+	curproc->expiration = k64timer_ticks() +  msecs;
 	k64schedule();
 }
 
@@ -482,6 +493,16 @@ void k64wakeup(struct proc64 *p)
 	assert(p->magic == PROC_MAGIC_NUMBER);
 	if (p && p->state == P_WAITING)
 		p->state = P_RUNNING;
+	k64schedule();
+}
+
+/* Pause this process */
+void k64pause(void)
+{
+	if (curproc == NULL)
+		return;
+	/* We don't really "pause" - we simply wait for a tick to happen */
+	k64delay(1);
 	k64schedule();
 }
 
