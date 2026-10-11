@@ -1,5 +1,10 @@
 # Change Log
 
+ - 2026-10-11 12:32:40 +0100 [dd82881](../../commit/dd82881265a4244f6ef43d0d910105d99c657ac0) reduce workflows/actions so they run only with relevant files
+ - 2026-10-11 01:25:28 +0100 [2254a84](../../commit/2254a8443a88cacd2b250118d908634e584dfacb) limit windows text runs to just three mins
+ - 2026-10-11 01:16:12 +0100 [03ff1f6](../../commit/03ff1f6f73419ce298386e94b27a76f65e8471a6) windows struct tm is different - dont print timezone
+ - 2026-10-11 01:05:14 +0100 [7602657](../../commit/760265741e6940f17de9a7d549abf5bee155cc71) new timer code and idle now sleeps
+ - 2026-10-10 22:51:50 +0100 [550b075](../../commit/550b075d9cfbec232de317d217f3d45939eb1d0b) CHANGELOG
  - 2026-10-10 22:51:35 +0100 [a1181eb](../../commit/a1181ebdacce43be3204c40a71c48695fe8f8212) test3_nothing - not perfect, but shows timers work
  - 2026-10-10 22:49:10 +0100 [20a6412](../../commit/20a6412a74d008ccadc51f4a74b1d148a26dbf51) timers - first pass
  - 2026-10-10 21:26:40 +0100 [9712f1b](../../commit/9712f1b13f0cab035adcd0ebe550cb4e117243a8) get workflows ready for more in the Makefile
