@@ -3,8 +3,14 @@ name: Kernel64 on Windows Intel x86_64
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+    - '*.md'
+    - 'k64_switch_to_stack_[aix]*.S'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+    - '*.md'
+    - 'k64_switch_to_stack_[aix]*.S'
 
 jobs:
   test-on-windows-x86_64:
