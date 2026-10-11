@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
     paths:
-    paths:
     - 'Makefile'
     - '*.[hc]'
     - 'k64_switch_to_stack_i386.S'
