@@ -3,20 +3,19 @@ name: Kernel64 on Linux Ubuntu Intel i386
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-    - '*.md'
-    - 'k64_switch_to_stack_win64.S'
-    - 'k64_switch_to_stack_[ax]*.S'
-    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
-    - '.github/workflows/c-windows-x86_64.yml'
+    paths:
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_i386.S'
+    - '.github/workflows/c-ubuntu-i386.yml'
   pull_request:
     branches: [ "main" ]
-    paths-ignore:
-    - '*.md'
-    - 'k64_switch_to_stack_win64.S'
-    - 'k64_switch_to_stack_[ax]*.S'
-    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
-    - '.github/workflows/c-windows-x86_64.yml'
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_i386.S'
+    - '.github/workflows/c-ubuntu-i386.yml'
 
 jobs:
   test-on-ubuntu-i386:

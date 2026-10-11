@@ -3,20 +3,20 @@ name: Kernel64 on macOS arm64 and Intel x86_64, Linux Ubuntu Intel x86_64 & arm6
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-    - '*.md'
-    - 'k64_switch_to_stack_win64.S'
-    - 'k64_switch_to_stack_i386.S'
-    - '.github/workflows/c-ubuntu-i386.yml'
-    - '.github/workflows/c-windows-x86_64.yml'
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_arm64.S'
+    - 'k64_switch_to_stack_x86_64.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
   pull_request:
     branches: [ "main" ]
-    paths-ignore:
-    - '*.md'
-    - 'k64_switch_to_stack_win64.S'
-    - 'k64_switch_to_stack_i386.S'
-    - '.github/workflows/c-ubuntu-i386.yml'
-    - '.github/workflows/c-windows-x86_64.yml'
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_arm64.S'
+    - 'k64_switch_to_stack_x86_64.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
 
 jobs:
   test-on-various-os-and-arch:
