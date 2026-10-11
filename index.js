@@ -1,5 +1,5 @@
 import { marked } from 'marked';
-import readme from 'README.md'; // Wrangler supports bundling text assets
+import readme from './README.md'; // Wrangler supports bundling text assets
 
 export default {
   async fetch(request, env, ctx) {
