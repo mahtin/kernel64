@@ -26,12 +26,14 @@ static void print_time(void)
 		".%03ld",
 		tp.tv_nsec/1000000
 	);
+#ifndef _WIN32
 	off += snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
 		labs(local->tm_gmtoff)%3600/60
 	); 
+#endif
 
 	printf("%s\n", buf);
 	fflush(stdout);
