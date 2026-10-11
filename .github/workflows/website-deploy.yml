@@ -28,6 +28,7 @@ on:
 jobs:
   kernel64-wranger-deploy:
     runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Workers
 
     steps:
       - name: Checkout Code
@@ -39,22 +40,22 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-#    - uses: actions/checkout@v5
+#     - uses: actions/checkout@v5
 
-#   - name: Setup Node.js
-#     uses: actions/setup-node@v4
-#     with:
-#       node-version: 20
-#       cache: 'npm'
+#     - name: Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: 20
+#         cache: 'npm'
 
-#   - name: Install Wrangler
-#     run: npm install -g wrangler
+#     - name: Install Wrangler
+#       run: npm install -g wrangler
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Deploy Wrangler
-      uses: cloudflare/wrangler-action@v4
-      with:
-        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy Wrangler
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
