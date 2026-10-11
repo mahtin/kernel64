@@ -1,5 +1,12 @@
 # Kernel Design / Theory of Operation
 
+A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
+
+*[1]* Also some 32 bit o/s's - armv7l (older Raspberry Pi's) and Intel i386.
+
+Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/actions) and should be cloned locally in order to run.
+No precompiled binary is provided.
+
 ## Overview
 
 Kernel64 is a portable cooperative multitasking kernel inspired by many other schedulers found online.
@@ -19,7 +26,7 @@ Kernel64 currently supports:
 - Linux ARMv7
 - macOS Apple Silicon
 - macOS Intel
-- Windows x64 (work in progress)
+- Windows x64 (still work in progress - but nearly works)
 
 The scheduler is entirely cooperative. Processes execute until they voluntarily yield, sleep, exit, or are destroyed.
 
@@ -88,7 +95,7 @@ During creation Kernel64:
 2. Assigns a process identifier.
 3. Allocates a stack.
 4. Initializes the stack guard pattern.
-5. Stores the process entry function and argument.
+5. Stores the process-entry function and argument.
 6. Captures an initial scheduler context using `setjmp()`.
 7. Adds the process to the process list.
 8. Marks the process state as `P_GO`.
@@ -99,6 +106,7 @@ Execution starts when the scheduler first selects the process.
 ## Stack Allocation
 
 Each process owns its own private stack.
+Stack size can be specified by the caller via the `k64spawn()` call.
 Stacks are allocated using virtual memory rather than standard heap allocation.
 
 ## POSIX Platforms
@@ -116,7 +124,7 @@ The lowest page of each stack allocation is marked:
 	PROT_NONE
 ```
 
-to act as a guard page.
+to act as a stack guard page.
 
 ## Windows
 
@@ -133,7 +141,7 @@ The lowest page of the allocation is marked:
 	PAGE_NOACCESS
 ```
 
-to provide the same protection.
+to provide the same stack protection.
 
 ## Guard Pages
 
@@ -150,7 +158,7 @@ After allocation, every usable byte of stack memory is initialized with:
 	STACK_GUARD_BYTE
 ```
 
-currently:
+currently (which is really a random choice):
 
 ```c
 	0xAA
@@ -171,19 +179,21 @@ This permits:
 
 without platform-specific APIs.
 
----
+## Timers
+
+Timer implementation is work in progress.
 
 # Idle Process
 
 Kernel64 always creates an idle process during initialization.
 The idle process becomes PID 1.
-Initialization is performed by:
+Initialization is performed within:
 
 ```c
 	k64init();
 ```
 
-which internally creates:
+which must be called before anything else and internally creates:
 
 ```text
 	[idle]
@@ -192,11 +202,12 @@ which internally creates:
 The idle process serves several purposes:
 
 - Provides a runnable process when no others are available.
-- Reaps zombie process resources.
+- Reaps zombie process resources (i.e. unsued stacks).
 - Performs scheduler housekeeping.
+- Handles sleep/wakeup processing for processes that are sleeping.
 - Prevents the scheduler from running out of executable processes.
 
-The idle process runs at the lowest priority value used by the scheduler.
+The idle process runs at the lowest priority value used by the scheduler (255).
 
 ## Context Switching
 
@@ -208,7 +219,7 @@ Kernel64 performs scheduling through:
 ```
 
 A context switch occurs in two stages.
-This code does not work fully on Windows. i.e. work in progress.
+This code does not fully work on Windows. (Hence the work in progress.)
 
 ## Saving State
 
@@ -241,7 +252,7 @@ All scheduling remains inside user space.
 
 ## First Process Execution
 
-A newly created process begins in state:
+A newly created process (via `k64spawn()`) begins in state:
 
 ```c
 	P_GO
@@ -258,8 +269,8 @@ is invoked.
 The bootstrap routine:
 
 1. Switches to the process stack using an architecture-specific assembly helper.
-2. Executes the process entry routine.
-3. Calls `k64exit()` when the process entry routine returns.
+2. Executes the process-entry routine.
+3. Calls `k64exit()` when the process-entry routine returns.
 
 The bootstrap function never returns.
 
@@ -277,7 +288,7 @@ Implementations exist for:
 - i386
 - ARM64
 - ARMv7
-- x86_64 specific to Windows (ABI is different)
+- x86_64 specific to Windows (the ABI is different)
 
 The purpose of the routine is:
 
@@ -345,9 +356,11 @@ and then invokes the scheduler.
 
 Because Kernel64 is cooperative:
 
-- No timer interrupt is required.
+- No timer interrupt is presently required for swapping processes.
 - No preemption occurs.
 - A process runs until it explicitly yields.
+
+A process should call `k64yield()` often. If no other process is ready to run, then the kernel returns to the call process quite quickly.
 
 ## Sleeping
 
@@ -363,9 +376,9 @@ This places the process into:
 	P_SLEEPING
 ```
 
-and stores a countdown value.
-The scheduler decrements the remaining duration on each scheduling pass.
-When the countdown reaches zero, the process becomes runnable again.
+and stores a wakeup value.
+The scheduler compares the wakeup time on each scheduling pass.
+When the wakeup is reached, the process is makred as runnable again.
 
 ## Waiting and Wakeup
 
@@ -405,6 +418,7 @@ A process terminates itself by calling:
 ```
 
 or by returning from its entry function.
+There are no exit values.
 
 Exit processing:
 
@@ -413,7 +427,8 @@ Exit processing:
 3. Invokes the scheduler.
 4. Never returns.
 
-Zombie processes remain in the process list until the idle process reaps their resources.
+Zombie processes remain in the process list with their resources until the idle process reaps their resources.
+Presently only the stack is the resource reaped.
 
 ## Process Destruction
 
@@ -431,6 +446,9 @@ A destroyed process enters state:
 
 Destroyed processes are eventually cleaned up by the idle process.
 This mechanism is used primarily when stack corruption or internal errors are detected.
+
+The `k64destroy(process)` can be called by another process.
+As present there's no mechaanism to record reasons for a process to be destroyed.
 
 ## Stack Corruption Detection
 
@@ -466,10 +484,10 @@ This prevents a corrupted process from continuing execution.
 Kernel64 provides:
 
 ```c
-	k64ps();
+	k64print_ps();
 ```
 
-which generates a textual snapshot of all processes.
+which generates a textual snapshot of all processes send to `stdout`.
 
 Displayed information includes:
 
@@ -478,6 +496,7 @@ Displayed information includes:
 - State
 - Name
 - Priority
+- Time used
 - Stack size
 - Stack usage
 - Entry function
@@ -497,4 +516,14 @@ Key goals include:
 - No dependency on operating system threads.
 - Easy integration into existing applications.
 
-The resulting design provides a lightweight process environment suitable for experimentation, embedded systems, network services, and educational operating system development.
+The resulting design provides a lightweight process environment suitable for experimentation,
+embedded systems, network services, and educational operating system development.
+
+## More information
+
+Read the full [README](README.md) page for install, license, and other inforation.
+
+## Author & Copyright
+
+Copyright (C) 2025-2026 Martin J Levy - W6LHI/G8LHI - @mahtin - https://github.com/mahtin
+

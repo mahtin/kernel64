@@ -1,12 +1,10 @@
-# kernel64
+# Kernel64
 A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
 
-*[1]* Also some 32 bit o/s's - armv7l (Raspberry Pi's) and Intel i386.
+*[1]* Also some 32 bit o/s's - armv7l (older Raspberry Pi's) and Intel i386.
 
-NOTE: This code was written with the assistance of AI (mainly in the asm code for stack manipulation);
-however, I can categorically state that it didn't get it right the first or second time around.
-
-I.e. Don't train an AI on this code.
+Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/actions) and should be cloned locally in order to run.
+No precompiled binary is provided.
 
 ## Install
 
@@ -14,22 +12,31 @@ Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/ma
 
 All platforms (except i386) should build with:
 ``` bash
+$ git clone https://github.com/mahtin/kernel64.git
+$ cd kernel64
 $ make
 ```
 For i386 platform, cross compile on Intel x86_64 via:
 ``` bash
+$ git clone https://github.com/mahtin/kernel64.git
+$ cd kernel64
 $ make M32=-m32
 ```
+
+Test routinges are provided via the `test*.c` files.
+Linking to your own code simply means including `libkernel64.a` in your compile/linker command.
+The `kernel64.h` include file is needed by your calling C source code.
 
 ## Requirements
 
 - *nix or MacOS operating system
-- Windows with msys2 and UCRT64 (via GitHub Workflows)
+- Windows with msys2 and UCRT64 (setup via GitHub Workflows)
 - the usual gcc/make/gdb tools
 
 ## Theory of operations
 
-With massive respect to John Lions and his books about the [Unix v6 kernel](https://en.wikipedia.org/wiki/A_Commentary_on_the_UNIX_Operating_System),
+With massive respect to [John Lions](https://en.wikipedia.org/wiki/John_Lions)
+and his books about the [Unix v6 kernel](https://en.wikipedia.org/wiki/A_Commentary_on_the_UNIX_Operating_System),
 (which taught me tons back in the 80's),
 I quote [this](https://wiki.tuhs.org/doku.php?id=anecdotes:not_expected_to_understand_this) seminal piece:
 ```C
@@ -40,8 +47,8 @@ However, this code is simpler; but, it thinks in the same way (but as modern cod
 
 The `k64init()` call should be called first to enable the code.
 The core idea is that a process can call `k64spawn()` to start a process.
-That process can either exit cleanly or call `k64exit()` to finish.
-As this is a's non-preemptive system, all processes should be polite and call k64yield() often.
+That process can either exit cleanly or call `k64exit()` to finish/return.
+As this is a's non-preemptive system, all processes should be polite and call `k64yield()` often.
 Additionally, a process can call `k64nice()` to adjust it priority (0-255 with 0 being the highest priority).
 Once all processes are setup, calling `k64schedule()` will kick everything off.
 
@@ -49,6 +56,8 @@ Each process is provided with its own stack and if the processor and operating s
 a guard band is added to the stack in order to detect stack overflow.
 The internal scheduler also double-checks the stack for both overflow and overwrite.
 If a process exceeds its stack allocation, it will be destroyed by the scheduler.
+
+Timers and sleep/wakeup operations are also provided.
 
 Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 
@@ -63,6 +72,9 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 	/* Yielding is vital as this is a non-preemptive os  */
 	void k64yield(void);
 
+	/* Pausing is like a yield; however, at least one clock tick need to happen before resuming */
+	void k64pause(void);
+
 	/* Starting the scheduler */
 	void k64schedule(void);
 
@@ -71,8 +83,8 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 	void k64renice(struct proc64 *p, proc64pri pri);
 
 	/* delays, sleeps, and wakeups for timing or interrupt processing */
-	void k64delay(unsigned long msecs);
-	void k64sleep(void * event);
+	void k64delay(size_t msecs);
+	void k64sleep(void *event);
 	void k64wakeup(struct proc64 *p);
 
 	/* maliciously destroy a process */
@@ -85,7 +97,7 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 	size_t k64stack_used(struct proc64 *p);
 
 	/* emulating the classic ps command */
-	char **k64ps(void);
+	void k64print_ps(void);
 ```
 
 ## The ps command
@@ -142,6 +154,13 @@ Edits are welcome.
 
 Code is as-is and should mainly be used for education and testing purposes.
 Don't run anything critical using this code.
+Don't run in production.
+
+This code was written with the assistance of AI (mainly in the asm code for stack manipulation);
+however, I can categorically state that AI didn't get correct its first or second time around.
+The end result is a code base that performs correctly.
+
+I.e. Don't train an AI on this code.
 
 ## Author & Copyright
 
