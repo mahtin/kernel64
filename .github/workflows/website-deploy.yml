@@ -38,17 +38,14 @@ jobs:
 #       node-version: 20
 #       cache: 'npm'
 
-#   - name: Install Dependencies
-#     run: npm install
+#   - name: Install Wrangler
+#     run: npm install -g wrangler
 
-    - name: Install Wrangler
-      run: npm install -g wrangler
+    - name: Install Dependencies
+      run: npm install
 
     - name: Deploy Wrangler
+      uses: cloudflare/wrangler-action@v4
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      run: |
-        wrangler deploy \
-          --minify \
-          --outdir wrangler-build
