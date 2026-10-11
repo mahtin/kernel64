@@ -47,14 +47,17 @@ jobs:
 #   - name: test1_idle.exe
 #     continue-on-error: true
 #     run: ./test1_idle.exe
+#     timeout-minutes: 3
 
 #   - name: test2_kernel.exe
 #     continue-on-error: true
 #     run: ./test2_kernel.exe
+#     timeout-minutes: 3
 
 #   - name: test3_nothing
 #     continue-on-error: true
 #     run: ./test3_nothing
+#     timeout-minutes: 3
 
     - name: gdb test1_idle.exe
       continue-on-error: true
@@ -63,6 +66,7 @@ jobs:
             -ex "run" \
             -ex "thread apply all bt" \
             ./test1_idle.exe
+      timeout-minutes: 3
 
     - name: gdb test2_kernel.exe
       continue-on-error: true
@@ -71,6 +75,7 @@ jobs:
             -ex "run" \
             -ex "thread apply all bt" \
             ./test2_kernel.exe
+      timeout-minutes: 3
 
     - name: gdb test3_nothing.exe
       continue-on-error: true
@@ -79,3 +84,4 @@ jobs:
             -ex "run" \
             -ex "thread apply all bt" \
             ./test3_nothing.exe
+      timeout-minutes: 3
