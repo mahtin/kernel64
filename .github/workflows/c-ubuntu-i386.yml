@@ -7,12 +7,16 @@ on:
     - '*.md'
     - 'k64_switch_to_stack_win64.S'
     - 'k64_switch_to_stack_[ax]*.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
+    - '.github/workflows/c-windows-x86_64.yml'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
     - '*.md'
     - 'k64_switch_to_stack_win64.S'
     - 'k64_switch_to_stack_[ax]*.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
+    - '.github/workflows/c-windows-x86_64.yml'
 
 jobs:
   test-on-ubuntu-i386:

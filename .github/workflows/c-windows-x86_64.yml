@@ -6,11 +6,15 @@ on:
     paths-ignore:
     - '*.md'
     - 'k64_switch_to_stack_[aix]*.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
+    - '.github/workflows/c-ubuntu-i386.yml'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
     - '*.md'
     - 'k64_switch_to_stack_[aix]*.S'
+    - '.github/workflows/c-macos-ubuntu-arm64-x86_64.yml'
+    - '.github/workflows/c-ubuntu-i386.yml'
 
 jobs:
   test-on-windows-x86_64:
