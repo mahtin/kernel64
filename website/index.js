@@ -35,7 +35,7 @@ export default {
     `;
 
     // Switch based on the URL path
-    switch (url.pathname) {
+    switch (request.pathname) {
       case "/":
         return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/readme.html":
