@@ -1,5 +1,33 @@
 # Change Log
 
+ - 2026-10-12 20:26:24 +0100 [a52ec48](../../commit/a52ec48f4cfae6934cbced2d0211fd23b6c13ad1) test4_pause - to test pause()
+ - 2026-10-12 20:24:47 +0100 [48e9162](../../commit/48e9162852ad458f37708695f3d7b5234baca2a5) recurse needed a return
+ - 2026-10-12 20:24:00 +0100 [dd45c5a](../../commit/dd45c5a9d22cb74464ee24c5a3f58caddfbef514) P_DESTROYED processing moved to idle process becuase it needs a stack
+ - 2026-10-12 20:22:46 +0100 [b02d47a](../../commit/b02d47a5719e88e081b0c0223a9f81475a80591e) cleanup
+ - 2026-10-12 20:19:16 +0100 [897e8df](../../commit/897e8dfc5ec117a710fdb7c565435a5f807dc2c4) fixed url
+ - 2026-10-12 20:16:26 +0100 [07e21bf](../../commit/07e21bf3baeba1e18ce8c11577bbdaf8a5751c02) fixed url
+ - 2026-10-12 20:14:11 +0100 [a574482](../../commit/a574482e29b6dccaee8dbd1095c16bd88befafde) fixed url
+ - 2026-10-12 20:10:34 +0100 [171fabb](../../commit/171fabb8d28577c6e21aeb94d6ac5fe3c3db7a98) still testing
+ - 2026-10-12 20:05:42 +0100 [b0c4077](../../commit/b0c4077ecca93ad4ea53c0d0b0b30592435f7a1d) still testing
+ - 2026-10-12 19:54:36 +0100 [b720c8a](../../commit/b720c8a186efe469beffb2d592ccaff7847ee0e5) typo
+ - 2026-10-12 19:50:18 +0100 [40d7d62](../../commit/40d7d62c76de23cc27959d9c0e92b554aa9cc629) observability added
+ - 2026-10-12 19:45:33 +0100 [3b1bfce](../../commit/3b1bfcea1750c84676be74ef6b9cc99a3ed298e8) added back in account
+ - 2026-10-12 19:39:20 +0100 [377465e](../../commit/377465e4e736c64a37d953933597955a9fb9ca8d) fixing directory for npm and added image logic
+ - 2026-10-12 18:36:40 +0100 [fee7ad1](../../commit/fee7ad1fe5c257af08c0826014b0606ef8133e47) moved workers and website to website folder and updated workflow
+ - 2026-10-11 23:40:09 +0100 [82ff7a0](../../commit/82ff7a0155ebf340d04e391ddd602cb1daa52191) globs added
+ - 2026-10-11 23:39:05 +0100 [84d9560](../../commit/84d95606c0ed8259fc5edb84aad5dcfd788e2adc) globs added
+ - 2026-10-11 23:34:27 +0100 [cc5e02a](../../commit/cc5e02a98e1139ff5658b46a9f461b4b56a8efef) ./README.js needed
+ - 2026-10-11 23:32:46 +0100 [c257f67](../../commit/c257f6737b3f0d7154de204f22ae2819aeacbd5b) cleaner setup
+ - 2026-10-11 23:28:35 +0100 [bd3ddeb](../../commit/bd3ddeb0ae090c8cf3abdf273082b3f648e3ee50) cleaner setup
+ - 2026-10-11 23:25:00 +0100 [0c487c5](../../commit/0c487c541c3ff1d4fa5eb9411014a84d8a4ab880) cleaner setup
+ - 2026-10-11 23:21:47 +0100 [4744fb2](../../commit/4744fb233e4771064eba85181cc60f0bf9bd5e4e) cleaner setup
+ - 2026-10-11 23:19:09 +0100 [07ac6a0](../../commit/07ac6a02acc98a3401df5ad133596cbae1913191) typo
+ - 2026-10-11 23:15:27 +0100 [6b3f705](../../commit/6b3f7056d609c9fbcc45b6c37bc23ad449ca7d3a) typo
+ - 2026-10-11 23:11:57 +0100 [a557023](../../commit/a55702320290fcde06e5154d74e6dc67c3b0e232) workflow cleanup - try to only run what is really needed
+ - 2026-10-11 23:01:02 +0100 [0ea4288](../../commit/0ea4288ca70adc3f4d8657e37ebfc9968eb7a171) kernel64 website - via cloudlfare workers/wranger
+ - 2026-10-11 17:40:04 +0100 [d470233](../../commit/d470233f6a4cfdafa9e62a25e2ce94956c9b9d21) more words and update to calls
+ - 2026-10-11 12:35:38 +0100 [3cd51a2](../../commit/3cd51a2a69d6b2478e0ec9e817cfb0db60c35d73) more path ignores
+ - 2026-10-11 12:33:38 +0100 [1356f90](../../commit/1356f90f2dea31265e2dc2c244f878b04e65814d) CHANGELOG
  - 2026-10-11 12:32:40 +0100 [dd82881](../../commit/dd82881265a4244f6ef43d0d910105d99c657ac0) reduce workflows/actions so they run only with relevant files
  - 2026-10-11 01:25:28 +0100 [2254a84](../../commit/2254a8443a88cacd2b250118d908634e584dfacb) limit windows text runs to just three mins
  - 2026-10-11 01:16:12 +0100 [03ff1f6](../../commit/03ff1f6f73419ce298386e94b27a76f65e8471a6) windows struct tm is different - dont print timezone
