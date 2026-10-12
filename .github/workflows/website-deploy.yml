@@ -52,7 +52,9 @@ jobs:
 #       run: npm install -g wrangler
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+            cp website/package.json .
+            npm install
 
       - name: Deploy Wrangler
         uses: cloudflare/wrangler-action@v4

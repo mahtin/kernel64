@@ -44,6 +44,10 @@ export default {
         return new Response(topHtml + marked.parse(theory) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/changelog.html":
         return new Response(topHtml + marked.parse(changelog) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+      case "kernel64logo-small.png":
+        const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
+        const bytes = await image.bytes();
+        return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
       default:
         return new Response("Page Not Found", { status: 404 });		// Return a 404 Page Not Found for unmatched paths
     }
