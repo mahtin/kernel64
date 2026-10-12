@@ -36,7 +36,7 @@ export default {
     ` + '<!-- "' + url.pathname + '" -->';
 
     // Switch based on the URL path
-    switch (request.pathname) {
+    switch (url.pathname) {
       case "/":
         return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/readme.html":
@@ -50,7 +50,7 @@ export default {
         const bytes = await image.bytes();
         return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
       default:
-        return new Response("Page Not Found: " + request.pathname, { status: 404 });		// Return a 404 Page Not Found for unmatched paths
+        return new Response("Page Not Found: " + url.pathname, { status: 404 });		// Return a 404 Page Not Found for unmatched paths
     }
   },
 };
