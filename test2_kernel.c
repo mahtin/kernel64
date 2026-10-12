@@ -54,7 +54,10 @@ test_proc_stack(void *arg)
 		k64yield();
 		arg += 1;
 		test_proc_stack(arg);
+		return;
 	}
+	printf("TESTING: DONE!\n");
+	fflush(stdout);
 	k64exit();
 }
 
