@@ -76,7 +76,14 @@ static void k64zombies_reap(void)
 				fprintf(stderr, "k64zombies_reap(%d) p->name=\"%s\", p->state=%c\n", p->pid, p->name, p->state);
 				fflush(stderr);
 			}
-			/* remove stack memory as a zombie can never run anymore */
+			if (p->state == P_DESTROYED) {
+				/* report a stack overflow - do it from a safe stack - i.e. here in idle */
+				size_t used = k64stack_used(p);
+				fprintf(stderr, "k64zombies_reap(%d): p->name=%s stack_used=%zu / %zu -- STACK CORRUPT!\n", p->pid, p->name, used, p->stack_size);
+				fflush(stderr);
+				k64print_ps();
+			}
+			/* remove stack memory from that process as a zombie can never run anymore */
 			k64stack_free(p);
 #if OPTION_DELETE_ZOMBIE == 1
 			/* unlink from list */
@@ -101,13 +108,13 @@ static void k64zombies_reap(void)
 static void k64idle_process(void *arg)
 {
 	for (;;) {
+		/* cleanup any zombie process stack allocations - only do this is init processs */
+		k64zombies_reap();
+
 		if (k64process_count(0) <= 1) {
 			/* all processes exited (except idle) - so exit the idle process and end everything */
 			k64exit();
 		}
-
-		/* cleanup any zombie process stack allocations - only do this is init processs */
-		k64zombies_reap();
 
 		/* Optional: low-power hint, logging, etc. */
 
@@ -381,14 +388,11 @@ void k64schedule(void)
 	/* kick off processs p if its stack is ok */
 	if (k64stack_sanity_check(p) || k64stack_overflowed(p)) {
 		/* stack corrupt on this process */
-		size_t used = k64stack_used(p);
-		fprintf(stderr, "k64schedule(%d): name=%s stack_used=%zu / %zu STACK CORRUPT\n", p->pid, p->name, used, p->stack_size);
-		fflush(stderr);
+		/* we don't report here - 'cause we don't have a stack! */
 		p->state = P_DESTROYED;
 		if (p == curproc) {
 			curproc = NULL;
 		}
-		k64print_ps();
 		/* TODO - not really true - we may have another process ready to fly */
 		p = pidle;
 	}
@@ -473,7 +477,7 @@ void k64delay(size_t msecs)
 	if (curproc == NULL)
 		return;
 	curproc->state = P_SLEEPING;
-	curproc->expiration = k64timer_ticks() +  msecs;
+	curproc->expiration = k64timer_ticks() + msecs;
 	k64schedule();
 }
 
