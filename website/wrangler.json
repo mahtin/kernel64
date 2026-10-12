@@ -5,7 +5,12 @@
   "rules": [
     {
       "type": "Text",
-      "globs": ["*.md"],
+      "globs": [
+        "./kernel64logo-small.png",
+        "../README.md",
+        "../THEORY-OF-OPERATIONS.md",
+        "../CHANGELOG.md"
+      ],
       "fallthrough": true
     }
   ]
