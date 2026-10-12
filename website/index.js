@@ -49,7 +49,8 @@ export default {
         const bytes = await image.bytes();
         return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
       default:
-        return new Response("Page Not Found", { status: 404 });		// Return a 404 Page Not Found for unmatched paths
+        return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+//      return new Response("Page Not Found", { status: 404 });		// Return a 404 Page Not Found for unmatched paths
     }
   },
 };
