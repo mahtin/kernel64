@@ -5,6 +5,7 @@ import changelog from '../CHANGELOG.md';			// Wrangler supports bundling text as
 
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
     const topHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -32,7 +33,7 @@ export default {
     const bottomHtml = `
       </body>
       </html>
-    ` + '<!-- "' + request.pathname + '" -->';
+    ` + '<!-- "' + url.pathname + '" -->';
 
     // Switch based on the URL path
     switch (request.pathname) {
@@ -49,8 +50,7 @@ export default {
         const bytes = await image.bytes();
         return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
       default:
-        return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
-//      return new Response("Page Not Found", { status: 404 });		// Return a 404 Page Not Found for unmatched paths
+        return new Response("Page Not Found: " + request.pathname, { status: 404 });		// Return a 404 Page Not Found for unmatched paths
     }
   },
 };
