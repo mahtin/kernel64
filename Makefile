@@ -88,11 +88,11 @@ LDFLAGS=	$(DEBUG) $(CPU) $(STACK_SIZE)
 
 LIBKERNEL64=	kernel64.o kernel64util.o kernel64ps.o kernel64timer.o $(K64_SWITCH_OBJ)
 
-OBJS=		test1_idle.o test2_kernel.o test3_nothing.o $(LIBKERNEL64)
+OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o $(LIBKERNEL64)
 
 LIBS=		libkernel64.a
 
-CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT)
+CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT)
 
 ALL:		$(CMDS)
 
@@ -103,6 +103,9 @@ test2_kernel$(EXT):	test2_kernel.o $(LIBS)
 	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
 
 test3_nothing$(EXT):	test3_nothing.o $(LIBS)
+	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
+
+test4_pause$(EXT):	test4_pause.o $(LIBS)
 	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
 
 clean:
@@ -118,8 +121,11 @@ libkernel64.a:	$(LIBKERNEL64)
 test1_idle.o:		port.h kernel64.h
 test2_kernel.o:		port.h kernel64.h
 test3_nothing.o:	port.h kernel64.h
+test4_pause.o:		port.h kernel64.h
 # LIBKERNEL64
 kernel64.o:		port.h kernel64.h kernel64util.h
 kernel64util.o:		port.h kernel64.h kernel64util.h
 kernel64ps.o:		port.h kernel64.h
 kernel64timer.o:	port.h kernel64.h
+# INCLUDES
+kernel64.h:		port.h
