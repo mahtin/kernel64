@@ -32,7 +32,7 @@ export default {
     const bottomHtml = `
       </body>
       </html>
-    `;
+    ` + '<!-- "' + request.pathname + '" -->';
 
     // Switch based on the URL path
     switch (request.pathname) {
