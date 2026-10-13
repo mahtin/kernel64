@@ -13,20 +13,17 @@ export default {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Kernel64 - Project Documentation</title>
-        <!-- Simple.css styling - Minified version -->
 	<link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
         <style>
-	  /*
-          body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
-          @media (max-width: 767px) { body { padding: 15px; } }
-	  */
           #kernel64logo { float: left; margin-top: 5px; margin-left: 20px; }
         </style>
       </head>
       <body class="markdown-body">
+    `;
+    const headerHtml = `
         <header>
-          <img id='kernel64logo' src="kernel64logo-small.png">
-          <h1>Kernel64</br>Project Documentation</h1>
+          <a href="/"><img id='kernel64logo' src="kernel64logo-small.png"></a>
+          <h1>Kernel64</h1>
           <p>A user level kernel for non-preemptive multiprocessing</p>
         </header>
     `;
@@ -35,37 +32,39 @@ export default {
       </html>
     ` + '<!-- "' + url.pathname + '" -->';
 
-    let html = "";
+    let body_markup = "";
     // Switch based on the URL path
     switch (url.pathname) {
       case "/":
-        html = readme;
-        html = html.replace("(README.md)", "(readme.html)");
-        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
-        return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
-      case "/readme.html":
-        html = readme;
-        html = html.replace("(README.md)", "(readme.html)");
-        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
-        return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+        body_markup = readme;
+        body_markup = body_markup.replace("(README.md)", "(/)");
+        body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
+        body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
+        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/theory.html":
-        html = theory;
-        html = html.replace("(README.md)", "(readme.html)");
-        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
-        return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+        body_markup = theory;
+        body_markup = body_markup.replace("(README.md)", "(/)");
+        body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
+        body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
+        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/changelog.html":
-        html = changelog;
-        html = html.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
-        return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+        body_markup = changelog;
+        body_markup = body_markup.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
+        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/kernel64logo-small.png":
         const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
         const bytes = await image.bytes();
         return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
+      case "/kernel64logo-large.png":
+        const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-large.png");
+        const bytes = await image.bytes();
+        return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
       default:
-        return new Response("Page Not Found: " + url.pathname, { status: 404 });		// Return a 404 Page Not Found for unmatched paths
+        body_markup = "# Oops! Page Not Found \n\n";
+	body.markup = body.markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
+	body.markup = body.markup + "Request: '" + url.pathname + "'id url\n\n";
+	body.markup = body.markup + "[Return to home page](/)";
+        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { status: 404 });		// Return a 404 Page Not Found for unmatched paths
     }
   },
 };
