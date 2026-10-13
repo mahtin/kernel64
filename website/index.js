@@ -35,28 +35,29 @@ export default {
       </html>
     ` + '<!-- "' + url.pathname + '" -->';
 
+    let html = "";
     // Switch based on the URL path
     switch (url.pathname) {
       case "/":
-        let html = readme;
+        html = readme;
         html = html.replace("(README.md)", "(readme.html)");
         html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
         html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/readme.html":
-        let html = readme;
+        html = readme;
         html = html.replace("(README.md)", "(readme.html)");
         html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
         html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/theory.html":
-        let html = theory;
+        html = theory;
         html = html.replace("(README.md)", "(readme.html)");
         html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
         html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/changelog.html":
-        let html = changelog;
+        html = changelog;
         html = html.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
         return new Response(topHtml + marked.parse(html) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/kernel64logo-small.png":
