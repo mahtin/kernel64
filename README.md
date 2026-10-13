@@ -1,7 +1,7 @@
 # Kernel64
 A user level kernel for non-preemptive multiprocessing on various 64 bit o/s's.*[1]*
 
-Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/actions) and should be cloned locally in order to run.
+Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/) and should be cloned locally in order to run.
 No precompiled binary is provided.
 
 The project home is the [https://kernel64.net](https://kernel64.net) website.
@@ -10,7 +10,7 @@ The project home is the [https://kernel64.net](https://kernel64.net) website.
 
 ## Install
 
-Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/actions) and should be cloned locally.
+Code can be found at [https://github.com/mahtin/kernel64/](https://github.com/mahtin/kernel64/) and should be cloned locally.
 
 All platforms (except i386) should build with:
 ``` bash
@@ -151,6 +151,12 @@ An automatically generated CHANGELOG is provided [here](CHANGELOG.md).
 
 As always, open an issue or pull request should you want.
 Edits are welcome.
+
+## Logo
+
+![Kernel64](website/kernel64logo-large.png)
+
+(Totally AI generated - not a copyright/trademark in sight!)
 
 ## Notes
 
