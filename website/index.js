@@ -66,7 +66,8 @@ export default {
         body_markup = body_markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
         body_markup = body_markup + "Request: '" + url.pathname + "'id url\n\n";
         body_markup = body_markup + "[Return to home page](/)\n\n";
-        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { status: 404 });        	// Return a 404 Page Not Found for unmatched paths
+        // Return a 404 Page Not Found for unmatched paths
+        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, status: 404 });
     }
   },
 };
