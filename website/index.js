@@ -38,22 +38,26 @@ export default {
     // Switch based on the URL path
     switch (url.pathname) {
       case "/":
-        readme = readme.replace("(README.md)", "(readme.html)");
-        readme = readme.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        readme = readme.replace("(CHANGELOG.md)", "(changelog.html)");
+        html = readme;
+        html = html.replace("(README.md)", "(readme.html)");
+        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
+        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/readme.html":
-        readme = readme.replace("(README.md)", "(readme.html)");
-        readme = readme.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        readme = readme.replace("(CHANGELOG.md)", "(changelog.html)");
+        html = readme;
+        html = html.replace("(README.md)", "(readme.html)");
+        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
+        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(readme) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/theory.html":
-        theory = theory.replace("(README.md)", "(readme.html)");
-        theory = theory.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
-        theory = theory.replace("(CHANGELOG.md)", "(changelog.html)");
+        html = theory;
+        html = html.replace("(README.md)", "(readme.html)");
+        html = html.replace("(THEORY-OF-OPERATIONS.md)", "(theory.html)");
+        html = html.replace("(CHANGELOG.md)", "(changelog.html)");
         return new Response(topHtml + marked.parse(theory) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/changelog.html":
-        changelog = changelog.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
+        html = changelog;
+        html = html.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
         return new Response(topHtml + marked.parse(changelog) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/kernel64logo-small.png":
         const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
