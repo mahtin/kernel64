@@ -52,13 +52,13 @@ export default {
         body_markup = body_markup.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
         return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/kernel64logo-small.png":
-        const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
-        const bytes = await image.bytes();
-        return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
+        const image_small = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
+        const bytes_small = await image_small.bytes();
+        return new Response(bytes_small, { headers: { 'Content-Type': 'image/png' }, });
       case "/kernel64logo-large.png":
-        const image = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-large.png");
-        const bytes = await image.bytes();
-        return new Response(bytes, { headers: { 'Content-Type': 'image/png' }, });
+        const image_large = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-large.png");
+        const bytes_large = await image_large.bytes();
+        return new Response(bytes_large, { headers: { 'Content-Type': 'image/png' }, });
       default:
         body_markup = "# Oops! Page Not Found \n\n";
 	body.markup = body.markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
