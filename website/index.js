@@ -22,7 +22,7 @@ export default {
     `;
     const headerHtml = `
         <header>
-          <a href="/"><img id='kernel64logo' src="kernel64logo-small.png"></a>
+          <a href="/"><img id='kernel64logo' src="/kernel64logo-small.png"></a>
           <h1>Kernel64</h1>
           <p>A user level kernel for non-preemptive multiprocessing</p>
         </header>
@@ -40,14 +40,14 @@ export default {
         body_markup = body_markup.replace("(README.md)", "(/)");
         body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
         body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
-        body_markup = body_markup.replace("website/kernel", "(/kernel)");
+        body_markup = body_markup.replace("website/kernel64logo", "/kernel64logo");
         return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/theory.html":
         body_markup = theory;
         body_markup = body_markup.replace("(README.md)", "(/)");
         body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
         body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
-        body_markup = body_markup.replace("website/kernel", "(/kernel)");
+        body_markup = body_markup.replace("(website/kernel64logo", "(/kernel64logo");
         return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
       case "/changelog.html":
         body_markup = changelog;
@@ -64,7 +64,7 @@ export default {
       default:
         body_markup = "# Oops! Page Not Found \n\n";
         body_markup = body_markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
-        body_markup = body_markup + "Request: '" + url.pathname + "'id url\n\n";
+        body_markup = body_markup + "Request: **" + url.pathname + "** is incorrect\n\n";
         body_markup = body_markup + "[Return to home page](/)\n\n";
         // Return a 404 Page Not Found for unmatched paths
         return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, status: 404 });
