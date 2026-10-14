@@ -1,5 +1,16 @@
 # Change Log
 
+ - 2026-10-14 18:25:44 +0100 [6674922](../../commit/6674922c08c871d36fc1f0e6deca5ee7b37e6132) init now has debug flag, p->prev set correctly now (but not used yet)
+ - 2026-10-13 18:39:24 +0100 [460fb1e](../../commit/460fb1e2a952330059c0fbc80ffbb8d951a71c09) one of these days Ill learn javascript
+ - 2026-10-13 18:32:07 +0100 [1b75abc](../../commit/1b75abc5977ce791e9a3b3c0c1c2f0785c1e4bc2) one of these days Ill learn javascript
+ - 2026-10-13 18:28:09 +0100 [ec023a9](../../commit/ec023a9f3e44df3ae78318de26cb7fd925eb1c5f) one of these days Ill learn javascript
+ - 2026-10-13 18:10:59 +0100 [24947bf](../../commit/24947bf688ed1d4714015eb754e55593c9caee14) one of these days Ill learn javascript
+ - 2026-10-13 18:08:19 +0100 [0ed25f4](../../commit/0ed25f4a2b710316571739d5a8deea90a8bff787) fancy 404 just for lols, cleanup of vars
+ - 2026-10-13 17:10:29 +0100 [7024cad](../../commit/7024cadf47a71ef08846bd5cb73fdfb47e7fc080) one of these days Ill learn javascript
+ - 2026-10-13 17:08:49 +0100 [ca929b9](../../commit/ca929b9d5c994c734aaa8f391922abb84c4c587e) one of these days Ill learn javascript
+ - 2026-10-13 17:05:51 +0100 [46aad8c](../../commit/46aad8c4418d0b11a06b24ab6a0b5366286358e7) one of these days Ill learn javascript
+ - 2026-10-13 17:02:03 +0100 [4f1e654](../../commit/4f1e65406f3441718ee39b2a2c2014a7c1866eb2) typos and improved index.js processing
+ - 2026-10-12 20:27:02 +0100 [ec440e2](../../commit/ec440e2d039ef57ffc7ad5ac9bacccc9a5683187) CHANGELOG
  - 2026-10-12 20:26:24 +0100 [a52ec48](../../commit/a52ec48f4cfae6934cbced2d0211fd23b6c13ad1) test4_pause - to test pause()
  - 2026-10-12 20:24:47 +0100 [48e9162](../../commit/48e9162852ad458f37708695f3d7b5234baca2a5) recurse needed a return
  - 2026-10-12 20:24:00 +0100 [dd45c5a](../../commit/dd45c5a9d22cb74464ee24c5a3f58caddfbef514) P_DESTROYED processing moved to idle process becuase it needs a stack
