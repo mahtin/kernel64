@@ -21,6 +21,7 @@
 
 static int debug_flag = 0;			/* turn on for debug */
 
+static int init_done_flag = 0;			/* 1 after init */
 struct proc64 *curproc = NULL;
 struct proc64 *proclist = NULL;
 
@@ -138,10 +139,13 @@ static void k64timer_expired(void)
 }
 
 /* Init */
-void k64init(void)
+void k64init(int debug)
 {
 	proclist = NULL;
 	curproc = NULL;
+
+	debug_flag = debug;
+	init_done_flag = 1;							/* set it now to get init process going */
 
 	/* create idle process first: pid 1 */
 	struct proc64 *idle = k64spawn("[idle]", k64idle_process, NULL, 16*1024, NULL);
@@ -241,6 +245,11 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 		fflush(stderr);
 	}
 
+	/* just in case nothing is init'ed */
+	if (!init_done_flag) {
+		k64init(0);
+	}
+
 	p = (struct proc64 *)malloc(sizeof(struct proc64));
 	if (p == NULL)
 		return NULL;
@@ -284,20 +293,24 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 #if OPTION_START_OF_LIST == 1
 	/* add to start of list */
 	p->next = proclist;
-	if (proclist)
+	if (proclist) {
 		proclist->prev = p;
+	}
 	proclist = p;
+	p->prev = NULL;
 #else
 	/* add to end of list */
 	if (proclist == NULL) {
 		proclist = p;
+		p->prev = NULL;
 	} else {
 		struct proc64 *pp = proclist;
 		while (pp->next != NULL)
 			pp = pp->next;
 		pp->next = p;
+		p->prev = pp;
 	}
-	p->next = NULL;
+	p->next = NULL;					/* end of list */
 #endif
 	return p;
 }
@@ -314,6 +327,9 @@ void k64schedule(void)
 			fprintf(stderr, "k64schedule(): curproc NULL\n");
 		fflush(stderr);
 	}
+
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
 
 	/* Full circular scan */
 	if (curproc == NULL)
@@ -408,8 +424,10 @@ void k64exit(void)
 {
 	struct proc64 *p;
 
-	if (curproc != NULL) {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
 
+	if (curproc != NULL) {
 		p = curproc;
 		assert(p->magic == PROC_MAGIC_NUMBER);
 		if (debug_flag) {
@@ -440,7 +458,7 @@ void k64exit(void)
 		curproc = NULL;			/* we were the running process */
 	}
 
-	/* no running process at this point */
+	/* no running process at this point - which is hard to see this call happen */
 	if (debug_flag) {
 		fprintf(stderr, "k64exit(): calling k64schedule\n");
 		fflush(stderr);
@@ -457,6 +475,9 @@ void k64exit(void)
 /* Nice this process */
 void k64nice(proc64pri pri)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	if (curproc == NULL)
 		return;
 	curproc->priority = pri < 255 ? pri : 255;
@@ -466,6 +487,9 @@ void k64nice(proc64pri pri)
 /* Renice another process */
 void k64renice(struct proc64 *p, proc64pri pri)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	assert(p->magic == PROC_MAGIC_NUMBER);
 	p->priority = pri < 255 ? pri : 255;
 	k64schedule();
@@ -474,6 +498,9 @@ void k64renice(struct proc64 *p, proc64pri pri)
 /* Delay this process */
 void k64delay(size_t msecs)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	if (curproc == NULL)
 		return;
 	curproc->state = P_SLEEPING;
@@ -484,6 +511,9 @@ void k64delay(size_t msecs)
 /* Sleep this process */
 void k64sleep(void * event)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	if (curproc == NULL)
 		return;
 	curproc->event = event;
@@ -494,6 +524,9 @@ void k64sleep(void * event)
 /* Wakeup another process */
 void k64wakeup(struct proc64 *p)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	assert(p->magic == PROC_MAGIC_NUMBER);
 	if (p && p->state == P_WAITING)
 		p->state = P_RUNNING;
@@ -503,6 +536,9 @@ void k64wakeup(struct proc64 *p)
 /* Pause this process */
 void k64pause(void)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	if (curproc == NULL)
 		return;
 	/* We don't really "pause" - we simply wait for a tick to happen */
@@ -525,6 +561,9 @@ struct proc64 *k64pid_to_proc(proc64pid pid)
 /* Destroy another process */
 void k64destroy(struct proc64 *p)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	assert(p->magic == PROC_MAGIC_NUMBER);
 
 	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING) {
@@ -539,6 +578,9 @@ void k64destroy(struct proc64 *p)
 /* Yield this process */
 void k64yield(void)
 {
+	/* only proceed if we are init'ed and ready to roll */
+	assert(proclist != NULL);
+
 	if (curproc == NULL)
 		return;
 	curproc->state = P_RUNNING;	/* redundant but why not */

@@ -37,7 +37,7 @@ test1_idle(void)
 {
 	struct proc64 *p;
 
-	k64init();
+	k64init(0);
 	printf("k64init() done\n");
 	fflush(stdout);
 

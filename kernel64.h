@@ -50,7 +50,7 @@ struct proc64 {
 extern struct proc64 *curproc;
 extern struct proc64 *proclist;
 
-extern void k64init(void);
+extern void k64init(int debug);
 struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
 void k64schedule(void);
 void k64exit(void);

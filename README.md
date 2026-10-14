@@ -67,7 +67,7 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 
 ```C
 	/* Basic calls */
-	void k64init(void);
+	void k64init(int debug);
 	struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
 	void k64exit(void);
 

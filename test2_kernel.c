@@ -68,7 +68,7 @@ test_kernel(void)
 	size_t stack_size = 16 * 1024;		/* one day we work out what size is really needed */
 	struct proc64 *p;
 
-	k64init();
+	k64init(0);
 	printf("k64init() done\n");
 	fflush(stdout);
 
