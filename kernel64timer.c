@@ -102,8 +102,8 @@ void k64timer_init(void (*callback)(void))
 #endif
 
 	timer_callback = callback;
-	fprintf(stderr, "k64timer_init(): done!\n");
-	fflush(stderr);
+	// fprintf(stderr, "k64timer_init(): done!\n");
+	// fflush(stderr);
 }
 
 size_t k64timer_ticks(void)

@@ -398,8 +398,15 @@ void k64schedule(void)
 			break;
 		}
 	}
-	if (p == NULL)
-		return;	/* no processes is ready to run - we have nothing to schedule */
+	if (p == NULL) {
+		/* no processes is able to run - we have nothing to schedule anymore */
+		if (debug_flag) {
+			fprintf(stderr, "k64schedule(): no more processes - EXITING CLEANLY\n");
+			fflush(stderr);
+		}
+		/* we cleanly exit becuase this only happens when someone destroyed the idle process */
+		exit(0);
+	}
 
 	/* kick off processs p if its stack is ok */
 	if (k64stack_sanity_check(p) || k64stack_overflowed(p)) {
@@ -466,10 +473,6 @@ void k64exit(void)
 	k64schedule();
 	/* Never return */
 	/* NOTREACHED: we always longjmp into another process (idle if nothing else) */
-	fprintf(stderr, "k64exit(): k64schedule() returned - SHOULD NOT HAPPEN - EXITING CLEANLY\n");
-	fflush(stderr);
-	/* we cleanly exit becuase this only happens when someone destroyed the idle process */
-	exit(0);
 }
 
 /* Nice this process */
