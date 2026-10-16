@@ -4,6 +4,11 @@ test2_kernel
 test3_nothing
 test4_pause
 
+# Cloudflare Workers
+website/.wrangler/
+website/node_modules/
+website/package-lock.json
+
 # Prerequisites
 *.d
 
