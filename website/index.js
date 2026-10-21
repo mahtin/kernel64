@@ -1,7 +1,7 @@
 import { marked } from 'marked';
-import readme from '../README.md';        			// Wrangler supports bundling text assets
-import theory from '../THEORY-OF-OPERATIONS.md';        	// Wrangler supports bundling text assets
-import changelog from '../CHANGELOG.md';        		// Wrangler supports bundling text assets
+import readme from '../README.md';                              // Wrangler supports bundling text assets
+import theory from '../THEORY-OF-OPERATIONS.md';                // Wrangler supports bundling text assets
+import changelog from '../CHANGELOG.md';                        // Wrangler supports bundling text assets
 
 export default {
   async fetch(request, env, ctx) {
@@ -17,6 +17,17 @@ export default {
         <style>
           #kernel64logo { float: left; margin-top: 5px; margin-left: 20px; }
         </style>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/kernel64logo-180x180.png" sizes="152x152" type="image/png" />
+
+        <!--
+        UNUSED PRESENTLY
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        -->
+
       </head>
       <body class="markdown-body">
     `;
@@ -61,6 +72,14 @@ export default {
         const image_large = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-large.png");
         const bytes_large = await image_large.bytes();
         return new Response(bytes_large, { headers: { 'Content-Type': 'image/png' }, });
+      case "/kernel64logo-180x180.png":
+        const appletouchicon = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/apple-touch-icon-180x180.png");
+        const bytes_appletouchicon = await appletouchicon.bytes();
+        return new Response(bytes_appletouchicon, { headers: { 'Content-Type': 'image/x-icon' }, });
+      case "/favicon.ico":
+        const favicon = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/favicon.ico");
+        const bytes_favicon = await favicon.bytes();
+        return new Response(bytes_favicon, { headers: { 'Content-Type': 'image/x-icon' }, });
       default:
         body_markup = "# Oops! Page Not Found \n\n";
         body_markup = body_markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
