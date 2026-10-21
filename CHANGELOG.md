@@ -1,5 +1,12 @@
 # Change Log
 
+ - 2026-10-21 19:22:40 +0700 [0af3670](../../commit/0af36705b858c43113c3f5390617d9e87f7e62c8) moved css locally, simplified .js, should be faster operations
+ - 2026-10-21 18:26:46 +0700 [259dcb7](../../commit/259dcb74f55646af4c2efbca1bd98fab894d2f72) always use latest wranger via npx
+ - 2026-10-21 02:29:47 +0100 [55d478d](../../commit/55d478d0c24c4d4c92a13900040e584f23fac099) test5 added
+ - 2026-10-21 02:26:39 +0100 [ea31e47](../../commit/ea31e4730d2aff17a3118968c51991db7c949d3f) improved favicon/apple-touch-icon/etc
+ - 2026-10-16 20:51:08 +0100 [fdbe1d6](../../commit/fdbe1d6d0c54919096e2ac544606d519b0a238cf) favicon.ico created
+ - 2026-10-15 22:00:15 +0100 [763c05e](../../commit/763c05ef1a79edfced7131bdd8ea614d4901e84e) moved last printf info debug mode, changed exit to be cleaner
+ - 2026-10-14 18:25:54 +0100 [a567756](../../commit/a56775672e3734e115c35f5473b1003024c43e01) CHANGELOG
  - 2026-10-14 18:25:44 +0100 [6674922](../../commit/6674922c08c871d36fc1f0e6deca5ee7b37e6132) init now has debug flag, p->prev set correctly now (but not used yet)
  - 2026-10-13 18:39:24 +0100 [460fb1e](../../commit/460fb1e2a952330059c0fbc80ffbb8d951a71c09) one of these days Ill learn javascript
  - 2026-10-13 18:32:07 +0100 [1b75abc](../../commit/1b75abc5977ce791e9a3b3c0c1c2f0785c1e4bc2) one of these days Ill learn javascript
