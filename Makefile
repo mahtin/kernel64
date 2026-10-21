@@ -117,7 +117,7 @@ clean:
 	rm -f $(CMDS)
 
 website: .FORCE
-	( cd website ; npm install ; npx wrangler dev )
+	( cd website ; npm install ; npx wrangler@latest dev )
 
 libkernel64.a:	$(LIBKERNEL64)
 	ar $(ARFLAGS) $@ $^
