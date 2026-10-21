@@ -108,6 +108,9 @@ test3_nothing$(EXT):	test3_nothing.o $(LIBS)
 test4_pause$(EXT):	test4_pause.o $(LIBS)
 	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
 
+test5_delay$(EXT):	test5_delay.o $(LIBS)
+	$(CC) $(DEBUG) $(LDFLAGS) -o $@ $^
+
 clean:
 	rm -f $(OBJS)
 	rm -f $(LIBS)
@@ -127,6 +130,7 @@ test1_idle.o:		port.h kernel64.h
 test2_kernel.o:		port.h kernel64.h
 test3_nothing.o:	port.h kernel64.h
 test4_pause.o:		port.h kernel64.h
+test5_delay.o:		port.h kernel64.h
 # LIBKERNEL64
 kernel64.o:		port.h kernel64.h kernel64util.h
 kernel64util.o:		port.h kernel64.h kernel64util.h

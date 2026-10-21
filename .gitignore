@@ -3,6 +3,7 @@ test1_idle
 test2_kernel
 test3_nothing
 test4_pause
+test5_delay
 
 # Cloudflare Workers
 website/.wrangler/
