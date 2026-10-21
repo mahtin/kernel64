@@ -9,7 +9,8 @@
         "./kernel64logo-small.png",
         "../README.md",
         "../THEORY-OF-OPERATIONS.md",
-        "../CHANGELOG.md"
+        "../CHANGELOG.md",
+        "./simple.min.css"
       ],
       "fallthrough": true
     }

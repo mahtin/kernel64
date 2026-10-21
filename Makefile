@@ -119,6 +119,9 @@ clean:
 website: .FORCE
 	( cd website ; npm install ; npx wrangler@latest dev )
 
+website/simple.min.css:
+	( cd website ; curl -ORL https://unpkg.com/simpledotcss/simple.min.css )
+
 libkernel64.a:	$(LIBKERNEL64)
 	ar $(ARFLAGS) $@ $^
 

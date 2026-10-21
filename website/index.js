@@ -1,92 +1,104 @@
+//
+// Kernel64 website via Cloudflare workers (but not using Pages yet)
+//
+
 import { marked } from 'marked';
-import readme from '../README.md';                              // Wrangler supports bundling text assets
-import theory from '../THEORY-OF-OPERATIONS.md';                // Wrangler supports bundling text assets
-import changelog from '../CHANGELOG.md';                        // Wrangler supports bundling text assets
 
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const topHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Kernel64 - Project Documentation</title>
-        <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
-        <style>
-          #kernel64logo { float: left; margin-top: 5px; margin-left: 20px; }
-        </style>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/kernel64logo-180x180.png" sizes="152x152" type="image/png" />
+// Wrangler supports bundling text assets (must place in wranger.json file "rules"/"globs")
+import readme from '../README.md'
+import theory from '../THEORY-OF-OPERATIONS.md';
+import changelog from '../CHANGELOG.md';
+import simple_min_css from './simple.min.css' with { type: 'css' };
 
-        <!--
-        UNUSED PRESENTLY
+const HTML_TOP = `
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Kernel64 - Project Documentation</title>
+      <link rel="stylesheet" href="/simple.min.css">
+      <style>
+        #kernel64logo { float: left; margin-top: 5px; margin-left: 20px; }
+      </style>
+      <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+      <link rel="apple-touch-icon" href="/kernel64logo-180x180.png" sizes="152x152" type="image/png" />
+      <!-- UNUSED PRESENTLY
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
         <link rel="manifest" href="/site.webmanifest">
-        -->
+      -->
+    </head>
+    <body class="markdown-body">
+`;
 
-      </head>
-      <body class="markdown-body">
-    `;
-    const headerHtml = `
-        <header>
-          <a href="/"><img id='kernel64logo' src="/kernel64logo-small.png"></a>
-          <h1>Kernel64</h1>
-          <p>A user level kernel for non-preemptive multiprocessing</p>
-        </header>
-    `;
-    const bottomHtml = `
-      </body>
-      </html>
-    ` + '<!-- "' + url.pathname + '" -->';
+const HTML_HEADER_SECTION = `
+      <header>
+        <a href="/"><img id='kernel64logo' src="/kernel64logo-small.png"></a>
+        <h1>Kernel64</h1>
+        <p>A user level kernel for non-preemptive multiprocessing</p>
+      </header>
+`;
+const HTML_BOTTOM = `
+    </body>
+  </html>
+`;
 
-    let body_markup = "";
+function replace_markup(r) {
+  r = r.replace("(README.md)", "(/)");
+  r = r.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
+  r = r.replace("(CHANGELOG.md)", "(/changelog.html)");
+  r = r.replace("website/kernel64logo", "/kernel64logo");
+  r = r.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
+  return r;
+}
+
+function html_from_markup(markup) {
+  return HTML_TOP + HTML_HEADER_SECTION + marked.parse(replace_markup(markup)) + HTML_BOTTOM;
+}
+
+const MY_GITHUB_PROJECT_BASE = "https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website";
+
+async function fetch_image_from_github(pathname) {
+  const image = await fetch(MY_GITHUB_PROJECT_BASE + pathname);
+  const bytes = await image.bytes();
+  return bytes;
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const pathname = url.pathname;
     // Switch based on the URL path
-    switch (url.pathname) {
+    switch (pathname) {
+      // HTML ...
       case "/":
-        body_markup = readme;
-        body_markup = body_markup.replace("(README.md)", "(/)");
-        body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
-        body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
-        body_markup = body_markup.replace("website/kernel64logo", "/kernel64logo");
-        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+      case "/readme.html":
+        return new Response(html_from_markup(readme), { headers: { 'Content-Type': 'text/html; charset=utf-8' }, });
       case "/theory.html":
-        body_markup = theory;
-        body_markup = body_markup.replace("(README.md)", "(/)");
-        body_markup = body_markup.replace("(THEORY-OF-OPERATIONS.md)", "(/theory.html)");
-        body_markup = body_markup.replace("(CHANGELOG.md)", "(/changelog.html)");
-        body_markup = body_markup.replace("(website/kernel64logo", "(/kernel64logo");
-        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+        return new Response(html_from_markup(theory), { headers: { 'Content-Type': 'text/html; charset=utf-8' }, });
       case "/changelog.html":
-        body_markup = changelog;
-        body_markup = body_markup.replace(/\.\.\/\.\.\/commit\//g, "https://github.com/mahtin/kernel64/commit/");
-        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, });
+        return new Response(html_from_markup(changelog), { headers: { 'Content-Type': 'text/html; charset=utf-8' }, });
+      // CSS ...
+      case "/simple.min.css":
+        return new Response(simple_min_css, { headers: { 'Content-Type': 'text/css; charset=utf-8' }, });
+      // IMAGES ...
       case "/kernel64logo-small.png":
-        const image_small = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-small.png");
-        const bytes_small = await image_small.bytes();
-        return new Response(bytes_small, { headers: { 'Content-Type': 'image/png' }, });
       case "/kernel64logo-large.png":
-        const image_large = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/kernel64logo-large.png");
-        const bytes_large = await image_large.bytes();
-        return new Response(bytes_large, { headers: { 'Content-Type': 'image/png' }, });
       case "/kernel64logo-180x180.png":
-        const appletouchicon = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/apple-touch-icon-180x180.png");
-        const bytes_appletouchicon = await appletouchicon.bytes();
-        return new Response(bytes_appletouchicon, { headers: { 'Content-Type': 'image/x-icon' }, });
+        return new Response(await fetch_image_from_github(pathname), { headers: { 'Content-Type': 'image/png' }, });
       case "/favicon.ico":
-        const favicon = await fetch("https://raw.githubusercontent.com/mahtin/kernel64/refs/heads/main/website/favicon.ico");
-        const bytes_favicon = await favicon.bytes();
-        return new Response(bytes_favicon, { headers: { 'Content-Type': 'image/x-icon' }, });
+        return new Response(await fetch_image_from_github(pathname), { headers: { 'Content-Type': 'image/x-icon' }, });
+      // 404 ...
       default:
-        body_markup = "# Oops! Page Not Found \n\n";
-        body_markup = body_markup + "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
-        body_markup = body_markup + "Request: **" + url.pathname + "** is incorrect\n\n";
-        body_markup = body_markup + "[Return to home page](/)\n\n";
+        let error404_markup = "";
+        error404_markup += "# Oops! Page Not Found \n\n";
+        error404_markup += "We're sorry; but, the page you are looking for doesn't exist, has been removed, or its name has changed.\n\n";
+        error404_markup += "Request: **" + pathname + "** is incorrect\n\n";
+        error404_markup += "[Return to home page](/)\n\n";
         // Return a 404 Page Not Found for unmatched paths
-        return new Response(topHtml + headerHtml + marked.parse(body_markup) + bottomHtml, { headers: { 'Content-Type': 'text/html;charset=UTF-8' }, status: 404 });
+        return new Response(html_from_markup(error404_markup), { headers: { 'Content-Type': 'text/html; charset=utf-8' }, status: 404 });
     }
   },
 };
