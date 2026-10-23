@@ -2,7 +2,7 @@
 # Makefile for:
 #	MacOS (Intel and/or Arm),
 #	Ubuntu Linux x86_64 and/or i386,
-#	RPi armv7l and/or aarch64, etc
+#	RPi armv6l/armv7l and/or aarch64, etc
 #	Windows x86_64
 #
 
@@ -24,7 +24,10 @@ CPU=-DKERNEL64_ARCH_ARM64
 K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),armv7l)
-CPU=-DKERNEL64_ARCH_ARMV7L
+CPU=-DKERNEL64_ARCH_ARM32
+K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
+endif
+ifeq ($(UNAME_M),armv6l)
 CPU=-DKERNEL64_ARCH_ARM32
 K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
@@ -88,11 +91,11 @@ LDFLAGS=	$(DEBUG) $(CPU) $(STACK_SIZE)
 
 LIBKERNEL64=	kernel64.o kernel64util.o kernel64ps.o kernel64timer.o $(K64_SWITCH_OBJ)
 
-OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o $(LIBKERNEL64)
+OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o test5_delay.o $(LIBKERNEL64)
 
 LIBS=		libkernel64.a
 
-CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT)
+CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT) test5_delay$(EXT)
 
 ALL:		$(CMDS)
 
