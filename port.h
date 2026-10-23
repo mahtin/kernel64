@@ -20,6 +20,13 @@
 #define	KERNEL64_ARCH_ARM64	1
 #endif
 
+#if defined(__riscv) && __riscv_xlen == 64
+#define	KERNEL64_ARCH_RISCV64	1
+#endif
+#if defined(__riscv) && __riscv_xlen == 32
+#define	KERNEL64_ARCH_RISCV32	1
+#endif
+
 #if defined(__arm__)
 #define	KERNEL64_ARCH_ARM32	1
 #endif
@@ -28,9 +35,9 @@
 #define KERNEL64_ARCH_i386      1
 #endif
 
-#if defined(KERNEL64_ARCH_X86_64) || defined(KERNEL64_ARCH_ARM64)
+#if defined(KERNEL64_ARCH_X86_64) || defined(KERNEL64_ARCH_ARM64) || defined(KERNEL64_ARCH_RISCV64)
 #define	KERNEL64_WORD_BITS	64
-#elif defined(KERNEL64_ARCH_ARM32) || defined(KERNEL64_ARCH_i386)
+#elif defined(KERNEL64_ARCH_ARM32) || defined(KERNEL64_ARCH_i386) || defined(KERNEL64_ARCH_RISCV32)
 #define	KERNEL64_WORD_BITS	32
 #else
 #define	KERNEL64_WORD_BITS	16	/* original 8086/8088 build */
@@ -45,7 +52,7 @@
 #define	KERNEL64_STACK_GROWS_DOWN	1
 
 #if defined(KERNEL64_ARCH_X86_64) || defined(KERNEL64_ARCH_ARM64)
-#define	KERNEL64_HAVE_STACK_GUARD	1
+#define	KERNEL64_HAVE_STACK_GUARD	1	/* TODO presently unused */
 #endif
 
 #if 0

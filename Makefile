@@ -16,28 +16,37 @@ endif
 
 # decide which CPU and which swich_to_stack code to use ...
 ifeq ($(UNAME_M),arm64)
-CPU=-DKERNEL64_ARCH_ARM64
+#CPU=-DKERNEL64_ARCH_ARM64
 K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),aarch64)
-CPU=-DKERNEL64_ARCH_ARM64
+#CPU=-DKERNEL64_ARCH_ARM64
 K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),armv7l)
-CPU=-DKERNEL64_ARCH_ARM32
+#CPU=-DKERNEL64_ARCH_ARM32
 K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
 ifeq ($(UNAME_M),armv6l)
-CPU=-DKERNEL64_ARCH_ARM32
+#CPU=-DKERNEL64_ARCH_ARM32
 K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
+endif
+ifeq ($(UNAME_M),riscv64)
+#CPU=-DKERNEL64_ARCH_RISCV64
+K64_SWITCH_OBJ=k64_switch_to_stack_riscv.o
+endif
+ifeq ($(UNAME_M),riscv32)
+#CPU=-DKERNEL64_ARCH_RISCV32
+K64_SWITCH_OBJ=k64_switch_to_stack_riscv.o
 endif
 ifeq ($(UNAME_M),x86_64)
 ifeq ($(M32),-m32)
 # cross compile from x86_64 machine to i386 target...
-CPU=-DKERNEL64_ARCH_i386 -m32
+#CPU=-DKERNEL64_ARCH_i386
+CPU=$(CPU) -m32
 K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
 else
-CPU=-DKERNEL64_ARCH_X86_64
+#CPU=-DKERNEL64_ARCH_X86_64
 ifeq ($(UNAME_S),Windows)
 K64_SWITCH_OBJ=k64_switch_to_stack_win64.o
 else
