@@ -1,5 +1,9 @@
 # Change Log
 
+ - 2026-10-23 18:20:24 +0700 [1952131](../../commit/1952131c389a137a9cc8d5bf0694e22013179502) unified comments - now explains processor support everywhere
+ - 2026-10-23 18:19:37 +0700 [88c4704](../../commit/88c47045ad8626fce61ba7c6918ef6739268a38e) armv6l/armv7l logic added - plus fixed a test5 typo
+ - 2026-10-23 18:19:08 +0700 [67d9102](../../commit/67d9102ca1c09d70b42bbeb139e1cb8a09785d8d) now with armv6l/armv7l code - name of file not changed
+ - 2026-10-21 19:23:20 +0700 [60e2ea9](../../commit/60e2ea9f6dcd40ab6b2d0498b7c8543f437623c3) CHANGELOG
  - 2026-10-21 19:22:40 +0700 [0af3670](../../commit/0af36705b858c43113c3f5390617d9e87f7e62c8) moved css locally, simplified .js, should be faster operations
  - 2026-10-21 18:26:46 +0700 [259dcb7](../../commit/259dcb74f55646af4c2efbca1bd98fab894d2f72) always use latest wranger via npx
  - 2026-10-21 02:29:47 +0100 [55d478d](../../commit/55d478d0c24c4d4c92a13900040e584f23fac099) test5 added
