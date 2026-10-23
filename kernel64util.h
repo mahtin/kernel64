@@ -1,5 +1,7 @@
 /*
- * kernel64util.h for modern 64 bit arch's (aarch64 & arm64) plus armv7l (32 bit)
+ * kernel64util.h
+ * for modern 64bit processor families: x86_64, aarch64/arm64.
+ * plus some 32bit processor families: i386, armv6l/armv7l.
  */
 
 #ifndef	_KERNEL64UTIL_H
