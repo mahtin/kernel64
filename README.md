@@ -137,6 +137,9 @@ Presently tested on three platforms via GitHub actions:
 - Ubuntu arm64
   - OS: Ubuntu 24.04.5 LTS
   - Compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+- Ubuntu armv7l
+  - OS: Ubuntu 24.04.5 LTS
+  - Compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 - Ubuntu Intel x86_64 but compiled for i386
   - OS: Ubuntu 24.04.5 LTS
   - Compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
