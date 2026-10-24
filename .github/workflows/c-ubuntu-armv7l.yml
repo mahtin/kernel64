@@ -29,6 +29,10 @@ jobs:
         arch: armv7
         distro: ubuntu24.04
         githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
+        name: Install build-essential
+        install: |
+              sudo apt-get update -q -y
+              sudo apt-get install -q -y build-essential
         name: Check Environment Details (Linux) / Check Environment Details (Common) / make
         run: |
               echo "Running on operating system:"
@@ -38,7 +42,7 @@ jobs:
               echo "System architecture:"
               uname -s
               echo "Compiler architecture:"
-              cc --version
+              gcc --version
               make -j4
               ./test1_idle
 
