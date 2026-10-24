@@ -31,8 +31,8 @@ jobs:
         githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
         name: Install build-essential / Check Environment Details (Linux) / Check Environment Details (Common) / make
         install: |
-              sudo apt-get update -q -y
-              sudo apt-get install -q -y build-essential
+              apt-get update -q -y
+              apt-get install -q -y build-essential
         run: |
               echo "Running on operating system:"
               cat /etc/os-release
