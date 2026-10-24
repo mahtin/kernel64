@@ -39,7 +39,7 @@ static char *format_tick_count(size_t tick_count)
 	int seconds = tick_count % 60;
 
 	// %02d ensures at least 2 digits are printed, padded with a leading zero if needed
-	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+	snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hours % 100, minutes % 60, seconds % 60);
 	return (buf);
 }
 
