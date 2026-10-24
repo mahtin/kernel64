@@ -1,0 +1,63 @@
+name: Kernel64 on Linux Ubuntu ARM 32 bit armv6l/armv7l
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_armv7.S'
+    - '.github/workflows/c-ubuntu-armv7l.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_armv7l.S'
+    - '.github/workflows/c-ubuntu-armv7.yml'
+
+jobs:
+  test-on-ubuntu-armv7l:
+    runs-on: ubuntu-24.04
+    name: Build on ubuntu-24.04 armv7
+    steps:
+    - uses: actions/checkout@v4
+    - uses: uraimo/run-on-arch-action@v3
+      name: Run commands for armv7
+      id: runcmd
+      with:
+        arch: armv7
+        distro: ubuntu24.04
+        githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
+
+    - name: Check Environment Details (Linux)
+      run: |
+          echo "Running on operating system:"
+          cat /etc/os-release
+    - name: Check Environment Details (Common)
+      run: |
+          echo "Hardware architecture:"
+          uname -m
+          echo "System architecture:"
+          uname -s
+          echo "Compiler architecture:"
+          cc --version
+
+    - name: make
+      run: make -j4
+
+    - name: test1_idle
+      run: ./test1_idle
+
+    - name: test2_kernel
+      run: ./test2_kernel
+
+    - name: test3_nothing
+      run: ./test3_nothing
+
+    - name: test4_pause
+      run: ./test4_pause
+
+    - name: test5_delay
+      run: ./test5_delay
+
