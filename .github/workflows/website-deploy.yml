@@ -1,4 +1,4 @@
-name: Deploy README Site
+name: Deploy website from README.md etc etc.
 
 defaults:
   run:
@@ -10,18 +10,16 @@ on:
     paths:
     - 'README.md'
     - 'THEORY-OF-OPERATIONS.md'
-    - 'website/index.js'
-    - 'website/package.json'
-    - 'website/wrangler.json'
+    - 'CHANGELOG.md'
+    - 'website/*'
     - '.github/workflows/website-deploy.yml'
   pull_request:
     branches: [ "main" ]
     paths:
     - 'README.md'
     - 'THEORY-OF-OPERATIONS.md'
-    - 'website/index.js'
-    - 'website/package.json'
-    - 'website/wrangler.json'
+    - 'CHANGELOG.md'
+    - 'website/*'
     - '.github/workflows/website-deploy.yml'
   workflow_dispatch:
 
