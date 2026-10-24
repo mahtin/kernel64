@@ -32,7 +32,8 @@ jobs:
         install: |
               apt-get update -q -y
               apt-get install -q -y build-essential
-        name: Install build-essential / Check Environment Details (Linux) / Check Environment Details (Common) / make
+#       name: Install build-essential / Check Environment Details (Linux) / Check Environment Details (Common) / make
+#       Warning: Unexpected input(s) 'name', valid inputs are ['arch', 'distro', 'githubToken', 'env', 'run', 'shell', 'dockerRunArgs', 'setup', 'install', 'base_image']
         run: |
               echo "Running on operating system:"
               cat /etc/os-release
@@ -44,4 +45,8 @@ jobs:
               gcc --version
               make -j4
               ./test1_idle
+              ./test2_kernel
+              ./test3_nothing
+              ./test4_pause
+              ./test5_delay 
 
