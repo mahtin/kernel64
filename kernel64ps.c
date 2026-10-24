@@ -48,6 +48,7 @@ char **k64ps(void)
 	const static char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
 	const static char *format_entry1 = "%6d %1c     %c %10s %3d %10s %6zu %6zu %16p %16p";
 	const static char *format_entry2 = "%6d %1c     %c %10s %3s %10s %6s %6s %16p %16p";
+	struct proc64 *p;
 	char **r;
 	char *buf;
 	size_t nn, ii;
@@ -72,7 +73,7 @@ char **k64ps(void)
 	);
 	r[ii] = malloc(strlen(buf)+1);
 	strncpy(r[ii], buf, strlen(buf)+1);
-	for (struct proc64 *p=proclist;p!=NULL;p=p->next) {
+	for (p=proclist;p!=NULL;p=p->next) {
 		assert(p->magic == PROC_MAGIC_NUMBER);
 		ii++;
 		if (p->stack_base)

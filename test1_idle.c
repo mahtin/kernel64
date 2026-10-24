@@ -10,9 +10,11 @@
 
 static void test_destroy_idle_processs(void *arg)
 {
+	int ii;
+
 	printf("TESTING: destroy_idle_processs starting...\n");
 	fflush(stdout);
-	for (int ii=0;ii<3;ii++) {
+	for (ii=0;ii<3;ii++) {
 		printf("LOOP ... %d\n", ii);
 		k64yield();
 		k64print_ps();
@@ -22,7 +24,7 @@ static void test_destroy_idle_processs(void *arg)
 	k64destroy(k64pid_to_proc(1));
 	printf("TESTING: destroy_idle_processs continuing...\n");
 	fflush(stdout);
-	for (int ii=0;ii<3;ii++) {
+	for (ii=0;ii<3;ii++) {
 		printf("LOOP ... %d\n", ii);
 		fflush(stdout);
 		k64yield();

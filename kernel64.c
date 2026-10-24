@@ -604,10 +604,11 @@ int k64has_a_process_to_run(void)
 
 size_t k64process_count(int incl_zombie)
 {
+	struct proc64 *p;
 	size_t nn;
 
 	nn = 0;
-	for (struct proc64 *p=proclist;p!=NULL;p=p->next) {
+	for (p=proclist;p!=NULL;p=p->next) {
 		nn++;
 		if ((p->state == P_ZOMBIE || p->state == P_DESTROYED) && !incl_zombie)
 			nn--;
