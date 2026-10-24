@@ -40,3 +40,4 @@ k64_switch_to_stack:
 	bx	lr
 
 	.size	k64_switch_to_stack, .-k64_switch_to_stack
+	.section .note.GNU-stack,"",@progbits
