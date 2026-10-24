@@ -30,34 +30,33 @@ jobs:
         distro: ubuntu24.04
         githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
 
-    - name: Check Environment Details (Linux)
-      run: |
-          echo "Running on operating system:"
-          cat /etc/os-release
-    - name: Check Environment Details (Common)
-      run: |
-          echo "Hardware architecture:"
-          uname -m
-          echo "System architecture:"
-          uname -s
-          echo "Compiler architecture:"
-          cc --version
+      - name: Check Environment Details (Linux)
+        run: |
+            echo "Running on operating system:"
+            cat /etc/os-release
+      - name: Check Environment Details (Common)
+        run: |
+            echo "Hardware architecture:"
+            uname -m
+            echo "System architecture:"
+            uname -s
+            echo "Compiler architecture:"
+            cc --version
 
-    - name: make
-      run: make -j4
+      - name: make
+        run: make -j4
 
-    - name: test1_idle
-      run: ./test1_idle
+      - name: test1_idle
+        run: ./test1_idle
 
-    - name: test2_kernel
-      run: ./test2_kernel
+      - name: test2_kernel
+        run: ./test2_kernel
 
-    - name: test3_nothing
-      run: ./test3_nothing
+      - name: test3_nothing
+        run: ./test3_nothing
 
-    - name: test4_pause
-      run: ./test4_pause
+      - name: test4_pause
+        run: ./test4_pause
 
-    - name: test5_delay
-      run: ./test5_delay
-
+      - name: test5_delay
+        run: ./test5_delay
