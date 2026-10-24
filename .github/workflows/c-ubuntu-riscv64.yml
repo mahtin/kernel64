@@ -1,0 +1,49 @@
+name: Kernel64 on Linux Ubuntu riscv64
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_riscv.S'
+    - '.github/workflows/c-ubuntu-riscv64.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+    - 'Makefile'
+    - '*.[hc]'
+    - 'k64_switch_to_stack_riscv.S'
+    - '.github/workflows/c-ubuntu-riscv64.yml'
+
+jobs:
+  test-on-ubuntu-riscv64:
+    runs-on: ubuntu-24.04
+    name: Build on ubuntu-24.04 riscv64
+    steps:
+    - uses: actions/checkout@v5
+    - uses: uraimo/run-on-arch-action@v3
+
+      name: Run commands for riscv64
+      with:
+        arch: riscv64
+        distro: ubuntu24.04
+        githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
+        install: |
+              apt-get update -q -y
+              apt-get install -q -y build-essential
+        run: |
+              echo "Running on operating system:"
+              cat /etc/os-release
+              echo "Hardware architecture:"
+              uname -m
+              echo "System architecture:"
+              uname -s
+              echo "Compiler architecture:"
+              gcc --version
+              make -j4
+              ./test1_idle
+              ./test2_kernel
+              ./test3_nothing
+              ./test4_pause
+              ./test5_delay 
