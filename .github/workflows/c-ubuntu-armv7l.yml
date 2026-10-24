@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Build on ubuntu-24.04 armv7l
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: uraimo/run-on-arch-action@v3
 
       name: Run commands for armv7l
@@ -29,10 +29,10 @@ jobs:
         arch: armv7
         distro: ubuntu24.04
         githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
-        name: Install build-essential / Check Environment Details (Linux) / Check Environment Details (Common) / make
         install: |
               apt-get update -q -y
               apt-get install -q -y build-essential
+        name: Install build-essential / Check Environment Details (Linux) / Check Environment Details (Common) / make
         run: |
               echo "Running on operating system:"
               cat /etc/os-release
@@ -45,17 +45,3 @@ jobs:
               make -j4
               ./test1_idle
 
-#         name: test1_idle
-#         run: ./test1_idle
-
-#         name: test2_kernel
-#         run: ./test2_kernel
-
-#         name: test3_nothing
-#         run: ./test3_nothing
-
-#         name: test4_pause
-#         run: ./test4_pause
-
-#         name: test5_delay
-#         run: ./test5_delay

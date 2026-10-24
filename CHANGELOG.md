@@ -1,5 +1,19 @@
 # Change Log
 
+ - 2026-10-24 18:23:14 +0700 [a73d924](../../commit/a73d924c5748012a29beed2aac936ccd87e3bdd2) .section .note.GNU-stack,"",%progbits
+ - 2026-10-24 18:17:31 +0700 [8e1df8a](../../commit/8e1df8a3053653eb6e220446ec031d953c65ac58) added .section
+ - 2026-10-24 18:09:27 +0700 [22284e4](../../commit/22284e4b3d17851df4604b16721a0b4334d31d5e) moved to snprintf()
+ - 2026-10-24 18:02:00 +0700 [77bd9db](../../commit/77bd9dbd209f18372481244040afd6e8dfb105d6) seems like you dont need sudo
+ - 2026-10-24 18:00:26 +0700 [3c8cd79](../../commit/3c8cd79d96056a0d7622c975225efb6d297d5999) more yaml learning
+ - 2026-10-24 17:59:29 +0700 [f0d1807](../../commit/f0d1807a7f8ece1ca6ad6a79fab43624a4928d98) install gcc
+ - 2026-10-24 17:48:53 +0700 [b6a58a3](../../commit/b6a58a3cc05a02b88e09dd68b876d8979ed6eb51) more yaml learning
+ - 2026-10-24 17:36:10 +0700 [5945df2](../../commit/5945df2096304b15534f337fdca45aa0a13f9710) more yaml learning
+ - 2026-10-24 17:33:12 +0700 [46907e3](../../commit/46907e35001904670657e240255c8c7efe720667) removed $CPU from Makefile (except i386) as its all in port.h anyway
+ - 2026-10-24 17:24:43 +0700 [8ec73c2](../../commit/8ec73c275c22b7d7e9166eefa46043b1c90067c7) damn yaml indent!
+ - 2026-10-24 17:19:34 +0700 [a8ff048](../../commit/a8ff048f4cc9a96ada5a474799676133cd7bd59e) armv6l/armv7l workflow - first pass
+ - 2026-10-24 16:56:18 +0700 [717fc49](../../commit/717fc498d4c5ee5b322a73dbfb96d9e8cc9e9682) website workflow dependency updated
+ - 2026-10-23 23:18:22 +0700 [0c1b77f](../../commit/0c1b77f78a48856a64491c7ac2c941e80f334850) added riscv 64 and 32 bit code - not tested yet
+ - 2026-10-23 19:11:25 +0700 [7e2f031](../../commit/7e2f03126a31bceb8457e7ce9701785349e5669c) CHANGELOG
  - 2026-10-23 18:20:24 +0700 [1952131](../../commit/1952131c389a137a9cc8d5bf0694e22013179502) unified comments - now explains processor support everywhere
  - 2026-10-23 18:19:37 +0700 [88c4704](../../commit/88c47045ad8626fce61ba7c6918ef6739268a38e) armv6l/armv7l logic added - plus fixed a test5 typo
  - 2026-10-23 18:19:08 +0700 [67d9102](../../commit/67d9102ca1c09d70b42bbeb139e1cb8a09785d8d) now with armv6l/armv7l code - name of file not changed
