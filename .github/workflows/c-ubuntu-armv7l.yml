@@ -1,4 +1,4 @@
-name: Kernel64 on Linux Ubuntu ARM 32 bit armv6l/armv7l
+name: Kernel64 on Linux Ubuntu ARM 32 bit armv7l
 
 on:
   push:
