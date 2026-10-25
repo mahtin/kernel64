@@ -40,4 +40,4 @@ k64_switch_to_stack:
 	bx	lr
 
 	.size	k64_switch_to_stack, .-k64_switch_to_stack
-	.section .note.GNU-stack,"",%progbits	# Use percent vs at sign becuase at sign was used for comments on armv7 way-back-when
+	.section .note.GNU-stack,"",%progbits	/* Use percent vs at sign becuase at sign was used for comments on armv7 way-back-when */
