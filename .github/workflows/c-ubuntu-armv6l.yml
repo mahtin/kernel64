@@ -1,5 +1,8 @@
 name: Kernel64 on Linux Ubuntu ARM 32 bit armv6l
 
+# https://github.com/marketplace/actions/run-on-architecture
+# https://github.com/uraimo/run-on-arch-action/issues/178
+
 on:
   push:
     branches: [ "main" ]
