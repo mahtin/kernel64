@@ -38,7 +38,7 @@ struct proc64 {
 	proc64state state;			/* process state */
 	proc64pri priority;			/* process priority */
 	proc64context context;			/* process stack and context for setjmp/longjmp */
-	size_t tick_count;			/* count of processor time */
+	size_t msec_elapsed;			/* count of processor time */
 	void *stack_real_base;			/* process actual mmap base (including guard) */
 	size_t stack_real_size;			/* process total mmap size (usable + guard) */
 	void *stack_base;			/* process stack */

@@ -32,7 +32,7 @@ static void print_time(void)
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
 		labs(local->tm_gmtoff)%3600/60
-	); 
+	);
 #endif
 
 	printf("%s\n", buf);
@@ -41,19 +41,19 @@ static void print_time(void)
 
 static void do_nothing(void *arg)
 {
+	int count;
+
 	printf("TESTING: do_nothing() starting...\n");
 	fflush(stdout);
 	k64print_ps();
-	for (int count=0;count<=250;count++) {
-		if ((count % 50) == 0) {
-			printf("%3d ", count);
-			print_time();
-		}
-		k64delay(20);
-		// k64print_ps();
+	for (count=0;count<5;count++) {
+		printf("%3d ", count);
+		print_time();
+		k64delay(1250);
+		k64print_ps();
 		// k64yield();
 	}
-	k64print_ps();
+	// k64print_ps();
 	k64exit();
 }
 

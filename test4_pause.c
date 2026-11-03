@@ -36,7 +36,7 @@ static void print_time(void)
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
 		labs(local->tm_gmtoff)%3600/60
-	); 
+	);
 #endif
 
 	printf("%s\n", buf);
@@ -45,12 +45,13 @@ static void print_time(void)
 
 static void do_pause(void *arg)
 {
+	int count;
 	const char *name = ((struct _a *)arg)->name;
 
 	printf("TESTING: do_pause(%s) starting...\n", name);
 	fflush(stdout);
 	k64print_ps();
-	for (int count=0;count<=400;count++) {
+	for (count=0;count<=400;count++) {
 		if ((count % 100) == 0) {
 			printf("%s %3d ", name, count);
 			print_time();

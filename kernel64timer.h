@@ -9,12 +9,12 @@
 #include "port.h"
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
-void k64timer_init(void (*callback)(void));
-size_t k64timer_ticks(void);
+void k64timer_init(void (*callback)(size_t msecs));
+size_t k64timer_time_in_msecs(void);
 void k64timer_stop(void);
-void k64timer_pause(void);
+void k64timer_pause(size_t msecs);
 
-#define	MSECS_PER_TICK	50		/* as good as any value for now */
+#define	TICKS_PER_SECOND	50		/* as good as any value for now */
 
 #endif	/* KERNEL64_WORD_BITS */
 #endif	/* _KERNEL64TIMER */

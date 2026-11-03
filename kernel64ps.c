@@ -17,8 +17,10 @@
 
 void k64print_ps(void)
 {
+	size_t ii;
 	char **r = k64ps();
-	for (size_t ii=0;r[ii];ii++) {
+
+	for (ii=0;r[ii];ii++) {
 		printf("%s\n", r[ii]);
 		fflush(stdout);
 		free(r[ii]);
@@ -28,15 +30,14 @@ void k64print_ps(void)
 	fflush(stdout);
 }
 
-static char *format_tick_count(size_t tick_count)
+static char *format_msec_elapsed(size_t msec_elapsed)
 {
 	static char buf[2+1+2+1+2+1];
+	int sec_elapsed = msec_elapsed /= 1000;
 
-	tick_count /= 50;
-
-	int hours = tick_count / 3600;
-	int minutes = (tick_count % 3600) / 60;
-	int seconds = tick_count % 60;
+	int hours = sec_elapsed / 3600;
+	int minutes = (sec_elapsed % 3600) / 60;
+	int seconds = sec_elapsed % 60;
 
 	// %02d ensures at least 2 digits are printed, padded with a leading zero if needed
 	snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hours % 100, minutes % 60, seconds % 60);
@@ -83,7 +84,7 @@ char **k64ps(void)
 				p->state,
 				p->name?p->name:" ",
 				p->priority,
-				format_tick_count(p->tick_count),
+				format_msec_elapsed(p->msec_elapsed),
 				p->stack_size,
 				k64stack_used(p),
 				p->entry,
@@ -96,7 +97,7 @@ char **k64ps(void)
 				p->state,
 				p->name?p->name:" ",
 				"-",
-				format_tick_count(p->tick_count),
+				format_msec_elapsed(p->msec_elapsed),
 				"-",
 				"-",
 				p->entry,

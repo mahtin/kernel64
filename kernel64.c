@@ -31,6 +31,8 @@ static proc64pid pid_number = 1;		/* start with process id 1 */
 
 static int timer_started = 0;			/* only start the timer once */
 
+static size_t next_expiration = 0;		/* we keep track of all the delayed processes so we can sleep longer than a single tick */
+
 int k64stack_overflowed(struct proc64 *p)
 {
 	unsigned char *top = (unsigned char *)p->stack_base;
@@ -126,17 +128,39 @@ static void k64idle_process(void *arg)
 			fprintf(stderr, "k64idle_process(): pause!\n");
 			fflush(stderr);
 		}
-		k64timer_pause();
+		/* idle is only called when no process is able to run - so we wait for the tick timer to go off as we have nothing else to do */
+		if (next_expiration != 0) {
+			/* we have an active timer */
+			if (next_expiration <= k64timer_time_in_msecs()) {
+				if (debug_flag) {
+					fprintf(stderr, "k64idle_process(): pause - %zu %zu - pause is up!\n", next_expiration, k64timer_time_in_msecs());
+					fflush(stderr);
+				}
+				next_expiration = 0;
+			} else {
+				/* caculate the pause we should take! */
+				size_t how_many_more_msecs = next_expiration - k64timer_time_in_msecs();
+				if (debug_flag) {
+					fprintf(stderr, "k64idle_process(): pause - %zu %zu - pause = %zu msecs\n", next_expiration, k64timer_time_in_msecs(), how_many_more_msecs);
+					fflush(stderr);
+				}
+				/* we have time to wait */
+				k64timer_pause(how_many_more_msecs);
+			}
+		} else {
+			if (!k64has_a_process_to_run())
+				k64timer_pause(0);
+		}
 		k64yield();
 	}
 }
 
-static void k64timer_expired(void)
+static void k64timer_expired(size_t msecs)
 {
 	/* timer has gone off! */
 	if (curproc) {
 		/* this process has accumulated time */
-		curproc->tick_count++;
+		curproc->msec_elapsed += msecs;
 	}
 }
 
@@ -262,7 +286,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->priority = 80;			/* mimic (somewhat) the norms for priority values */
 	p->expiration = 0;
 	p->pid = pid_number++;
-	p->tick_count = 0;
+	p->msec_elapsed = 0;
 	p->entry = entry;			/* entry point for new process */
 	p->arg = arg;				/* args for new process */
 	name = name ? name : "[proc]";
@@ -350,14 +374,13 @@ void k64schedule(void)
 		}
 #endif
 		/* while we are here - deal with delayed process */
-		if (p->state == P_SLEEPING) {
-			/* is it time to wake up */
-			if (p->expiration <= k64timer_ticks()) {
-				p->state = P_RUNNING;
-				if (debug_flag) {
-					fprintf(stderr, "k64schedule: wakeup p->pid=%d p->name=\"%s\"\n", p->pid, p->name);
-					fflush(stderr);
-				}
+		if (p->state == P_SLEEPING && p->expiration <= k64timer_time_in_msecs()) {
+			/* it's time to wake up */
+			p->state = P_RUNNING;
+			p->expiration = 0;
+			if (debug_flag) {
+				fprintf(stderr, "k64schedule: wakeup p->pid=%d p->name=\"%s\"\n", p->pid, p->name);
+				fflush(stderr);
 			}
 		}
 		/* only consider runnable processes */
@@ -406,6 +429,8 @@ void k64schedule(void)
 			fprintf(stderr, "k64schedule(): no more processes - EXITING CLEANLY\n");
 			fflush(stderr);
 		}
+		/* clean up timers */
+		k64timer_stop();
 		/* we cleanly exit becuase this only happens when someone destroyed the idle process */
 		exit(0);
 	}
@@ -509,7 +534,9 @@ void k64delay(size_t msecs)
 	if (curproc == NULL)
 		return;
 	curproc->state = P_SLEEPING;
-	curproc->expiration = k64timer_ticks() + msecs;
+	curproc->expiration = k64timer_time_in_msecs() + msecs;
+	if (next_expiration == 0 || next_expiration > curproc->expiration)
+		next_expiration = curproc->expiration;
 	k64schedule();
 }
 
