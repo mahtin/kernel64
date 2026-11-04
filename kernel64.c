@@ -308,7 +308,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->arg = arg;				/* args for new process */
 	p->name = malloc(strlen(name)+1);
 	if (p->name == NULL) {
-		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name?name:"null");
+		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name);
 		fflush(stderr);
 		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
 		free(p);
@@ -322,7 +322,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	if (p->stack_base == NULL || p->stack_size == 0) {
 		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
 		free(p);
-		fprintf(stderr, "k64spawn(\"%s\") - k64stack_alloc() failed\n", name?name:"null");
+		fprintf(stderr, "k64spawn(\"%s\") - k64stack_alloc() failed\n", name);
 		fflush(stderr);
 		return NULL;
 	}
