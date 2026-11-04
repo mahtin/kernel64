@@ -90,13 +90,13 @@ static void k64zombies_reap(void)
 		/* dont prune pid 1 or current process or something already pruned */
 		if (p->pid > 1 && p != curproc && p->stack_base != NULL && (p->state == P_ZOMBIE || p->state == P_DESTROYED)) {
 			if (debug_flag) {
-				fprintf(stderr, "k64zombies_reap(%d) p->name=\"%s\", p->state=%c\n", p->pid, p->name, p->state);
+				fprintf(stderr, "k64zombies_reap(%u) p->name=\"%s\", p->state=%c\n", p->pid, p->name, p->state);
 				fflush(stderr);
 			}
 			if (p->state == P_DESTROYED) {
 				/* report a stack overflow - do it from a safe stack - i.e. here in idle */
 				size_t used = k64stack_used(p);
-				fprintf(stderr, "k64zombies_reap(%d): p->name=%s stack_used=%zu / %zu -- STACK CORRUPT!\n", p->pid, p->name, used, p->stack_size);
+				fprintf(stderr, "k64zombies_reap(%u): p->name=%s stack_used=%zu / %zu -- STACK CORRUPT!\n", p->pid, p->name, used, p->stack_size);
 				fflush(stderr);
 				k64print_ps();
 			}
@@ -115,7 +115,8 @@ static void k64zombies_reap(void)
 				free(p->name);
 				p->name = NULL;
 			}
-			free(p);
+			p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
+			free(p);			/* finally can get rid of p's memory */
 #endif
 		}
 		p = next;
@@ -208,7 +209,7 @@ static void k64enter(struct proc64 *next)
 {
 	assert(next->magic == PROC_MAGIC_NUMBER);
 	if (debug_flag) {
-		fprintf(stderr, "k64enter(%d) next->name=\"%s\", next->state=%c\n", next->pid, next->name, next->state);
+		fprintf(stderr, "k64enter(%u) next->name=\"%s\", next->state=%c\n", next->pid, next->name, next->state);
 		fflush(stderr);
 	}
 	if (next->state == P_GO) {
@@ -224,7 +225,7 @@ static void k64enter(struct proc64 *next)
 		/* never returns */
 	}
 	if (debug_flag) {
-		fprintf(stderr, "k64enter(%d): next->name=\"%s\" doing longjmp:\n", next->pid, next->name);
+		fprintf(stderr, "k64enter(%u): next->name=\"%s\" doing longjmp:\n", next->pid, next->name);
 		fflush(stderr);
 	}
 	longjmp(next->context, 1);
@@ -245,13 +246,13 @@ static void k64switch(struct proc64 *next)
 		return;
 	}
 	if (debug_flag) {
-		fprintf(stderr, "k64switch() next->pid=%d next->name=%s prev->pid=%d\n", next->pid, next->name, prev?prev->pid:-1);
+		fprintf(stderr, "k64switch() next->pid=%u next->name=%s prev->pid=%u\n", next->pid, next->name, prev?prev->pid:0);
 		fflush(stderr);
 	}
 
 	curproc = next;
 	if (debug_flag) {
-		fprintf(stderr, "k64switch(%d): next->name=\"%s\" setjmp() prev->pid=%d prev->name=\"%s\" rsp=%p\n", next->pid, next->name, prev?prev->pid:-1, prev?prev->name:"-", __builtin_frame_address(0));
+		fprintf(stderr, "k64switch(%u): next->name=\"%s\" setjmp() prev->pid=%u prev->name=\"%s\" rsp=%p\n", next->pid, next->name, prev?prev->pid:0, prev?prev->name:"-", __builtin_frame_address(0));
 		fflush(stderr);
 	}
 	if (prev == NULL || (r=setjmp(prev->context)) == 0) {
@@ -277,8 +278,10 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	struct proc64 *p;
 	int r;
 
+	name = name ? name : "[null]";
+
 	if (debug_flag) {
-		fprintf(stderr, "k64spawn(\"%s\")\n", name?name:"null");
+		fprintf(stderr, "k64spawn(\"%s\")\n", name);
 		fflush(stderr);
 	}
 
@@ -289,7 +292,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 
 	p = (struct proc64 *)malloc(sizeof(struct proc64));
 	if (p == NULL) {
-		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name?name:"null");
+		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name);
 		fflush(stderr);
 		return NULL;
 	}
@@ -303,11 +306,11 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->msec_elapsed = 0;
 	p->entry = entry;			/* entry point for new process */
 	p->arg = arg;				/* args for new process */
-	name = name ? name : "[proc]";
 	p->name = malloc(strlen(name)+1);
 	if (p->name == NULL) {
 		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name?name:"null");
 		fflush(stderr);
+		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
 		free(p);
 		return NULL;
 	}
@@ -317,6 +320,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 		stack_size = 64 * 1024;
 	k64stack_alloc(p, stack_size);
 	if (p->stack_base == NULL || p->stack_size == 0) {
+		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
 		free(p);
 		fprintf(stderr, "k64spawn(\"%s\") - k64stack_alloc() failed\n", name?name:"null");
 		fflush(stderr);
@@ -325,12 +329,12 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	memset(p->stack_base, STACK_GUARD_BYTE, p->stack_size);
 
 	if (debug_flag) {
-		fprintf(stderr, "k64spawn(%d): p->name=\"%s\" setjmp() - first setup - rsp=%p\n", p->pid, p->name, __builtin_frame_address(0));
+		fprintf(stderr, "k64spawn(%u): p->name=\"%s\" setjmp() - first setup - rsp=%p\n", p->pid, p->name, __builtin_frame_address(0));
 		fflush(stderr);
 	}
 	r = setjmp(p->context);				/* only save context, never run child branch */
 	if (debug_flag) {
-		fprintf(stderr, "k64spawn(): SAVE p->pid=%d return=%d\n", p->pid, r);
+		fprintf(stderr, "k64spawn(): SAVE p->pid=%u return=%d\n", p->pid, r);
 		fflush(stderr);
 	}
 
@@ -366,7 +370,7 @@ void k64schedule(void)
 
 	if (debug_flag) {
 		if (curproc)
-			fprintf(stderr, "k64schedule(): curproc->pid=%d curproc->name=\"%s\"\n", curproc->pid, curproc->name);
+			fprintf(stderr, "k64schedule(): curproc->pid=%u curproc->name=\"%s\"\n", curproc->pid, curproc->name);
 		else
 			fprintf(stderr, "k64schedule(): curproc NULL\n");
 		fflush(stderr);
@@ -387,7 +391,7 @@ void k64schedule(void)
 		assert(p->magic == PROC_MAGIC_NUMBER);
 #if 0
 		if (debug_flag) {
-			fprintf(stderr, "k64schedule: testing p->pid=%d p->state=%c p->priority=%d\n", p->pid, p->state, p->priority);
+			fprintf(stderr, "k64schedule: testing p->pid=%u p->state=%c p->priority=%u\n", p->pid, p->state, p->priority);
 			fflush(stderr);
 		}
 #endif
@@ -397,7 +401,7 @@ void k64schedule(void)
 			p->state = P_RUNNING;
 			p->expiration = 0;
 			if (debug_flag) {
-				fprintf(stderr, "k64schedule: wakeup p->pid=%d p->name=\"%s\"\n", p->pid, p->name);
+				fprintf(stderr, "k64schedule: wakeup p->pid=%u p->name=\"%s\"\n", p->pid, p->name);
 				fflush(stderr);
 			}
 		}
@@ -483,7 +487,7 @@ void k64exit(void)
 		p = curproc;
 		assert(p->magic == PROC_MAGIC_NUMBER);
 		if (debug_flag) {
-			fprintf(stderr, "k64exit(): p->pid=%d p->state=%c set state P_ZOMBIE\n", p->pid, p->state);
+			fprintf(stderr, "k64exit(): p->pid=%u p->state=%c set state P_ZOMBIE\n", p->pid, p->state);
 			fflush(stderr);
 		}
 		p->state = P_ZOMBIE;
@@ -503,8 +507,8 @@ void k64exit(void)
 			free(p->name);
 			p->name = NULL;
 		}
-		/* finally can get rid of p */
-		free(p);
+		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
+		free(p);			/* finally can get rid of p's memory */
 #endif
 #endif
 		curproc = NULL;			/* we were the running process */
