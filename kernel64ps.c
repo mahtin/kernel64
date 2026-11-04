@@ -25,15 +25,15 @@ static char *format_msec_elapsed(size_t msec_elapsed)
 	int seconds = sec_elapsed % 60;
 
 	/* %02d ensures at least 2 digits are printed, padded with a leading zero if needed */
-	snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hours % 100, minutes % 60, seconds % 60);
+	snprintf(buf, sizeof(buf), "%02u:%02u:%02u", hours % 100, minutes % 60, seconds % 60);
 	return (buf);
 }
 
 static char **k64ps(void)
 {
 	const static char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
-	const static char *format_entry1 = "%6d %1c     %c %10s %3d %10s %6zu %6zu %16p %16p";
-	const static char *format_entry2 = "%6d %1c     %c %10s %3s %10s %6s %6s %16p %16p";
+	const static char *format_entry1 = "%6u %1c     %c %10s %3u %10s %6zu %6zu %16p %16p";
+	const static char *format_entry2 = "%6u %1c     %c %10s %3s %10s %6s %6s %16p %16p";
 	struct proc64 *p;
 	char **r;
 	char *buf;
