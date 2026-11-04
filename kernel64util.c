@@ -50,35 +50,41 @@ void k64stack_alloc(struct proc64 *p, size_t stack_size)
 #ifdef _WIN32
 	base = VirtualAlloc(NULL, total, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
 	if (base == NULL) {
-		fprintf(stderr, "VirtualAlloc() failed, error=%lu\n", (unsigned long)GetLastError());
+		fprintf(stderr, "k64stack_alloc(): VirtualAlloc() failed, error=%lu\n", (unsigned long)GetLastError());
+		fflush(stderr);
 		return;
 	}
 
 	DWORD oldprot;
 	if (!VirtualProtect(base, pagesize, PAGE_NOACCESS, &oldprot)) {
-		fprintf(stderr, "VirtualProtect() failed, error=%lu\n", (unsigned long)GetLastError());
+		fprintf(stderr, "k64stack_alloc(): VirtualProtect() failed, error=%lu\n", (unsigned long)GetLastError());
+		fflush(stderr);
 		VirtualFree(base, 0, MEM_RELEASE);
 		return;
 	}
 #else
-#ifdef MAP_ANONYNOUS
+#if defined(MAP_ANON) || defined(MAP_ANONYNOUS)
 	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 #else
+	/* mmap of /dev/zero does not work on MacOS - which is fine because MAP_ANON is defined */
 	int fd = open("/dev/zero", O_RDWR);
 	if (fd < 0) {
-		fprintf(stderr, "open(/dev/zero) failed, error=%d\n", errno);
+		fprintf(stderr, "k64stack_alloc(): open(/dev/zero) failed, error=%d\n", errno);
+		fflush(stderr);
 		return;
 	}
 	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
 	close(fd);
 #endif /* MAP_ANONYNOUS */
 	if (base == MAP_FAILED) {
-		fprintf(stderr, "mmap() failed, error=%d\n", errno);
+		fprintf(stderr, "k64stack_alloc(): mmap() failed, error=%d\n", errno);
+		fflush(stderr);
 		return;
 	}
 	/* Make the lowest page (overflow direction) non-accessible */
 	if (mprotect(base, pagesize, PROT_NONE) != 0) {
-		fprintf(stderr, "mprotect() failed, error=%d\n", errno);
+		fprintf(stderr, "k64stack_alloc(): mprotect() failed, error=%d\n", errno);
+		fflush(stderr);
 		munmap(base, total);
 		return;
 	}
@@ -95,13 +101,13 @@ void k64stack_free(struct proc64 *p)
 		return;
 #ifdef _WIN32
 	if (!VirtualFree(p->stack_real_base, 0, MEM_RELEASE)) {
-		fprintf(stderr, "VirtualFree() failed, error=%lu\n", (unsigned long)GetLastError());
+		fprintf(stderr, "k64stack_alloc(): VirtualFree() failed, error=%lu\n", (unsigned long)GetLastError());
 		fflush(stderr);
 		/* fall thru to clear up values */
 	}
 #else
 	if (munmap(p->stack_real_base, p->stack_real_size) != 0) {
-		fprintf(stderr, "munmap() failed, error=%d\n", errno);
+		fprintf(stderr, "k64stack_alloc(): munmap() failed, error=%d\n", errno);
 		fflush(stderr);
 		/* fall thru to clear up values */
 	}
