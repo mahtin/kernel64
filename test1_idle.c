@@ -34,8 +34,7 @@ static void test_destroy_idle_processs(void *arg)
 	k64exit();
 }
 
-void
-test1_idle(void)
+static void test1_idle(void)
 {
 	struct proc64 *p;
 
@@ -63,8 +62,7 @@ test1_idle(void)
 	fflush(stdout);
 }
 
-int
-main(void)
+int main(void)
 {
 	test1_idle();
 	exit(0);

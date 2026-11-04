@@ -20,8 +20,7 @@ static void do_delay(void *arg)
 	k64exit();
 }
 
-void
-test5_delay(void)
+static void test5_delay(void)
 {
 	struct proc64 *p;
 
@@ -37,8 +36,7 @@ test5_delay(void)
 	/* NOTREACHED */
 }
 
-int
-main(void)
+int main(void)
 {
 	test5_delay();
 	exit(0);

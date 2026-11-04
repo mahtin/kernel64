@@ -13,8 +13,7 @@ struct _a {
 	int count;
 };
 
-static void
-test_proc(void *arg)
+static void test_proc(void *arg)
 {
 	const char *name = ((struct _a *)arg)->name;
 	const int count = ((struct _a *)arg)->count;
@@ -39,8 +38,7 @@ test_proc(void *arg)
 	fflush(stdout);
 }
 
-static void
-test_proc_stack(void *arg)
+static void test_proc_stack(void *arg)
 {
 	char on_stack_allocation[512];			/* size is a hack but works - slowly eat up the stack */
 
@@ -61,8 +59,7 @@ test_proc_stack(void *arg)
 	k64exit();
 }
 
-void
-test_kernel(void)
+static void test_kernel(void)
 {
 	struct _a argA, argB, argC;
 	size_t stack_size = 16 * 1024;		/* one day we work out what size is really needed */
@@ -109,8 +106,7 @@ test_kernel(void)
 	fflush(stdout);
 }
 
-int
-main(void)
+int main(void)
 {
 	test_kernel();
 	exit(0);

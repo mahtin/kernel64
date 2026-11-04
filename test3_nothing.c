@@ -55,8 +55,7 @@ static void do_nothing(void *arg)
 	k64exit();
 }
 
-void
-test3_nothing(void)
+static void test3_nothing(void)
 {
 	struct proc64 *p;
 
@@ -82,8 +81,7 @@ test3_nothing(void)
 	fflush(stdout);
 }
 
-int
-main(void)
+int main(void)
 {
 	test3_nothing();
 	exit(0);

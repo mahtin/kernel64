@@ -68,8 +68,7 @@ static void do_pause(void *arg)
 	k64exit();
 }
 
-void
-test4_pause(void)
+static void test4_pause(void)
 {
 	struct proc64 *p;
 	struct _a argA, argB, argC;
@@ -103,8 +102,7 @@ test4_pause(void)
 	fflush(stdout);
 }
 
-int
-main(void)
+int main(void)
 {
 	test4_pause();
 	exit(0);
