@@ -38,6 +38,7 @@ ifeq ($(M32),-m32)
 # cross compile from x86_64 machine to i386 target...
 K64_SWITCH_OBJ:=k64_switch_to_stack_i386.o
 TARGET_ARCH:=	-m32
+TARGET_MACH:=	-m32
 else
 ifeq ($(UNAME_S),Windows)
 K64_SWITCH_OBJ:=k64_switch_to_stack_win64.o
