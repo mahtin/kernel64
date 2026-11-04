@@ -276,8 +276,11 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	}
 
 	p = (struct proc64 *)malloc(sizeof(struct proc64));
-	if (p == NULL)
+	if (p == NULL) {
+		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name?name:"null");
+		fflush(stderr);
 		return NULL;
+	}
 
 	memset(p, 0x00, sizeof(*p));
 	p->magic = PROC_MAGIC_NUMBER;
@@ -291,6 +294,8 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	name = name ? name : "[proc]";
 	p->name = malloc(strlen(name)+1);
 	if (p->name == NULL) {
+		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name?name:"null");
+		fflush(stderr);
 		free(p);
 		return NULL;
 	}
@@ -301,6 +306,8 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	k64stack_alloc(p, stack_size);
 	if (p->stack_base == NULL || p->stack_size == 0) {
 		free(p);
+		fprintf(stderr, "k64spawn(\"%s\") - k64stack_alloc() failed\n", name?name:"null");
+		fflush(stderr);
 		return NULL;
 	}
 	memset(p->stack_base, STACK_GUARD_BYTE, p->stack_size);
