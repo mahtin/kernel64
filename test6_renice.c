@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 
 #include "kernel64.h"
@@ -21,7 +22,7 @@ static struct proc64 *processes[N_PROCS];
 static void do_renice(void *arg)
 {
 	int ii, delay, proc;
-	int my_proc = (int)(long)arg;
+	int my_proc = (int)(intptr_t)arg;
 	unsigned int pri;
 
 	printf("TESTING: do_renice(%d) started ...\n", my_proc);
@@ -83,7 +84,7 @@ static void test6_renice(void)
 	for (ii=0;ii<N_PROCS;ii++) {
 		printf("TESTING: k64spawn(..., %d) ...\n", ii);
 		fflush(stdout);
-		p = k64spawn("do_renice", do_renice,  (void *)(long)ii, 0, NULL);
+		p = k64spawn("do_renice", do_renice,  (void *)(intptr_t)ii, 0, NULL);
 		printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
 		fflush(stdout);
 		/* save away for use later */
