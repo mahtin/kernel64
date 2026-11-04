@@ -26,6 +26,13 @@ $ cd kernel64
 $ make M32=-m32
 ```
 
+For an armv6l compile on an armv7l host, use:
+```bash
+$ git clone https://github.com/mahtin/kernel64.git
+$ cd kernel64
+$ make TARGET_ARCH="-march=armv6 -mfpu=vfp -mfloat-abi=hard"
+```
+
 Test routinges are provided via the `test*.c` files.
 Linking to your own code simply means including `libkernel64.a` in your compile/linker command.
 The `kernel64.h` include file is needed by your calling C source code.
