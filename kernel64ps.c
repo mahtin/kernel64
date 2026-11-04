@@ -15,21 +15,6 @@
 
 #include "kernel64.h"
 
-void k64print_ps(void)
-{
-	size_t ii;
-	char **r = k64ps();
-
-	for (ii=0;r[ii];ii++) {
-		printf("%s\n", r[ii]);
-		fflush(stdout);
-		free(r[ii]);
-	}
-	free(r);
-	printf("\n");
-	fflush(stdout);
-}
-
 static char *format_msec_elapsed(size_t msec_elapsed)
 {
 	static char buf[2+1+2+1+2+1];
@@ -44,7 +29,7 @@ static char *format_msec_elapsed(size_t msec_elapsed)
 	return (buf);
 }
 
-char **k64ps(void)
+static char **k64ps(void)
 {
 	const static char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
 	const static char *format_entry1 = "%6d %1c     %c %10s %3d %10s %6zu %6zu %16p %16p";
@@ -111,6 +96,21 @@ char **k64ps(void)
 	r[ii] = NULL;
 	free(buf);
 	return r;
+}
+
+void k64print_ps(void)
+{
+	size_t ii;
+	char **r = k64ps();
+
+	for (ii=0;r[ii];ii++) {
+		printf("%s\n", r[ii]);
+		fflush(stdout);
+		free(r[ii]);
+	}
+	free(r);
+	printf("\n");
+	fflush(stdout);
 }
 
 #endif	/* KERNEL64_WORD_BITS */

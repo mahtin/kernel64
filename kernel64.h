@@ -72,7 +72,6 @@ size_t k64stack_used(struct proc64 *p);
 void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
 void k64print_ps(void);
-char **k64ps(void);
 
 #define	STACK_GUARD_BYTE	0xAA		/* could be nearly any random value */
 #define	PROC_MAGIC_NUMBER	0x70726f633634	/* "proc64" as hex */
