@@ -35,7 +35,7 @@ static size_t next_expiration = 0;		/* we keep track of all the delayed processe
 
 int k64stack_overflowed(const struct proc64 *p)
 {
-	unsigned char *top;
+	const unsigned char *bottom;
 	unsigned char *s;
 	size_t ii, band = 256;			/* Check a small band at the bottom (near guard page) or one page */
 
@@ -53,9 +53,9 @@ int k64stack_overflowed(const struct proc64 *p)
 	if (band > p->stack_size)
 		band = p->stack_size;
 
-	top = (unsigned char *)p->stack_base;
+	bottom = (const unsigned char *)p->stack_base;
 
-	for (ii=0,s=top;ii<band;ii++,s++) {
+	for (ii=0,s=(unsigned char *)bottom;ii<band;ii++,s++) {
 		if (*s != STACK_GUARD_BYTE)
 			return 1;		/* overflow into guard region */
 	}
@@ -668,7 +668,7 @@ size_t k64process_count(const int incl_zombie)
 
 size_t k64stack_used(const struct proc64 *p)
 {
-	unsigned char *top, *bottom;
+	const unsigned char *top, *bottom;
 	unsigned char *s;
 
 	if (p->stack_base == NULL || p->stack_size == 0) {
@@ -688,7 +688,7 @@ size_t k64stack_used(const struct proc64 *p)
 		fflush(stderr);
 	}
 #endif
-	s = bottom;
+	s = (unsigned char *)bottom;
 	while (s < top && *s == STACK_GUARD_BYTE)
 		s++;
 	return top - s;

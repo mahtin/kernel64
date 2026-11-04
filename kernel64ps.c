@@ -18,11 +18,11 @@
 static char *format_msec_elapsed(size_t msec_elapsed)
 {
 	static char buf[2+1+2+1+2+1];
-	int sec_elapsed = msec_elapsed /= 1000;
+	int sec_elapsed = msec_elapsed / 1000;
 
-	int hours = sec_elapsed / 3600;
-	int minutes = (sec_elapsed % 3600) / 60;
-	int seconds = sec_elapsed % 60;
+	unsigned int hours = sec_elapsed / 3600;
+	unsigned int minutes = (sec_elapsed % 3600) / 60;
+	unsigned int seconds = sec_elapsed % 60;
 
 	/* %02d ensures at least 2 digits are printed, padded with a leading zero if needed */
 	snprintf(buf, sizeof(buf), "%02u:%02u:%02u", hours % 100, minutes % 60, seconds % 60);

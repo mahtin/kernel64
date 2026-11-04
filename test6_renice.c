@@ -21,11 +21,11 @@ static struct proc64 *processes[N_PROCS];
 
 static void do_renice(void *arg)
 {
-	int ii, delay, proc;
-	int my_proc = (int)(intptr_t)arg;
+	int ii, delay;
+	const int proc_n_me = (int)(intptr_t)arg;
 	unsigned int pri;
 
-	printf("TESTING: do_renice(%d) started ...\n", my_proc);
+	printf("TESTING: do_renice(%d) started ...\n", proc_n_me);
 	fflush(stdout);
 
 	pri = PRI_BASE;
@@ -36,8 +36,8 @@ static void do_renice(void *arg)
 
 	/* run N times */
 	for (ii=0;ii<10;ii++) {
-		proc = rand() % N_PROCS;
-		if (proc == my_proc) {
+		const int proc_n = rand() % N_PROCS;
+		if (proc_n == proc_n_me) {
 			/* don't redo myself or a dead process */
 			continue;
 		}
@@ -47,21 +47,21 @@ static void do_renice(void *arg)
 		fflush(stdout);
 		k64delay(delay);
 
-		if (processes[proc] == NULL) {
+		if (processes[proc_n] == NULL) {
 			/* a dead process */
 			continue;
 		}
 		pri = PRI_BASE - PRI_SPREAD/2 + (rand() % PRI_SPREAD);
-		printf("TESTING: k64renice(%d, %u) starting...\n", proc, pri);
+		printf("TESTING: k64renice(%d, %u) starting...\n", proc_n, pri);
 		fflush(stdout);
-		k64renice(processes[proc], pri);
+		k64renice(processes[proc_n], pri);
 
 		k64print_ps();
 	}
 
 	k64print_ps();
 	/* remove my process - can't be acted upon anymore */
-	processes[my_proc] = NULL;
+	processes[proc_n_me] = NULL;
 
 	printf("TESTING: calling exit...\n");
 	fflush(stdout);
@@ -71,7 +71,6 @@ static void do_renice(void *arg)
 static void test6_renice(void)
 {
 	int ii;
-	time_t t;
 	struct proc64 *p;
 
 	/* seed them random thingy */

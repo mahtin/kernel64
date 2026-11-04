@@ -26,7 +26,7 @@ static void do_delay(void *arg)
 
 static void test5_delay(void)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 
 	printf("TESTING: k64init() ...\n");
 	fflush(stdout);

@@ -20,8 +20,8 @@ static void print_time(void)
 
 	clock_gettime(CLOCK_REALTIME, &tp);
 
-	char buf[sizeof "9999-12-31T23:59:59.999+00:00"];	/* 29 chars + '\0' */
-	size_t bufsize = sizeof buf;
+	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
+	size_t bufsize = sizeof(buf);
 	int off = 0;
 	const struct tm *local = localtime(&tp.tv_sec);
 
@@ -30,7 +30,9 @@ static void print_time(void)
 		".%03ld",
 		tp.tv_nsec/1000000
 	);
-#ifndef _WIN32
+#ifdef _WIN32
+	snprintf(buf+off, bufsize-off, "%s", "");
+#else
 	snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',

@@ -16,17 +16,19 @@ static void print_time(void)
 
 	clock_gettime(CLOCK_REALTIME, &tp);
 
-	char buf[sizeof "9999-12-31T23:59:59.999+00:00"];	/* 29 chars + '\0' */
-	size_t bufsize = sizeof buf;
+	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
+	size_t bufsize = sizeof(buf);
 	int off = 0;
-	struct tm *local = localtime(&tp.tv_sec);
+	const struct tm *local = localtime(&tp.tv_sec);
 
 	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
 	off += snprintf(buf+off, bufsize-off,
 		".%03ld",
 		tp.tv_nsec/1000000
 	);
-#ifndef _WIN32
+#ifdef _WIN32
+	snprintf(buf+off, bufsize-off, "%s", "");
+#else
 	snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',
@@ -57,7 +59,7 @@ static void do_nothing(void *arg)
 
 static void test3_nothing(void)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 
 	k64init(0);
 	printf("k64init() done\n");

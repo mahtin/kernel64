@@ -41,8 +41,9 @@ static void test_proc(void *arg)
 static void test_proc_stack(void *arg)
 {
 	char on_stack_allocation[512];			/* size is a hack but works - slowly eat up the stack */
+	int depth = (int)(intptr_t)arg;
 
-	/* FORCEFULLY destroy the stack via recursive calls */
+	memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
 
 	if (k64stack_overflowed(NULL)) {
 		printf("TESTING: DONE! STACK OVERFLOWED\n");
@@ -50,14 +51,12 @@ static void test_proc_stack(void *arg)
 		k64exit();
 	}
 
-	if ((uintptr_t)arg < 1024) {
-		printf("TESTING: [%s] test_proc_stack(%lu)\n", "procS", (long)(uintptr_t)arg);
+	if (depth < 1024) {
+		printf("TESTING: [%s] test_proc_stack(%d)\n", "procS", depth);
 		fflush(stdout);
-		memset(on_stack_allocation, 0x00, sizeof(on_stack_allocation));
 		k64print_ps();
 		k64yield();
-		arg += 1;
-		test_proc_stack(arg);
+		test_proc_stack((void *)(intptr_t)(depth+1));	/* FORCEFULLY destroy the stack via recursive calls */
 		return;
 	}
 	printf("TESTING: DONE!\n");
@@ -68,7 +67,7 @@ static void test_proc_stack(void *arg)
 static void test_kernel(void)
 {
 	struct _a argA, argB, argC;
-	size_t stack_size = 16 * 1024;		/* one day we work out what size is really needed */
+	const size_t stack_size = 16 * 1024;		/* one day we work out what size is really needed */
 	struct proc64 *p;
 
 	k64init(0);
