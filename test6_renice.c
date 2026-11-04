@@ -35,13 +35,13 @@ static void do_renice(void *arg)
 
 	/* run N times */
 	for (ii=0;ii<10;ii++) {
-		proc = random() % N_PROCS;
+		proc = rand() % N_PROCS;
 		if (proc == my_proc) {
 			/* don't redo myself or a dead process */
 			continue;
 		}
 
-		delay = DELAY_BASE - DELAY_SPREAD/2 + (random() % DELAY_SPREAD);
+		delay = DELAY_BASE - DELAY_SPREAD/2 + (rand() % DELAY_SPREAD);
 		printf("TESTING: do_delay(%d) starting...\n", delay);
 		fflush(stdout);
 		k64delay(delay);
@@ -50,7 +50,7 @@ static void do_renice(void *arg)
 			/* a dead process */
 			continue;
 		}
-		pri = PRI_BASE - PRI_SPREAD/2 + (random() % PRI_SPREAD);
+		pri = PRI_BASE - PRI_SPREAD/2 + (rand() % PRI_SPREAD);
 		printf("TESTING: k64renice(%d, %u) starting...\n", proc, pri);
 		fflush(stdout);
 		k64renice(processes[proc], pri);
@@ -74,7 +74,7 @@ static void test6_renice(void)
 	struct proc64 *p;
 
 	/* seed them random thingy */
-	srandom((unsigned int)time(NULL));
+	srand((unsigned int)time(NULL));
 
 	printf("TESTING: k64init() ...\n");
 	fflush(stdout);
