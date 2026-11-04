@@ -33,9 +33,10 @@ static int timer_started = 0;			/* only start the timer once */
 
 static size_t next_expiration = 0;		/* we keep track of all the delayed processes so we can sleep longer than a single tick */
 
-int k64stack_overflowed(struct proc64 *p)
+int k64stack_overflowed(const struct proc64 *p)
 {
-	unsigned char *top, *bottom, *s;
+	unsigned char *top;
+	unsigned char *s;
 	size_t ii, band = 256;			/* Check a small band at the bottom (near guard page) or one page */
 
 	if (p == NULL)
@@ -47,13 +48,12 @@ int k64stack_overflowed(struct proc64 *p)
 		abort();
 	}
 
-	assert(p->magic == PROC_MAGIC_NUMBER);
+	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 
 	if (band > p->stack_size)
 		band = p->stack_size;
 
 	top = (unsigned char *)p->stack_base;
-	bottom = top + p->stack_size - 1;
 
 	for (ii=0,s=top;ii<band;ii++,s++) {
 		if (*s != STACK_GUARD_BYTE)
@@ -62,7 +62,7 @@ int k64stack_overflowed(struct proc64 *p)
 	return 0;
 }
 
-static int k64stack_sanity_check(struct proc64 *p)
+static int k64stack_sanity_check(const struct proc64 *p)
 {
 	/* Sanity check */
 	if (p->stack_base == NULL)
@@ -167,7 +167,7 @@ static void k64idle_process(void *arg)
 	}
 }
 
-static void k64timer_expired(size_t msecs)
+static void k64timer_expired(const size_t msecs)
 {
 	/* timer has gone off! */
 	if (curproc) {
@@ -177,7 +177,7 @@ static void k64timer_expired(size_t msecs)
 }
 
 /* Init */
-void k64init(int debug)
+void k64init(const int debug)
 {
 	proclist = NULL;
 	curproc = NULL;
@@ -195,7 +195,7 @@ void k64init(int debug)
 	k64renice(idle, 255);	/* lowest priority */
 }
 
-static void k64process_bootstrap(struct proc64 *p)
+static void k64process_bootstrap(const struct proc64 *p)
 {
 	/* Called only once per process, on its first scheduling */
 	k64_switch_to_stack(p->stack_base, p->stack_size, p->entry, p->arg);	/* Switch to the process's stack and now safely running on the process stack */
@@ -207,7 +207,7 @@ static void k64process_bootstrap(struct proc64 *p)
 
 static void k64enter(struct proc64 *next)
 {
-	assert(next->magic == PROC_MAGIC_NUMBER);
+	assert(next != NULL && next->magic == PROC_MAGIC_NUMBER);
 	if (debug_flag) {
 		fprintf(stderr, "k64enter(%u) next->name=\"%s\", next->state=%c\n", next->pid, next->name, next->state);
 		fflush(stderr);
@@ -237,7 +237,7 @@ static void k64switch(struct proc64 *next)
 	struct proc64 *prev = curproc;
 	int r = -1;
 
-	assert(next->magic == PROC_MAGIC_NUMBER);
+	assert(next != NULL && next->magic == PROC_MAGIC_NUMBER);
 	if (next == prev) {
 		if (debug_flag) {
 			fprintf(stderr, "k64switch(): next == prev - returning\n");
@@ -257,7 +257,7 @@ static void k64switch(struct proc64 *next)
 	}
 	if (prev == NULL || (r=setjmp(prev->context)) == 0) {
 		if (debug_flag) {
-			fprintf(stderr, "k64switch(): setjmp() returns 0 - next up k64enter ...\n");
+			fprintf(stderr, "k64switch(): setjmp() returns %d (should be 0) - next up k64enter ...\n", r);
 			fflush(stderr);
 		}
 		k64enter(next);
@@ -273,7 +273,7 @@ static void k64switch(struct proc64 *next)
 }
 
 /* Spawn a new process */
-struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v)
+struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, const void *v)
 {
 	struct proc64 *p;
 	int r;
@@ -388,7 +388,7 @@ void k64schedule(void)
 	phighest = NULL;
 	pidle = NULL;
 	while (1) {
-		assert(p->magic == PROC_MAGIC_NUMBER);
+		assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 #if 0
 		if (debug_flag) {
 			fprintf(stderr, "k64schedule: testing p->pid=%u p->state=%c p->priority=%u\n", p->pid, p->state, p->priority);
@@ -485,7 +485,7 @@ void k64exit(void)
 
 	if (curproc != NULL) {
 		p = curproc;
-		assert(p->magic == PROC_MAGIC_NUMBER);
+		assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 		if (debug_flag) {
 			fprintf(stderr, "k64exit(): p->pid=%u p->state=%c set state P_ZOMBIE\n", p->pid, p->state);
 			fflush(stderr);
@@ -525,7 +525,7 @@ void k64exit(void)
 }
 
 /* Nice this process */
-void k64nice(proc64pri pri)
+void k64nice(const proc64pri pri)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
@@ -538,18 +538,18 @@ void k64nice(proc64pri pri)
 }
 
 /* Renice another process */
-void k64renice(struct proc64 *p, proc64pri pri)
+void k64renice(struct proc64 *p, const proc64pri pri)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
 
-	assert(p->magic == PROC_MAGIC_NUMBER);
-	p->priority = pri < 255 ? pri : 255;
+	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
+	p->priority = (proc64pri)(pri < 255 ? pri : 255);
 	/* we don't call k64schedule() because we have affected a different process */
 }
 
 /* Delay this process */
-void k64delay(size_t msecs)
+void k64delay(const size_t msecs)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
@@ -564,14 +564,14 @@ void k64delay(size_t msecs)
 }
 
 /* Sleep this process */
-void k64sleep(void * event)
+void k64sleep(const void * event)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
 
 	if (curproc == NULL)
 		return;
-	curproc->event = event;
+	curproc->event = (void *)event;
 	curproc->state = P_WAITING;
 	k64schedule();
 }
@@ -582,7 +582,7 @@ void k64wakeup(struct proc64 *p)
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
 
-	assert(p->magic == PROC_MAGIC_NUMBER);
+	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 	if (p && p->state == P_WAITING)
 		p->state = P_RUNNING;
 	k64schedule();
@@ -601,7 +601,7 @@ void k64pause(void)
 	k64schedule();
 }
 
-struct proc64 *k64pid_to_proc(proc64pid pid)
+struct proc64 *k64pid_to_proc(const proc64pid pid)
 {
 	struct proc64 *p;
 	for (p=proclist;p!=NULL;p=p->next) {
@@ -619,7 +619,7 @@ void k64destroy(struct proc64 *p)
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
 
-	assert(p->magic == PROC_MAGIC_NUMBER);
+	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 
 	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING) {
 		p->state = P_DESTROYED;
@@ -652,7 +652,7 @@ int k64has_a_process_to_run(void)
 	return 0;
 }
 
-size_t k64process_count(int incl_zombie)
+size_t k64process_count(const int incl_zombie)
 {
 	struct proc64 *p;
 	size_t nn;
@@ -666,9 +666,10 @@ size_t k64process_count(int incl_zombie)
 	return nn;
 }
 
-size_t k64stack_used(struct proc64 *p)
+size_t k64stack_used(const struct proc64 *p)
 {
-	unsigned char *top, *bottom, *s;
+	unsigned char *top, *bottom;
+	unsigned char *s;
 
 	if (p->stack_base == NULL || p->stack_size == 0) {
 		/* unallocated (i.e. zombie) */

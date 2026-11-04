@@ -52,23 +52,23 @@ struct proc64 {
 extern struct proc64 *curproc;
 extern struct proc64 *proclist;
 
-extern void k64init(int debug);
-struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, void *v);
+extern void k64init(const int debug);
+struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, const void *v);
 void k64schedule(void);
 void k64exit(void);
-void k64nice(proc64pri pri);
-void k64renice(struct proc64 *p, proc64pri pri);
-void k64delay(size_t msecs);
-void k64sleep(void * event);
+void k64nice(const proc64pri pri);
+void k64renice(struct proc64 *p, const proc64pri pri);
+void k64delay(const size_t msecs);
+void k64sleep(const void * event);
 void k64wakeup(struct proc64 *p);
 void k64pause(void);
-struct proc64 *k64pid_to_proc(proc64pid pid);
+struct proc64 *k64pid_to_proc(const proc64pid pid);
 void k64destroy(struct proc64 *p);
 void k64yield(void);
 int k64has_a_process_to_run(void);
-size_t k64process_count(int incl_zombie);
-size_t k64stack_used(struct proc64 *p);
-int k64stack_overflowed(struct proc64 *p);
+size_t k64process_count(const int incl_zombie);
+size_t k64stack_used(const struct proc64 *p);
+int k64stack_overflowed(const struct proc64 *p);
 
 void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
