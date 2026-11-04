@@ -51,9 +51,7 @@ static void do_nothing(void *arg)
 		print_time();
 		k64delay(1250);
 		k64print_ps();
-		// k64yield();
 	}
-	// k64print_ps();
 	k64exit();
 }
 

@@ -39,7 +39,7 @@ static char *format_msec_elapsed(size_t msec_elapsed)
 	int minutes = (sec_elapsed % 3600) / 60;
 	int seconds = sec_elapsed % 60;
 
-	// %02d ensures at least 2 digits are printed, padded with a leading zero if needed
+	/* %02d ensures at least 2 digits are printed, padded with a leading zero if needed */
 	snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hours % 100, minutes % 60, seconds % 60);
 	return (buf);
 }

@@ -50,8 +50,6 @@ static void k64timer_handler(int signum) {
 #endif
 	time_msec_since_start += time_msec_last_sleep;
 
-	// fprintf(stderr, "k64timer_handler(): Timer expired\n");
-	// fflush(stderr);
 	if (timer_callback)
 		timer_callback(time_msec_last_sleep);
 
@@ -77,8 +75,6 @@ void k64timer_init(void (*callback)(size_t msecs))
 #endif
 	k64timer_set_msecs(1000 / TICKS_PER_SECOND);
 	timer_callback = callback;
-	// fprintf(stderr, "k64timer_init(): done!\n");
-	// fflush(stderr);
 }
 
 static void k64timer_set_msecs(size_t msecs)
@@ -168,8 +164,6 @@ void k64timer_pause(size_t msecs)
 		/* change timers */
 		k64timer_set_msecs(msecs);
 	}
-	// fprintf(stderr, "k64timer_pause(%zu)\n", msecs);
-	// fflush(stderr);
 
 	/* now we wait */
 #ifdef _WIN32

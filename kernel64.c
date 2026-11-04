@@ -123,7 +123,6 @@ static void k64idle_process(void *arg)
 
 		/* Optional: low-power hint, logging, etc. */
 
-		// k64print_ps();
 		if (debug_flag) {
 			fprintf(stderr, "k64idle_process(): pause!\n");
 			fflush(stderr);

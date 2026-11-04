@@ -63,8 +63,6 @@ static void do_pause(void *arg)
 			k64delay(4);
 		if (name[7] == 'C')
 			k64delay(5);
-		// k64pause();
-		// k64yield();
 	}
 	k64print_ps();
 	k64exit();
