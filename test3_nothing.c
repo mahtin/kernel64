@@ -27,7 +27,7 @@ static void print_time(void)
 		tp.tv_nsec/1000000
 	);
 #ifndef _WIN32
-	off += snprintf(buf+off, bufsize-off,
+	snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
@@ -64,6 +64,8 @@ static void test3_nothing(void)
 	fflush(stdout);
 
 	p = k64spawn("nothing", do_nothing, NULL, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");
 	fflush(stdout);

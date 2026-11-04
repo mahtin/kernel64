@@ -9,6 +9,10 @@
 
 static void do_delay(void *arg)
 {
+	printf("TESTING: k64nice() ...\n");
+	/* test nice for the heck of it */
+	k64nice(100);
+
 	k64print_ps();
 	printf("TESTING: do_delay(1000) starting...\n");
 	fflush(stdout);
@@ -30,6 +34,9 @@ static void test5_delay(void)
 	printf("TESTING: k64spawn() ...\n");
 	fflush(stdout);
 	p = k64spawn("do_delay", do_delay, NULL, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
+
 	printf("TESTING: k64schedule() ...\n");
 	fflush(stdout);
 	k64schedule();

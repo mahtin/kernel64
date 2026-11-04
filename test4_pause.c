@@ -23,7 +23,7 @@ static void print_time(void)
 	char buf[sizeof "9999-12-31T23:59:59.999+00:00"];	/* 29 chars + '\0' */
 	size_t bufsize = sizeof buf;
 	int off = 0;
-	struct tm *local = localtime(&tp.tv_sec);
+	const struct tm *local = localtime(&tp.tv_sec);
 
 	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
 	off += snprintf(buf+off, bufsize-off,
@@ -31,7 +31,7 @@ static void print_time(void)
 		tp.tv_nsec/1000000
 	);
 #ifndef _WIN32
-	off += snprintf(buf+off, bufsize-off,
+	snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
@@ -63,6 +63,8 @@ static void do_pause(void *arg)
 			k64delay(4);
 		if (name[7] == 'C')
 			k64delay(5);
+		if (name[7] == 'D')
+			k64pause();
 	}
 	k64print_ps();
 	k64exit();
@@ -71,7 +73,7 @@ static void do_pause(void *arg)
 static void test4_pause(void)
 {
 	struct proc64 *p;
-	struct _a argA, argB, argC;
+	struct _a argA, argB, argC, argD;
 
 	k64init(0);
 	printf("k64init() done\n");
@@ -79,12 +81,23 @@ static void test4_pause(void)
 
 	argA.name = "pausingA";
 	p = k64spawn("pausingA", do_pause, (void *)&argA, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
 
 	argB.name = "pausingB";
 	p = k64spawn("pausingB", do_pause, (void *)&argB, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
 
 	argC.name = "pausingC";
 	p = k64spawn("pausingC", do_pause, (void *)&argC, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
+
+	argD.name = "pausingD";
+	p = k64spawn("pausingD", do_pause, (void *)&argD, 0, NULL);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");
 	fflush(stdout);

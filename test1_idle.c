@@ -43,7 +43,7 @@ static void test1_idle(void)
 	fflush(stdout);
 
 	p = k64spawn("testD", test_destroy_idle_processs, NULL, 0, NULL);
-	printf("TESTING: p = %p %d \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");
