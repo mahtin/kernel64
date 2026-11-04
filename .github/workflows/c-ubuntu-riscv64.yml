@@ -28,6 +28,8 @@ jobs:
       with:
         arch: riscv64
         distro: ubuntu24.04
+        dockerRunArgs: |
+          --platform linux/riscv64
         githubToken: ${{ github.token }}	# speeds up builds by storing container images in a GitHub package registry
         install: |
               apt-get update -q -y
