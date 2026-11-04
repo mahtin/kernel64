@@ -95,3 +95,30 @@ jobs:
             -ex "thread apply all bt" \
             ./test3_nothing.exe
       timeout-minutes: 3
+
+    - name: gdb test4_pause.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test4_pause.exe
+      timeout-minutes: 3
+
+    - name: gdb test5_delay.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test5_delay.exe
+      timeout-minutes: 3
+
+    - name: gdb test6_renice.exe
+      continue-on-error: true
+      run: |
+        gdb -batch \
+            -ex "run" \
+            -ex "thread apply all bt" \
+            ./test6_renice.exe
+      timeout-minutes: 3

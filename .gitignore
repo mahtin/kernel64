@@ -4,6 +4,7 @@ test2_kernel
 test3_nothing
 test4_pause
 test5_delay
+test6_renice
 
 # Cloudflare Workers
 website/.wrangler/

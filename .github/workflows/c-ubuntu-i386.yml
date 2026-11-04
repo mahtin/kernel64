@@ -59,3 +59,12 @@ jobs:
 
     - name: test3_nothing
       run: ./test3_nothing
+
+    - name: test4_pause
+      run: ./test4_pause
+
+    - name: test5_delay
+      run: ./test5_delay
+
+    - name: test6_renice
+      run: ./test6_renice
