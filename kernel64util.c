@@ -9,6 +9,8 @@
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 
 #ifdef _WIN32
@@ -59,7 +61,17 @@ void k64stack_alloc(struct proc64 *p, size_t stack_size)
 		return;
 	}
 #else
+#ifdef MAP_ANONYNOUS
 	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+#else
+	int fd = open("/dev/zero", O_RDWR);
+	if (fd < 0) {
+		fprintf(stderr, "open(/dev/zero) failed, error=%d\n", errno);
+		return;
+	}
+	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	close(fd);
+#endif /* MAP_ANONYNOUS */
 	if (base == MAP_FAILED) {
 		fprintf(stderr, "mmap() failed, error=%d\n", errno);
 		return;
