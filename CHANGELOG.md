@@ -1,5 +1,30 @@
 # Change Log
 
+ - 2026-11-04 11:55:23 -0800 [4f096c1](../../commit/4f096c1ded632c543f3c4dae5865b220cba6d41f) test6_renice added - testing the renice() function
+ - 2026-11-04 11:48:30 -0800 [7a92d0c](../../commit/7a92d0cc7ec4a048f3644f054f2a46c2ff19a660) debug print added, stack overflowed test added, nice call tested
+ - 2026-11-04 11:46:49 -0800 [0d705bc](../../commit/0d705bc3264e993734219ba94f17980d9b5a83a2) magic cleared on zombie, various %u added to correct lint
+ - 2026-11-03 18:33:51 -0800 [890a26f](../../commit/890a26f9bae137ee1e11901945748ecdeb095316) nice() and stack_overflow() rewritten to work cleanly
+ - 2026-11-03 18:06:16 -0800 [7d2e86c](../../commit/7d2e86c3c80d508315840c3417d02b90ae2e8f2d) more debug when fails
+ - 2026-11-03 18:05:46 -0800 [8888e7e](../../commit/8888e7e5215096cc07b7193a29748e0e711e0d64) MAP_ANON code cleanup
+ - 2026-11-03 17:46:32 -0800 [c290897](../../commit/c290897dd396dee74480f55d68a86db6abe9e0ff) linting a bit
+ - 2026-11-03 17:44:23 -0800 [965afea](../../commit/965afea506bb952906182f5ee8859c6ccaae52b3) make k64print_ps() the only ps call
+ - 2026-11-03 17:37:53 -0800 [73ec640](../../commit/73ec640bb421828ca7a113141ec7c150a55af5d3) updated comments and removed some dead code
+ - 2026-11-03 17:37:22 -0800 [5bb8f1d](../../commit/5bb8f1d447e187b6f81de0a52bd8a021c34e38ef) handle lack of MAP_ANONYMOUS within OS
+ - 2026-11-03 16:50:57 -0800 [a308fe4](../../commit/a308fe4a476795da73c4264e146e7ef971870076) Makefile cleanup and flags now in line with make flags
+ - 2026-11-03 13:00:29 -0800 [182f374](../../commit/182f3744a95ab52230d499e6d32e1c70884f5442) big timer change to handle longer waits when quick ticks arent needed
+ - 2026-10-29 16:22:18 -0700 [de03477](../../commit/de03477ece6ead02c9b86cd205899b648c5ae1fc) add comments to show core pages for this usage
+ - 2026-10-26 07:15:56 +0700 [39b0700](../../commit/39b0700907df45b11b00bf3fae553398e0f16344) try bookworm for armv6l
+ - 2026-10-26 07:04:11 +0700 [316d703](../../commit/316d7039533cf2591f5fa3c1143b335b28598a5a) try 22.04 for armv6l
+ - 2026-10-25 13:52:05 +0700 [3d1235a](../../commit/3d1235a277d648471ced45f443e0a89bd04b602d) rename armv6 and arm7 files
+ - 2026-10-25 12:44:49 +0700 [c5825bb](../../commit/c5825bb123138637893ce0e922ba2c9b1518b6a8) try ubuntu 20.04
+ - 2026-10-25 12:44:22 +0700 [c52e9f3](../../commit/c52e9f333e1cdc33ec1ad6f290682678bedc9c06) comments are /* */
+ - 2026-10-25 12:37:34 +0700 [ee4aad8](../../commit/ee4aad814f48a54ac74b9cf6015c0465779ccc36) add armv6l action - late on we can merge into armv7 file
+ - 2026-10-25 12:35:30 +0700 [eaf9423](../../commit/eaf9423537f0588d3867697db75f63ba140314b3) document the % vs @
+ - 2026-10-24 22:23:32 +0700 [1449a64](../../commit/1449a6483167c57f807f457725eb25789bbff607) somewhat backwards; but for reason that will oneday make sense ... made code C89/C90/ANSI clean
+ - 2026-10-24 18:42:40 +0700 [e8ca7ed](../../commit/e8ca7ed237457d17f2708f10859818b0a6160ba7) add CI for riscv64
+ - 2026-10-24 18:41:47 +0700 [80b11f5](../../commit/80b11f5650e9c64f88f01a1b5470a9a2091a453a) run more tests
+ - 2026-10-24 18:28:11 +0700 [dfed288](../../commit/dfed28865e7421b40d9a735a55ff359a5f5ad3b2) added armv7l build info
+ - 2026-10-24 18:27:32 +0700 [7da5370](../../commit/7da5370bab543e971c5614bdeac2c39cb5ce57f4) CHANGELOG
  - 2026-10-24 18:23:14 +0700 [a73d924](../../commit/a73d924c5748012a29beed2aac936ccd87e3bdd2) .section .note.GNU-stack,"",%progbits
  - 2026-10-24 18:17:31 +0700 [8e1df8a](../../commit/8e1df8a3053653eb6e220446ec031d953c65ac58) added .section
  - 2026-10-24 18:09:27 +0700 [22284e4](../../commit/22284e4b3d17851df4604b16721a0b4334d31d5e) moved to snprintf()
