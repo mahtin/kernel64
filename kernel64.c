@@ -35,13 +35,25 @@ static size_t next_expiration = 0;		/* we keep track of all the delayed processe
 
 int k64stack_overflowed(struct proc64 *p)
 {
-	unsigned char *top = (unsigned char *)p->stack_base;
-	unsigned char *bottom = top + p->stack_size - 1;
-	unsigned char *s;
+	unsigned char *top, *bottom, *s;
 	size_t ii, band = 256;			/* Check a small band at the bottom (near guard page) or one page */
+
+	if (p == NULL)
+		p = curproc;
+
+	if (p == NULL) {
+		fprintf(stderr, "k64stack_overflowed(): called without curproc - THIS SHOULD NOT HAPPEN\n");
+		fflush(stderr);
+		abort();
+	}
+
+	assert(p->magic == PROC_MAGIC_NUMBER);
 
 	if (band > p->stack_size)
 		band = p->stack_size;
+
+	top = (unsigned char *)p->stack_base;
+	bottom = top + p->stack_size - 1;
 
 	for (ii=0,s=top;ii<band;ii++,s++) {
 		if (*s != STACK_GUARD_BYTE)
@@ -179,7 +191,7 @@ void k64init(int debug)
 		fflush(stderr);
 		abort();	/* kernel cannot run without idle */
 	}
-	idle->priority = 255;	/* lowest priority */
+	k64renice(idle, 255);	/* lowest priority */
 }
 
 static void k64process_bootstrap(struct proc64 *p)
@@ -516,7 +528,8 @@ void k64nice(proc64pri pri)
 
 	if (curproc == NULL)
 		return;
-	curproc->priority = pri < 255 ? pri : 255;
+	k64renice(curproc, pri);
+	/* call k64schedule() becuase we are this process */
 	k64schedule();
 }
 
@@ -528,7 +541,7 @@ void k64renice(struct proc64 *p, proc64pri pri)
 
 	assert(p->magic == PROC_MAGIC_NUMBER);
 	p->priority = pri < 255 ? pri : 255;
-	k64schedule();
+	/* we don't call k64schedule() because we have affected a different process */
 }
 
 /* Delay this process */

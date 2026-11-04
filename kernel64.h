@@ -68,6 +68,7 @@ void k64yield(void);
 int k64has_a_process_to_run(void);
 size_t k64process_count(int incl_zombie);
 size_t k64stack_used(struct proc64 *p);
+int k64stack_overflowed(struct proc64 *p);
 
 void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
