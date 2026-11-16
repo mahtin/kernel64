@@ -1,5 +1,16 @@
 # Change Log
 
+ - 2026-11-16 15:53:49 -0800 [7bf7ae5](../../commit/7bf7ae571c18cfc675cb308221a9673c4e3c513e) big cleanup of schedule loop, P_WAITING vs P_SLEEPING, k64stack_used moved to utils, plus cleaner timer code
+ - 2026-11-04 14:59:43 -0800 [4d2546f](../../commit/4d2546f773cea5b44f3125b203bdb0ce4b56e504) many lint fixes
+ - 2026-11-04 14:58:35 -0800 [0e64c70](../../commit/0e64c70b10d201c33524bec27c60a721376e1ce4) cppcheck added
+ - 2026-11-04 14:23:58 -0800 [a778971](../../commit/a778971f8e8aa330bf4e5634859045435092f226) many lint fixes
+ - 2026-11-04 13:43:07 -0800 [d888dec](../../commit/d888dec224dd282f6b22e580cf623443326a9bbe) one more fix for name being null test
+ - 2026-11-04 13:25:03 -0800 [0c612ef](../../commit/0c612ef238bed120142e6bd5580eca832a9a7f92) try docker args --platform linux/riscv64 to suspress a message - this maybe wrong
+ - 2026-11-04 13:23:45 -0800 [49df205](../../commit/49df2054d2c1292663ee1326ea1fc2c98b850125) make %u the default for pid and pri
+ - 2026-11-04 13:12:48 -0800 [0a950e0](../../commit/0a950e0af5d90b11a265fd63112dccd80b8e6df7) long should be intptr_t to make all machines work
+ - 2026-11-04 12:18:29 -0800 [cdf6b73](../../commit/cdf6b73b2783705573671faf8fb7744658a8d4d2) TARGET_MACH= need to get -m32 to work on i386
+ - 2026-11-04 12:00:50 -0800 [7a4977a](../../commit/7a4977a655904b8e053aae67c8a38cb3da56949e) moved from random() to rand() for backwards compatibility
+ - 2026-11-04 11:55:57 -0800 [b06ce67](../../commit/b06ce6732cfe6da2373047d6f3f6ee6ff0bb9fb9) CHANGELOG
  - 2026-11-04 11:55:23 -0800 [4f096c1](../../commit/4f096c1ded632c543f3c4dae5865b220cba6d41f) test6_renice added - testing the renice() function
  - 2026-11-04 11:48:30 -0800 [7a92d0c](../../commit/7a92d0cc7ec4a048f3644f054f2a46c2ff19a660) debug print added, stack overflowed test added, nice call tested
  - 2026-11-04 11:46:49 -0800 [0d705bc](../../commit/0d705bc3264e993734219ba94f17980d9b5a83a2) magic cleared on zombie, various %u added to correct lint
