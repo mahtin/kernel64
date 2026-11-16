@@ -118,4 +118,32 @@ void k64stack_free(struct proc64 *p)
 	p->stack_size = 0;
 }
 
+size_t k64stack_used(const struct proc64 *p)
+{
+	const unsigned char *top, *bottom;
+	const unsigned char *s;
+
+	if (p->stack_base == NULL || p->stack_size == 0) {
+		/* unallocated (i.e. zombie) */
+		return 0;
+	}
+	bottom = (unsigned char *)p->stack_base;		/* lowest address */
+	top = bottom + p->stack_size;				/* highest address + 1 */
+#if 0
+	if (debug_flag > 1) {
+		fprintf(stderr, "Top   : 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
+			(unsigned long)top, *(top-0), *(top-1), *(top-2), *(top-3), *(top-4), *(top-5), *(top-6), *(top-7)
+		);
+		fprintf(stderr, "Bottom: 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
+			(unsigned long)bottom, *(bottom+0), *(bottom+1), *(bottom+2), *(bottom+3), *(bottom+4), *(bottom+5), *(bottom+6), *(bottom+7)
+		);
+		fflush(stderr);
+	}
+#endif
+	s = (unsigned char *)bottom;
+	while (s < top && *s == STACK_GUARD_BYTE)
+		s++;
+	return top - s;
+}
+
 #endif	/* KERNEL64_WORD_BITS */

@@ -31,7 +31,7 @@ static proc64pid pid_number = 1;		/* start with process id 1 */
 
 static int timer_started = 0;			/* only start the timer once */
 
-static size_t next_expiration = 0;		/* we keep track of all the delayed processes so we can sleep longer than a single tick */
+static size_t next_expiration = 0;		/* we keep track of all the delayed processes so we can pause longer than a single tick */
 
 int k64stack_overflowed(const struct proc64 *p)
 {
@@ -169,11 +169,13 @@ static void k64idle_process(void *arg)
 
 static void k64timer_expired(const size_t msecs)
 {
-	/* timer has gone off! */
+	/* timer has gone off! it's been msecs since the last timer (i.e. it's possibly not every tick) */
 	if (curproc) {
 		/* this process has accumulated time */
 		curproc->msec_elapsed += msecs;
 	}
+	/* we explictly don't do any more processing in this routine so that we never have to lock/unlock data structures */
+	/* everything is done within k64schedule() and/or the idle process */
 }
 
 /* Init */
@@ -299,6 +301,8 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 
 	memset(p, 0x00, sizeof(*p));
 	p->magic = PROC_MAGIC_NUMBER;
+	p->prev = NULL;
+	p->next = NULL;
 	p->state = P_GO;
 	p->priority = 80;			/* mimic (somewhat) the norms for priority values */
 	p->expiration = 0;
@@ -350,23 +354,38 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	/* add to end of list */
 	if (proclist == NULL) {
 		proclist = p;
+		p->next = NULL;
 		p->prev = NULL;
 	} else {
 		struct proc64 *pp = proclist;
 		while (pp->next != NULL)
 			pp = pp->next;
 		pp->next = p;
+		p->next = NULL;
 		p->prev = pp;
 	}
-	p->next = NULL;					/* end of list */
 #endif
 	return p;
+}
+
+/* Delay check - maybe this process needs to wakeup from a timer */
+void k64delay_check(struct proc64 *p)
+{
+	if (p->expiration > k64timer_time_in_msecs())
+		return;
+	/* the processes timer has expired */
+	p->state = P_RUNNING;
+	p->expiration = 0;
+	if (debug_flag) {
+		fprintf(stderr, "k64delay_check(): wakeup p->pid=%u p->name=\"%s\"\n", p->pid, p->name);
+		fflush(stderr);
+	}
 }
 
 /* Schedule - Simple round-robin scheduler - with priority checking */
 void k64schedule(void)
 {
-	struct proc64 *p, *start, *phighest, *pidle;
+	struct proc64 *p, *p_start, *p_highest, *p_idle;
 
 	if (debug_flag) {
 		if (curproc)
@@ -379,72 +398,49 @@ void k64schedule(void)
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
 
+	p_highest = NULL;
+	p_idle = NULL;
+
 	/* Full circular scan */
-	if (curproc == NULL)
-		start = proclist;
-	else
-		start = curproc->next ? curproc->next : proclist;
-	p = start;
-	phighest = NULL;
-	pidle = NULL;
-	while (1) {
+	p_start = curproc ? (curproc->next ? curproc->next : proclist) : proclist;
+
+	/* check all processes */
+	p = p_start;
+	do {
 		assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
-#if 0
-		if (debug_flag) {
-			fprintf(stderr, "k64schedule: testing p->pid=%u p->state=%c p->priority=%u\n", p->pid, p->state, p->priority);
-			fflush(stderr);
-		}
-#endif
 		/* while we are here - deal with delayed process */
-		if (p->state == P_SLEEPING && p->expiration <= k64timer_time_in_msecs()) {
-			/* it's time to wake up */
-			p->state = P_RUNNING;
-			p->expiration = 0;
-			if (debug_flag) {
-				fprintf(stderr, "k64schedule: wakeup p->pid=%u p->name=\"%s\"\n", p->pid, p->name);
-				fflush(stderr);
-			}
-		}
+		if (p->state == P_DELAYED)
+			k64delay_check(p);
 		/* only consider runnable processes */
 		if (p->state == P_GO || p->state == P_RUNNING) {
 			if (p->pid == 1) {
-				pidle = p;
+				p_idle = p;
 			} else {
-				if (phighest == NULL)
-					phighest = p;
-				if (p->priority < phighest->priority)
-					phighest = p;
+				if (p_highest == NULL)
+					p_highest = p;
+				if (p->priority < p_highest->priority)
+					p_highest = p;
 			}
 		}
-		p = p->next;
-		if (p == NULL) {
-			/* loop back to the first process */
-			p = proclist;
-		}
-		if (p == start) {
-			/* we have checked all processes */
-			if (debug_flag) {
-				fprintf(stderr, "k64schedule: no ready process\n");
-				fflush(stderr);
-			}
-			if (pidle && pidle->state == P_GO) {
-				/* give the idle process a chance to start */
-				p = pidle;
-				break;
-			}
-			/* if possible select the process with the highest priorty */
-			p = phighest ? phighest : NULL;
-			if (p == NULL) {
-				/* this could mean only idle process is left - we need to sleep */
-				if (debug_flag) {
-					fprintf(stderr, "k64schedule: only idle ready to run\n");
-					fflush(stderr);
-				}
-				p = pidle;
-			}
-			break;
-		}
+		/* loop back to the first process if needed */
+		p = p->next ? p->next : proclist;
+	} while (p != p_start);
+	/* we have gone thru all the processes - now decide what to run */
+
+	if (p_idle && p_idle->state == P_GO) {
+		/* give the idle process a chance to start up - this is a special case */
+		k64switch(p_idle);
+		return;
 	}
+
+	/* if possible select the process with the highest priorty */
+	p = p_highest ? p_highest : NULL;
+
+	if (p == NULL) {
+		/* this could mean only idle process is left - so run that */
+		p = p_idle;
+	}
+
 	if (p == NULL) {
 		/* no processes is able to run - we have nothing to schedule anymore */
 		if (debug_flag) {
@@ -462,11 +458,12 @@ void k64schedule(void)
 		/* stack corrupt on this process */
 		/* we don't report here - 'cause we don't have a stack! */
 		p->state = P_DESTROYED;
+		/* now we don't have that process anymore - what if it's the running process? */
 		if (p == curproc) {
 			curproc = NULL;
 		}
-		/* TODO - not really true - we may have another process ready to fly */
-		p = pidle;
+		/* TODO - not really true - we may have another process ready to fly, but idle is safe */
+		p = p_idle;
 	}
 	if (debug_flag) {
 		fprintf(stderr, "k64schedule: doing k64switch!\n");
@@ -556,7 +553,7 @@ void k64delay(const size_t msecs)
 
 	if (curproc == NULL)
 		return;
-	curproc->state = P_SLEEPING;
+	curproc->state = P_DELAYED;
 	curproc->expiration = k64timer_time_in_msecs() + msecs;
 	if (next_expiration == 0 || next_expiration > curproc->expiration)
 		next_expiration = curproc->expiration;
@@ -605,7 +602,7 @@ struct proc64 *k64pid_to_proc(const proc64pid pid)
 {
 	struct proc64 *p;
 	for (p=proclist;p!=NULL;p=p->next) {
-		assert(p->magic == PROC_MAGIC_NUMBER);
+		assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 		if (pid == p->pid)
 			return p;
 		p = p->next;
@@ -621,7 +618,7 @@ void k64destroy(struct proc64 *p)
 
 	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 
-	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING) {
+	if (p->state == P_GO || p->state == P_RUNNING || p->state == P_DELAYED || p->state == P_WAITING) {
 		p->state = P_DESTROYED;
 	}
 	if (p == curproc) {
@@ -644,9 +641,9 @@ void k64yield(void)
 
 int k64has_a_process_to_run(void)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 	for (p=proclist;p!=NULL;p=p->next) {
-		if (p->state == P_GO || p->state == P_RUNNING || p->state == P_SLEEPING || p->state == P_WAITING)
+		if (p->state == P_GO || p->state == P_RUNNING || p->state == P_DELAYED || p->state == P_WAITING)
 			return 1;
 	}
 	return 0;
@@ -654,7 +651,7 @@ int k64has_a_process_to_run(void)
 
 size_t k64process_count(const int incl_zombie)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 	size_t nn;
 
 	nn = 0;
@@ -664,34 +661,6 @@ size_t k64process_count(const int incl_zombie)
 			nn--;
 	}
 	return nn;
-}
-
-size_t k64stack_used(const struct proc64 *p)
-{
-	const unsigned char *top, *bottom;
-	unsigned char *s;
-
-	if (p->stack_base == NULL || p->stack_size == 0) {
-		/* unallocated (i.e. zombie) */
-		return 0;
-	}
-	bottom = (unsigned char *)p->stack_base;		/* lowest address */
-	top = bottom + p->stack_size;				/* highest address + 1 */
-#if 0
-	if (debug_flag > 1) {
-		fprintf(stderr, "Top   : 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
-			(unsigned long)top, *(top-0), *(top-1), *(top-2), *(top-3), *(top-4), *(top-5), *(top-6), *(top-7)
-		);
-		fprintf(stderr, "Bottom: 0x%012lx %02x %02x %02x %02x %02x %02x %02x %02x\n",
-			(unsigned long)bottom, *(bottom+0), *(bottom+1), *(bottom+2), *(bottom+3), *(bottom+4), *(bottom+5), *(bottom+6), *(bottom+7)
-		);
-		fflush(stderr);
-	}
-#endif
-	s = (unsigned char *)bottom;
-	while (s < top && *s == STACK_GUARD_BYTE)
-		s++;
-	return top - s;
 }
 
 #endif	/* KERNEL64_WORD_BITS */

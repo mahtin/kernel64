@@ -13,6 +13,7 @@
 
 void k64stack_alloc(struct proc64 *p, size_t stack_size);
 void k64stack_free(struct proc64 *p);
+size_t k64stack_used(const struct proc64 *p);
 
 #endif	/* KERNEL64_WORD_BITS */
 #endif	/* _KERNEL64UTIL_H */

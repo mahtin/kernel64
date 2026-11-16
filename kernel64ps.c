@@ -14,6 +14,7 @@
 #include <assert.h>
 
 #include "kernel64.h"
+#include "kernel64util.h"
 
 static char *format_msec_elapsed(size_t msec_elapsed)
 {
