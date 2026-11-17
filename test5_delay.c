@@ -7,7 +7,7 @@
 
 #include "kernel64.h"
 
-static void do_delay(void *arg)
+static void do_delay(const void *arg)
 {
 	printf("TESTING: k64nice() ...\n");
 	/* test nice for the heck of it */

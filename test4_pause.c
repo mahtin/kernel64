@@ -45,7 +45,7 @@ static void print_time(void)
 	fflush(stdout);
 }
 
-static void do_pause(void *arg)
+static void do_pause(const void *arg)
 {
 	int count;
 	const char *name = ((struct _a *)arg)->name;
@@ -74,7 +74,7 @@ static void do_pause(void *arg)
 
 static void test4_pause(void)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 	struct _a argA, argB, argC, argD;
 
 	k64init(0);

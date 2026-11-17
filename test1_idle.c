@@ -8,7 +8,7 @@
 
 #include "kernel64.h"
 
-static void test_destroy_idle_processs(void *arg)
+static void test_destroy_idle_processs(const void *arg)
 {
 	int ii;
 

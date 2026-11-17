@@ -19,7 +19,7 @@
 
 static struct proc64 *processes[N_PROCS];
 
-static void do_renice(void *arg)
+static void do_renice(const void *arg)
 {
 	int ii, delay;
 	const int proc_n_me = (int)(intptr_t)arg;

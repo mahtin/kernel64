@@ -41,7 +41,7 @@ static void print_time(void)
 	fflush(stdout);
 }
 
-static void do_nothing(void *arg)
+static void do_nothing(const void *arg)
 {
 	int count;
 

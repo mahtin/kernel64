@@ -13,7 +13,7 @@ struct _a {
 	int count;
 };
 
-static void test_proc(void *arg)
+static void test_proc(const void *arg)
 {
 	const char *name = ((struct _a *)arg)->name;
 	const int count = ((struct _a *)arg)->count;
@@ -38,7 +38,7 @@ static void test_proc(void *arg)
 	fflush(stdout);
 }
 
-static void test_proc_stack(void *arg)
+static void test_proc_stack(const void *arg)
 {
 	char on_stack_allocation[512];			/* size is a hack but works - slowly eat up the stack */
 	int depth = (int)(intptr_t)arg;
@@ -67,8 +67,8 @@ static void test_proc_stack(void *arg)
 static void test_kernel(void)
 {
 	struct _a argA, argB, argC;
-	const size_t stack_size = 16 * 1024;		/* one day we work out what size is really needed */
-	struct proc64 *p;
+	const size_t stack_size = 8 * 1024;		/* one day we work out what size is really needed */
+	const struct proc64 *p;
 
 	k64init(0);
 	printf("k64init() done\n");
