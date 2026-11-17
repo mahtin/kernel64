@@ -133,6 +133,8 @@ static void k64timer_expired(const size_t msecs)
 /* Init */
 void k64init(const int debug)
 {
+	struct proc64 *idle;
+
 	proclist = NULL;
 	curproc = NULL;
 
@@ -140,7 +142,7 @@ void k64init(const int debug)
 	init_done_flag = 1;							/* set it now to get init process going */
 
 	/* create idle process first: pid 1 */
-	struct proc64 *idle = k64spawn("[idle]", k64idle_process, NULL, 8*1024, NULL);
+	idle = k64spawn("[idle]", k64idle_process, NULL, 8*1024, NULL);
 	if (!idle) {
 		fprintf(stderr, "k64init(): [init] process start failed - THIS SHOULD NOT HAPPEN\n");
 		fflush(stderr);

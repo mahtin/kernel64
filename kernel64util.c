@@ -171,10 +171,11 @@ int k64stack_band_check(const struct proc64 *p)
 
 int k64stack_sanity_check(const struct proc64 *p)
 {
+	size_t used;
 	/* Sanity check */
 	if (p->stack_base == NULL)
 		return 1;
-	size_t used = k64stack_used(p);
+	used = k64stack_used(p);
 	if ((used+STACK_GUARD_BAND_SIZE) >= p->stack_size)
 		return 1;
 	/* all ok */

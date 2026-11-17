@@ -19,11 +19,11 @@ typedef enum {
 	P_WAITING	= 'W',	/* proc waiting (for wakeup) */
 	P_DELAYED	= 'S',	/* proc delayed (i.e sleep in unix) */
 	P_DESTROYED	= 'D',	/* proc destroyed (because error) */
-	P_ZOMBIE	= 'Z',	/* proc dead/zombie */
+	P_ZOMBIE	= 'Z'	/* proc dead/zombie */
 } proc64state;
 
-typedef unsigned long long proc64magic;
-typedef unsigned short proc64pri;
+typedef uint64_t proc64magic;
+typedef uint16_t proc64pri;
 typedef unsigned int proc64pid;
 
 #include <setjmp.h>
@@ -74,7 +74,7 @@ void k64_switch_to_stack(void *stack_base, size_t stack_size, const void (*entry
 
 void k64print_ps(void);
 
-#define	PROC_MAGIC_NUMBER	0x5f70726f6336345f 	/* "_proc64_" as hex (64 bits for number i.e. long long) */
+#define	PROC_MAGIC_NUMBER	0x5f70726f6336345f 	/* "_proc64_" as hex (64 bits for number i.e. uint64_t) */
 
 #endif	/* KERNEL64_WORD_BITS */
 #endif	/* _KERNEL64_H */
