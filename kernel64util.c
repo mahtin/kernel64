@@ -36,35 +36,40 @@ static size_t k64pagesize(void)
 
 void k64stack_alloc(struct proc64 *p, size_t stack_size)
 {
-	size_t pagesize = k64pagesize();
-	/* round usable size up to page multiple */
-	size_t usable = (stack_size + pagesize - 1) & ~(pagesize - 1);
-	size_t total = usable + pagesize;		/* +1 guard page */
-	void *base;
+	const size_t page_size = k64pagesize();
+	size_t usable_stack_size, stack_real_size;
+	void *stack_real_base;
 
-	p->stack_base = NULL;
-	p->stack_size = 0;
+	if (stack_size == 0 || stack_size < STACK_MIN_SIZE)
+		stack_size = STACK_MIN_SIZE;
+
+	/* round usable_stack_size size up to page multiple */
+	usable_stack_size = (stack_size + page_size - 1) & ~(page_size - 1);
+	stack_real_size = usable_stack_size + page_size;		/* +1 guard page */
+
+	p->stack_real_base = NULL;
+	p->stack_real_size = 0;
 	p->stack_base = NULL;
 	p->stack_size = 0;
 
 #ifdef _WIN32
-	base = VirtualAlloc(NULL, total, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
-	if (base == NULL) {
+	stack_real_base = VirtualAlloc(NULL, stack_real_size, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+	if (stack_real_base == NULL) {
 		fprintf(stderr, "k64stack_alloc(): VirtualAlloc() failed, error=%lu\n", (unsigned long)GetLastError());
 		fflush(stderr);
 		return;
 	}
 
 	DWORD oldprot;
-	if (!VirtualProtect(base, pagesize, PAGE_NOACCESS, &oldprot)) {
+	if (!VirtualProtect(stack_real_base, page_size, PAGE_NOACCESS, &oldprot)) {
 		fprintf(stderr, "k64stack_alloc(): VirtualProtect() failed, error=%lu\n", (unsigned long)GetLastError());
 		fflush(stderr);
-		VirtualFree(base, 0, MEM_RELEASE);
+		VirtualFree(stack_real_base, 0, MEM_RELEASE);
 		return;
 	}
 #else
 #if defined(MAP_ANON) || defined(MAP_ANONYNOUS)
-	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+	stack_real_base = mmap(NULL, stack_real_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 #else
 	/* mmap of /dev/zero does not work on MacOS - which is fine because MAP_ANON is defined */
 	int fd = open("/dev/zero", O_RDWR);
@@ -73,26 +78,26 @@ void k64stack_alloc(struct proc64 *p, size_t stack_size)
 		fflush(stderr);
 		return;
 	}
-	base = mmap(NULL, total, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	stack_real_base = mmap(NULL, stack_real_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
 	close(fd);
 #endif /* MAP_ANONYNOUS */
-	if (base == MAP_FAILED) {
+	if (stack_real_base == MAP_FAILED) {
 		fprintf(stderr, "k64stack_alloc(): mmap() failed, error=%d\n", errno);
 		fflush(stderr);
 		return;
 	}
 	/* Make the lowest page (overflow direction) non-accessible */
-	if (mprotect(base, pagesize, PROT_NONE) != 0) {
+	if (mprotect(stack_real_base, page_size, PROT_NONE) != 0) {
 		fprintf(stderr, "k64stack_alloc(): mprotect() failed, error=%d\n", errno);
 		fflush(stderr);
-		munmap(base, total);
+		munmap(stack_real_base, stack_real_size);
 		return;
 	}
 #endif
-	p->stack_real_base = base;
-	p->stack_real_size = total;
-	p->stack_base = (void *)((unsigned char *)base + pagesize);
-	p->stack_size = usable;
+	p->stack_real_base = stack_real_base;
+	p->stack_real_size = stack_real_size;
+	p->stack_base = (void *)((unsigned char *)stack_real_base + page_size);
+	p->stack_size = usable_stack_size;
 
 	/* mark all stack area with guard */
 	{
@@ -101,7 +106,7 @@ void k64stack_alloc(struct proc64 *p, size_t stack_size)
 
 		bottom = (k64stack_guard *)p->stack_base;		/* lowest address */
 		top = bottom + p->stack_size/sizeof(k64stack_guard);	/* highest address + 1 */
-		s = bottom;
+		s = (k64stack_guard *)bottom;
 		while (s < top)
 			*s++ = STACK_GUARD_NUMBER;
 	}
@@ -140,17 +145,17 @@ size_t k64stack_used(const struct proc64 *p)
 	}
 	bottom = (k64stack_guard *)p->stack_base;		/* lowest address */
 	top = bottom + p->stack_size/sizeof(k64stack_guard);	/* highest address + 1 */
-	s = bottom;
+	s = (k64stack_guard *)bottom;
 	while (s < top && *s == STACK_GUARD_NUMBER)
 		s++;
 	return (top - s) * sizeof(k64stack_guard);
 }
 
-int k64stack_back_check(const struct proc64 *p)
+int k64stack_band_check(const struct proc64 *p)
 {
 	const k64stack_guard *bottom;
 	k64stack_guard *s;
-	size_t ii, band = 256/sizeof(k64stack_guard);	/* Check a small band at the bottom (near guard page) or one page */
+	size_t ii, band = STACK_GUARD_BAND_SIZE/sizeof(k64stack_guard);	/* Check a small band at the bottom (near guard page) or one page */
 
 	if (band > p->stack_size)
 		band = p->stack_size;
@@ -161,6 +166,18 @@ int k64stack_back_check(const struct proc64 *p)
 		if (*s != STACK_GUARD_NUMBER)
 			return 1;		/* overflow into guard region */
 	}
+	return 0;
+}
+
+int k64stack_sanity_check(const struct proc64 *p)
+{
+	/* Sanity check */
+	if (p->stack_base == NULL)
+		return 1;
+	size_t used = k64stack_used(p);
+	if ((used+STACK_GUARD_BAND_SIZE) >= p->stack_size)
+		return 1;
+	/* all ok */
 	return 0;
 }
 

@@ -33,41 +33,6 @@ static int timer_started = 0;			/* only start the timer once */
 
 static size_t next_expiration = 0;		/* we keep track of all the delayed processes so we can pause longer than a single tick */
 
-int k64stack_overflowed(const struct proc64 *p)
-{
-	if (p == NULL)
-		p = curproc;
-
-	if (p == NULL) {
-		fprintf(stderr, "k64stack_overflowed(): called without curproc - THIS SHOULD NOT HAPPEN\n");
-		fflush(stderr);
-		abort();
-	}
-
-	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
-
-	return k64stack_back_check(p);
-}
-
-static int k64stack_sanity_check(const struct proc64 *p)
-{
-	/* Sanity check */
-	if (p->stack_base == NULL)
-		return 1;
-	if (p->stack_size <= 4*1024)
-		return 1;
-	size_t used = k64stack_used(p);
-	if (debug_flag) {
-		fprintf(stderr, "k64stack_sanity_check(): p->stack_size: %zu used: %zu\n", p->stack_size, used);
-		fflush(stderr);
-	}
-	if ((used+4096) >= p->stack_size)
-		return 1;
-
-	/* all ok */
-	return 0;
-}
-
 static void k64zombies_reap(void)
 {
 	struct proc64 *p = proclist, *next;
@@ -110,7 +75,7 @@ static void k64zombies_reap(void)
 	}
 }
 
-static void k64idle_process(void *arg)
+static void k64idle_process(const void *arg)
 {
 	for (;;) {
 		/* cleanup any zombie process stack allocations - only do this is init processs */
@@ -175,7 +140,7 @@ void k64init(const int debug)
 	init_done_flag = 1;							/* set it now to get init process going */
 
 	/* create idle process first: pid 1 */
-	struct proc64 *idle = k64spawn("[idle]", k64idle_process, NULL, 16*1024, NULL);
+	struct proc64 *idle = k64spawn("[idle]", k64idle_process, NULL, 8*1024, NULL);
 	if (!idle) {
 		fprintf(stderr, "k64init(): [init] process start failed - THIS SHOULD NOT HAPPEN\n");
 		fflush(stderr);
@@ -262,7 +227,7 @@ static void k64switch(struct proc64 *next)
 }
 
 /* Spawn a new process */
-struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, const void *v)
+struct proc64 *k64spawn(const char *name, void (*entry)(const void *), const void *arg, size_t stack_size, const void *v)
 {
 	struct proc64 *p;
 	int r;
@@ -291,12 +256,12 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	p->prev = NULL;
 	p->next = NULL;
 	p->state = P_GO;
-	p->priority = 80;			/* mimic (somewhat) the norms for priority values */
+	p->priority = 80;				/* mimic (somewhat) the norms for priority values */
 	p->expiration = 0;
 	p->pid = pid_number++;
 	p->msec_elapsed = 0;
-	p->entry = entry;			/* entry point for new process */
-	p->arg = arg;				/* args for new process */
+	p->entry = (const void (*)(const void *))entry;	/* entry point for new process */
+	p->arg = arg;					/* args for new process */
 	p->name = malloc(strlen(name)+1);
 	if (p->name == NULL) {
 		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name);
@@ -307,8 +272,6 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 	}
 	strncpy(p->name, name, strlen(name)+1);
 
-	if (stack_size == 0)
-		stack_size = 64 * 1024;
 	k64stack_alloc(p, stack_size);
 	if (p->stack_base == NULL || p->stack_size == 0) {
 		p->magic = 0;			/* we do this as the process is done for and we don't want to reference free'ed memory */
@@ -647,6 +610,19 @@ size_t k64process_count(const int incl_zombie)
 			nn--;
 	}
 	return nn;
+}
+
+int k64stack_overflowed(const struct proc64 *p)
+{
+	if (p == NULL)
+		p = curproc;
+	if (p == NULL) {
+		fprintf(stderr, "k64stack_overflowed(): called without curproc - THIS SHOULD NOT HAPPEN\n");
+		fflush(stderr);
+		abort();
+	}
+	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
+	return k64stack_band_check(p);
 }
 
 #endif	/* KERNEL64_WORD_BITS */

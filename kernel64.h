@@ -43,8 +43,8 @@ struct proc64 {
 	size_t stack_real_size;			/* process total mmap size (usable + guard) */
 	void *stack_base;			/* process stack */
 	size_t stack_size;			/* process stack size */
-	void (*entry)(void *);			/* store entry function and argument */
-	void *arg;
+	const void (*entry)(const void *);	/* store entry function and argument */
+	const void *arg;
 	void *event;				/* process wait event */
 	size_t expiration;			/* process clock time at expiration of sleep */
 };
@@ -53,7 +53,7 @@ extern struct proc64 *curproc;
 extern struct proc64 *proclist;
 
 extern void k64init(const int debug);
-struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size_t stack_size, const void *v);
+struct proc64 *k64spawn(const char *name, void (*entry)(const void *), const void *arg, size_t stack_size, const void *v);
 void k64schedule(void);
 void k64exit(void);
 void k64nice(const proc64pri pri);
@@ -69,7 +69,7 @@ int k64has_a_process_to_run(void);
 size_t k64process_count(const int incl_zombie);
 int k64stack_overflowed(const struct proc64 *p);
 
-void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void *), void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
+void k64_switch_to_stack(void *stack_base, size_t stack_size, const void (*entry)(const void *), const void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
 void k64print_ps(void);
 
