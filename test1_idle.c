@@ -36,7 +36,7 @@ static void test_destroy_idle_processs(const void *arg)
 
 static void test1_idle(void)
 {
-	struct proc64 *p;
+	const struct proc64 *p;
 
 	k64init(0);
 	printf("k64init() done\n");
