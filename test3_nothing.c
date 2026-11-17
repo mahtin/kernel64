@@ -13,13 +13,13 @@
 static void print_time(void)
 {
 	struct timespec tp;
-
+	const struct tm *local;
 	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
 	size_t bufsize = sizeof(buf);
 	int off = 0;
-	const struct tm *local = localtime(&tp.tv_sec);
 
 	clock_gettime(CLOCK_REALTIME, &tp);
+	local = localtime(&tp.tv_sec);
 
 	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
 	off += snprintf(buf+off, bufsize-off,
