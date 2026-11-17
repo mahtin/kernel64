@@ -88,7 +88,7 @@ CPPFLAGS:=
 INCLUDES:=
 CFLAGS=		$(DEBUG) $(INCLUDES) $(WARNINGS)
 ASFLAGS=	$(DEBUG)
-ARFLAGS:=	-rv
+ARFLAGS:=	-crv
 LDFLAGS=	$(DEBUG) $(STACK_SIZE)
 
 LIBKERNEL64=	kernel64.o kernel64util.o kernel64ps.o kernel64timer.o $(K64_SWITCH_OBJ)
