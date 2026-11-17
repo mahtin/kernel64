@@ -94,8 +94,8 @@ Read the full [Theory of Operations](THEORY-OF-OPERATIONS.md) page.
 
 	/* delays, sleeps, and wakeups for timing or interrupt processing */
 	void k64delay(size_t msecs);
-	void k64sleep(void *event);
-	void k64wakeup(struct proc64 *p);
+	void k64suspend(void *event);
+	void k64resume(struct proc64 *p);
 
 	/* maliciously destroy a process */
 	void k64destroy(struct proc64 *p);

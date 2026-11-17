@@ -388,7 +388,7 @@ Processes may block waiting for an event.
 Waiting is performed with:
 
 ```c
-	k64sleep(event);
+	k64suspend(event);
 ```
 
 The process enters state:
@@ -400,7 +400,7 @@ The process enters state:
 Another process may resume it by calling:
 
 ```c
-	k64wakeup(process);
+	k64resume(process);
 ```
 
 which returns the process to:

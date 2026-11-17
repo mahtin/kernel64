@@ -318,7 +318,7 @@ struct proc64 *k64spawn(const char *name, void (*entry)(const void *), const voi
 }
 
 /* Delay check - maybe this process needs to wakeup from a timer */
-void k64delay_check(struct proc64 *p)
+static void k64delay_check(struct proc64 *p)
 {
 	if (p->expiration > k64timer_time_in_msecs())
 		return;
@@ -509,8 +509,8 @@ void k64delay(const size_t msecs)
 	k64schedule();
 }
 
-/* Sleep this process */
-void k64sleep(const void * event)
+/* Suspend this process */
+void k64suspend(const void *event)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);
@@ -522,8 +522,8 @@ void k64sleep(const void * event)
 	k64schedule();
 }
 
-/* Wakeup another process */
-void k64wakeup(struct proc64 *p)
+/* Resume another process */
+void k64resume(struct proc64 *p)
 {
 	/* only proceed if we are init'ed and ready to roll */
 	assert(proclist != NULL);

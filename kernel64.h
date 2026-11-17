@@ -10,6 +10,7 @@
 #if KERNEL64_WORD_BITS == 64 || KERNEL64_WORD_BITS == 32
 
 #include <stddef.h>
+#include <stdint.h>
 
 /* state of process (as a single character to make life easy) */
 typedef enum {
@@ -59,8 +60,8 @@ void k64exit(void);
 void k64nice(const proc64pri pri);
 void k64renice(struct proc64 *p, const proc64pri pri);
 void k64delay(const size_t msecs);
-void k64sleep(const void * event);
-void k64wakeup(struct proc64 *p);
+void k64suspend(const void *event);
+void k64resume(struct proc64 *p);
 void k64pause(void);
 struct proc64 *k64pid_to_proc(const proc64pid pid);
 void k64destroy(struct proc64 *p);
