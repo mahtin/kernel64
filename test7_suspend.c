@@ -4,13 +4,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include "kernel64.h"
 
-#define	N_PROCS	2
+static struct proc64 *process_that_suspends;
 
-static struct proc64 *processes[N_PROCS];
+#define	N_TIMES	5
 
 static void do_suspend(const void *arg)
 {
@@ -21,19 +20,19 @@ static void do_suspend(const void *arg)
 	fflush(stdout);
 
 	/* run N times */
-	for (ii=0;ii<10;ii++) {
-		printf("TESTING: do_suspend() ... k64suspend() ...\n");
+	for (ii=0;ii<(N_TIMES+0);ii++) {
+		printf("TESTING: do_suspend() k64suspend() ...\n");
 		fflush(stdout);
 		k64suspend(no_event);
 
 		printf("TESTING: do_suspend() ... resumed\n");
 		fflush(stdout);
 
-		printf("TESTING: do_suspend() ... k64delay(200) ...\n");
+		k64print_ps();
+
+		printf("TESTING: do_suspend() k64delay(200) ...\n");
 		fflush(stdout);
 		k64delay(200);
-
-		k64print_ps();
 	}
 
 	k64print_ps();
@@ -51,7 +50,7 @@ static void do_resume(const void *arg)
 	fflush(stdout);
 
 	/* run N times */
-	for (ii=0;ii<10;ii++) {
+	for (ii=0;ii<(N_TIMES+2);ii++) {
 		printf("TESTING: do_resume() k64delay(1000) ...\n");
 		fflush(stdout);
 		k64delay(1000);
@@ -60,7 +59,7 @@ static void do_resume(const void *arg)
 
 		printf("TESTING: do_resume() k64resume() ...\n");
 		fflush(stdout);
-		k64resume(processes[0]);
+		k64resume(process_that_suspends);
 	}
 
 	k64print_ps();
@@ -85,7 +84,8 @@ static void test6_renice(void)
 	p = k64spawn("do_suspend", do_suspend, 0, 0, NULL);
 	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
-	processes[ii] = p;
+
+	process_that_suspends = p;
 
 	ii = 1;
 	printf("TESTING: k64spawn(..., %d) ...\n", ii);
@@ -93,7 +93,6 @@ static void test6_renice(void)
 	p = k64spawn("do_resume", do_resume, 0, 0, NULL);
 	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
-	processes[ii] = p;
 
 	k64print_ps();
 	printf("TESTING: k64schedule() ...\n");
