@@ -73,8 +73,7 @@ void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(void
 
 void k64print_ps(void);
 
-#define	STACK_GUARD_BYTE	0xAA		/* could be nearly any random value */
-#define	PROC_MAGIC_NUMBER	0x70726f633634	/* "proc64" as hex */
+#define	PROC_MAGIC_NUMBER	0x5f70726f6336345f 	/* "_proc64_" as hex (64 bits for number i.e. long long) */
 
 #endif	/* KERNEL64_WORD_BITS */
 #endif	/* _KERNEL64_H */

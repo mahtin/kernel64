@@ -35,10 +35,6 @@ static size_t next_expiration = 0;		/* we keep track of all the delayed processe
 
 int k64stack_overflowed(const struct proc64 *p)
 {
-	const unsigned char *bottom;
-	unsigned char *s;
-	size_t ii, band = 256;			/* Check a small band at the bottom (near guard page) or one page */
-
 	if (p == NULL)
 		p = curproc;
 
@@ -50,16 +46,7 @@ int k64stack_overflowed(const struct proc64 *p)
 
 	assert(p != NULL && p->magic == PROC_MAGIC_NUMBER);
 
-	if (band > p->stack_size)
-		band = p->stack_size;
-
-	bottom = (const unsigned char *)p->stack_base;
-
-	for (ii=0,s=(unsigned char *)bottom;ii<band;ii++,s++) {
-		if (*s != STACK_GUARD_BYTE)
-			return 1;		/* overflow into guard region */
-	}
-	return 0;
+	return k64stack_back_check(p);
 }
 
 static int k64stack_sanity_check(const struct proc64 *p)
@@ -330,7 +317,6 @@ struct proc64 *k64spawn(const char *name, void (*entry)(void *), void *arg, size
 		fflush(stderr);
 		return NULL;
 	}
-	memset(p->stack_base, STACK_GUARD_BYTE, p->stack_size);
 
 	if (debug_flag) {
 		fprintf(stderr, "k64spawn(%u): p->name=\"%s\" setjmp() - first setup - rsp=%p\n", p->pid, p->name, __builtin_frame_address(0));
