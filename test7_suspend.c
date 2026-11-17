@@ -83,7 +83,7 @@ static void test6_renice(void)
 	printf("TESTING: k64spawn(..., %d) ...\n", ii);
 	fflush(stdout);
 	p = k64spawn("do_suspend", do_suspend, 0, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 	processes[ii] = p;
 
@@ -91,7 +91,7 @@ static void test6_renice(void)
 	printf("TESTING: k64spawn(..., %d) ...\n", ii);
 	fflush(stdout);
 	p = k64spawn("do_resume", do_resume, 0, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 	processes[ii] = p;
 

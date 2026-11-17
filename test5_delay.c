@@ -34,7 +34,7 @@ static void test5_delay(void)
 	printf("TESTING: k64spawn() ...\n");
 	fflush(stdout);
 	p = k64spawn("do_delay", do_delay, NULL, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	printf("TESTING: k64schedule() ...\n");

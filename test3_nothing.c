@@ -14,12 +14,12 @@ static void print_time(void)
 {
 	struct timespec tp;
 
-	clock_gettime(CLOCK_REALTIME, &tp);
-
 	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
 	size_t bufsize = sizeof(buf);
 	int off = 0;
 	const struct tm *local = localtime(&tp.tv_sec);
+
+	clock_gettime(CLOCK_REALTIME, &tp);
 
 	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
 	off += snprintf(buf+off, bufsize-off,
@@ -66,7 +66,7 @@ static void test3_nothing(void)
 	fflush(stdout);
 
 	p = k64spawn("nothing", do_nothing, NULL, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");

@@ -17,13 +17,12 @@ struct _a {
 static void print_time(void)
 {
 	struct timespec tp;
-
-	clock_gettime(CLOCK_REALTIME, &tp);
-
 	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
 	size_t bufsize = sizeof(buf);
 	int off = 0;
 	const struct tm *local = localtime(&tp.tv_sec);
+
+	clock_gettime(CLOCK_REALTIME, &tp);
 
 	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
 	off += snprintf(buf+off, bufsize-off,
@@ -83,22 +82,22 @@ static void test4_pause(void)
 
 	argA.name = "pausingA";
 	p = k64spawn("pausingA", do_pause, (void *)&argA, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argB.name = "pausingB";
 	p = k64spawn("pausingB", do_pause, (void *)&argB, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argC.name = "pausingC";
 	p = k64spawn("pausingC", do_pause, (void *)&argC, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argD.name = "pausingD";
 	p = k64spawn("pausingD", do_pause, (void *)&argD, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");

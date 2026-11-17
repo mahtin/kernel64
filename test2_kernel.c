@@ -77,23 +77,23 @@ static void test_kernel(void)
 	argA.name = "procA"; argA.count=5;
 	p = k64spawn(argA.name, test_proc, (void *)&argA, stack_size, NULL);
 	k64print_ps();
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argB.name = "procB"; argB.count=7;
 	p = k64spawn(argB.name, test_proc, (void *)&argB, stack_size, NULL);
 	k64print_ps();
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	argC.name = "procC"; argC.count=11;
 	p = k64spawn(argC.name, test_proc, (void *)&argC, stack_size, NULL);
 	k64print_ps();
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	p = k64spawn("procS", test_proc_stack, (void *)0, 0, NULL);
-	printf("TESTING: p = %p %u \"%s\" %c\n", p, p->pid, p->name, p->state);
+	printf("TESTING: p = %p %u \"%s\" %c\n", (void *)p, p->pid, p->name, p->state);
 	fflush(stdout);
 
 	printf("TESTING: about to loop on schedule ...\n");
