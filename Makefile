@@ -93,11 +93,11 @@ LDFLAGS=	$(DEBUG) $(STACK_SIZE)
 
 LIBKERNEL64=	kernel64.o kernel64util.o kernel64ps.o kernel64timer.o $(K64_SWITCH_OBJ)
 
-OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o test5_delay.o test6_renice.o $(LIBKERNEL64)
+OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o test5_delay.o test6_renice.o test7_suspend.o $(LIBKERNEL64)
 
 LIBS:=		libkernel64.a
 
-CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT) test5_delay$(EXT) test6_renice$(EXT)
+CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT) test5_delay$(EXT) test6_renice$(EXT) test7_suspend$(EXT)
 
 ALL:		$(CMDS)
 
@@ -113,12 +113,14 @@ test5_delay$(EXT):	test5_delay.o $(LIBS)
 
 test6_renice$(EXT):	test6_renice.o $(LIBS)
 
+test7_suspend$(EXT):	test7_suspend.o $(LIBS)
+
 clean:
 	$(RM) $(OBJS)
 	$(RM) $(LIBS)
 	$(RM) $(CMDS)
 
-website: .FORCE
+website:	.FORCE
 	( cd website ; npm install ; npx wrangler@latest dev )
 
 website/simple.min.css:
@@ -127,8 +129,8 @@ website/simple.min.css:
 libkernel64.a:	$(LIBKERNEL64)
 	$(AR) $(ARFLAGS) $@ $^
 
-cppcheck: .FORCE
-	cppcheck --enable=warning,performance,portability,style kernel64.c kernel64[a-z]*.c test[1-9]_*.c
+cppcheck:	.FORCE
+	cppcheck --enable=all --check-level=exhaustive --suppress=missingIncludeSystem --suppress=checkersReport kernel64.c kernel64[a-z]*.c test[1-9]_*.c
 
 .FORCE:
 
@@ -140,9 +142,10 @@ test3_nothing.c:	kernel64.h
 test4_pause.c:		kernel64.h
 test5_delay.c:		kernel64.h
 test6_renice.c:		kernel64.h
+test7_suspend.c:	kernel64.h
 # LIBKERNEL64
 kernel64.c:		kernel64.h kernel64timer.h kernel64util.h
-kernel64ps.c:		kernel64.h
+kernel64ps.c:		kernel64.h kernel64util.h
 kernel64timer.c:	kernel64.h kernel64timer.h
 kernel64util.c:		kernel64.h kernel64util.h
 # INCLUDES
