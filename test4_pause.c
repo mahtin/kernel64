@@ -16,29 +16,35 @@ struct _a {
 
 static void print_time(void)
 {
-	struct timespec tp;
 	const struct tm *local;
 	char buf[sizeof("9999-12-31T23:59:59.999+00:00")];	/* 29 chars + '\0' */
 	size_t bufsize = sizeof(buf);
 	int off = 0;
 
+#ifdef CLOCK_REALTIME
+	struct timespec tp;
 	clock_gettime(CLOCK_REALTIME, &tp);
 	local = localtime(&tp.tv_sec);
+#else
+	time_t raw_time;
+	local = localtime(&raw_time);
+#endif
 
-	off = strftime(buf, bufsize, "%FT%T", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
-	off += snprintf(buf+off, bufsize-off,
-		".%03ld",
-		tp.tv_nsec/1000000
-	);
+	off = strftime(buf, bufsize, "%Y-%m-%dT%H:%M:%S", local);		/* same as "%Y-%m-%dT%H:%M:%S"  */
+#ifdef CLOCK_REALTIME
+	off += snprintf(buf+off, bufsize-off, ".%03ld", tp.tv_nsec/1000000);
+#endif
 #ifdef _WIN32
 	snprintf(buf+off, bufsize-off, "%s", "");
 #else
+#ifdef CLOCK_REALTIME
 	snprintf(buf+off, bufsize-off,
 		"%c%02ld:%02ld",
 		local->tm_gmtoff >= 0 ? '+' : '-',
 		labs(local->tm_gmtoff)/3600,
 		labs(local->tm_gmtoff)%3600/60
 	);
+#endif
 #endif
 
 	printf("%s\n", buf);
