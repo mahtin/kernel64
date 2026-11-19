@@ -72,14 +72,16 @@ void k64stack_alloc(struct proc64 *p, size_t stack_size)
 	stack_real_base = mmap(NULL, stack_real_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 #else
 	/* mmap of /dev/zero does not work on MacOS - which is fine because MAP_ANON is defined */
-	int fd = open("/dev/zero", O_RDWR);
-	if (fd < 0) {
-		fprintf(stderr, "k64stack_alloc(): open(/dev/zero) failed, error=%d\n", errno);
-		fflush(stderr);
-		return;
+	{
+		int fd = open("/dev/zero", O_RDWR);
+		if (fd < 0) {
+			fprintf(stderr, "k64stack_alloc(): open(/dev/zero) failed, error=%d\n", errno);
+			fflush(stderr);
+			return;
+		}
+		stack_real_base = mmap(NULL, stack_real_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+		close(fd);
 	}
-	stack_real_base = mmap(NULL, stack_real_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
-	close(fd);
 #endif /* MAP_ANONYNOUS */
 	if (stack_real_base == MAP_FAILED) {
 		fprintf(stderr, "k64stack_alloc(): mmap() failed, error=%d\n", errno);
