@@ -63,15 +63,22 @@ void k64timer_init(void (*callback)(size_t msecs))
 #ifdef _WIN32
 	/* Windows ignores signal blocking entirely, so you can safely leave this blank */
 #else
+#ifdef SA_RESTART
 	struct sigaction sa;
 
 	sa.sa_handler = &k64timer_handler;
-	sa.sa_flags = SA_RESTART;		/* Restart system calls if interrupted */
+	sa.sa_flags = SA_RESTART;		/* Restart system calls if interrupted - this protects pause() */
 	sigemptyset(&sa.sa_mask);
 	if (sigaction(SIGALRM, &sa, NULL) == -1) {
 		perror("Error registering signal handler");
 		exit(EXIT_FAILURE);
 	}
+#else
+	/* We will run without this protection - see pause() code */
+	signal(SIGALRM, k64timer_handler);
+	fprintf(stderr, "k64timer_init(): WARNING - no SA_RESTART set\n");
+	fflush(stderr);
+#endif
 #endif
 	k64timer_set_msecs(1000 / TICKS_PER_SECOND);
 	timer_callback = callback;
@@ -87,12 +94,14 @@ static void k64timer_set_msecs(size_t msecs)
 		g_hTimerEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 		if (g_hTimerEvent == NULL) {
 			fprintf(stderr, "k64timer_init(): CreateEvent() failed (%d)\n", GetLastError());
+			fflush(stderr);
 			return;
 		}
 		/* Create a timer queue */
 		hTimerQueue = CreateTimerQueue();
 		if (hTimerQueue == NULL) {
 			fprintf(stderr, "k64timer_init(): CreateTimerQueue() failed (%d)\n", GetLastError());
+			fflush(stderr);
 			CloseHandle(g_hTimerEvent);
 			return;
 		}
@@ -113,6 +122,7 @@ static void k64timer_set_msecs(size_t msecs)
 			0				/* Flags */
 		)) {
 		fprintf(stderr, "k64timer_init(): CreateTimerQueueTimer() failed (%d)\n", GetLastError());
+		fflush(stderr);
 		DeleteTimerQueue(hTimerQueue);
 		CloseHandle(g_hTimerEvent);
 		return;
@@ -171,10 +181,12 @@ void k64timer_pause(size_t msecs)
 
 	if (waitResult != WAIT_OBJECT_0) {
 		fprintf(stderr, "k64timer_init(): waitResult() failed (%d)\n", GetLastError());
+		fflush(stderr);
 		return;
 	}
 #else
 	pause();				/* use this to wait efficiently until a signal is received */
+	/* SIGALRM went off - but didn't kill the process! */
 #endif
 }
 
