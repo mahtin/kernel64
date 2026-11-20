@@ -77,6 +77,7 @@ static void k64zombies_reap(void)
 
 static void k64idle_process(const void *arg)
 {
+	(void)arg;
 	for (;;) {
 		/* cleanup any zombie process stack allocations - only do this is init processs */
 		k64zombies_reap();
@@ -262,8 +263,9 @@ struct proc64 *k64spawn(const char *name, void (*entry)(const void *), const voi
 	p->expiration = 0;
 	p->pid = pid_number++;
 	p->msec_elapsed = 0;
-	p->entry = (const void (*)(const void *))entry;	/* entry point for new process */
+	p->entry = entry;				/* entry point for new process */
 	p->arg = arg;					/* args for new process */
+	p->v = v;
 	p->name = malloc(strlen(name)+1);
 	if (p->name == NULL) {
 		fprintf(stderr, "k64spawn(\"%s\") - malloc failed\n", name);

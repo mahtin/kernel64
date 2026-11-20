@@ -47,6 +47,8 @@ static void k64timer_set_msecs(size_t msecs);
 static void CALLBACK k64timer_handler(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
 #else
 static void k64timer_handler(int signum) {
+
+	(void)signum;
 #endif
 	time_msec_since_start += time_msec_last_sleep;
 

@@ -33,7 +33,7 @@ struct proc64 {
 	proc64magic magic;			/* proc64 structure magic number for sanity checks */
 	struct proc64 *prev;			/* processes are link listed */
 	struct proc64 *next;
-	void *v;				/* transparent pointer to calling process's structure - for tying into exiting systems */
+	const void *v;				/* transparent pointer to calling process's structure - for tying into exiting systems */
 	proc64pid pid;				/* process ID */
 	char *name;				/* process name */
 	proc64state state;			/* process state */
@@ -44,7 +44,7 @@ struct proc64 {
 	size_t stack_real_size;			/* process total mmap size (usable + guard) */
 	void *stack_base;			/* process stack */
 	size_t stack_size;			/* process stack size */
-	const void (*entry)(const void *);	/* store entry function and argument */
+	void (*entry)(const void *);		/* store entry function and argument */
 	const void *arg;
 	void *event;				/* process wait event */
 	size_t expiration;			/* process clock time at expiration of sleep */
@@ -70,7 +70,7 @@ int k64has_a_process_to_run(void);
 size_t k64process_count(const int incl_zombie);
 int k64stack_overflowed(const struct proc64 *p);
 
-void k64_switch_to_stack(void *stack_base, size_t stack_size, const void (*entry)(const void *), const void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
+void k64_switch_to_stack(void *stack_base, size_t stack_size, void (*entry)(const void *), const void *arg);	/* process stack switch primitive (implemented per-arch in assembly) */
 
 void k64print_ps(void);
 
