@@ -60,14 +60,18 @@ endif
 
 # this is mainly because of different gcc versions...
 ifeq ($(UNAME_S),Darwin)
-STACK_SIZE=	-Wl,-stack_size,0x80000		# .5 MB
+# .5 MB
+STACK_SIZE=	-Wl,-stack_size,0x80000
 endif
 ifeq ($(OS_NAME), Linux)
-STACK_SIZE=	-Wl,-z,stack_size=0x80000	# .5 MB
+# .5 MB
+STACK_SIZE=	-Wl,-z,stack_size=0x80000
 endif
 ifeq ($(UNAME_S),Windows)
-STACK_SIZE=	-Wl,--stack,0x100000:0x80000	# 1 MB with .5 MB reserve (causes an error)
-STACK_SIZE=	-Wl,--stack,0x100000		# 1 MB
+# 1 MB with .5 MB reserve (causes an error)
+STACK_SIZE=	-Wl,--stack,0x100000:0x80000
+# 1 MB
+STACK_SIZE=	-Wl,--stack,0x100000
 endif
 
 WARNINGS=	-Wno-comment \
@@ -79,14 +83,13 @@ WARNINGS=	-Wno-comment \
 		-Wno-incompatible-pointer-types-discards-qualifiers \
 		-Wno-macro-redefined \
 		-Wno-null-dereference
-WARNINGS=
+WARNINGS=	-W
 
 DEBUG=		-3 -O1 -Oi
 DEBUG=		-g
 
 CPPFLAGS=
-INCLUDES=
-CFLAGS=		$(DEBUG) $(INCLUDES) $(WARNINGS)
+CFLAGS=		$(DEBUG) $(WARNINGS)
 ASFLAGS=	$(DEBUG)
 ARFLAGS=	-crv
 LDFLAGS=	$(DEBUG) $(STACK_SIZE)
@@ -102,18 +105,25 @@ CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT)
 ALL:		$(CMDS)
 
 test1_idle$(EXT):	test1_idle.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test2_kernel$(EXT):	test2_kernel.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test3_nothing$(EXT):	test3_nothing.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test4_pause$(EXT):	test4_pause.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test5_delay$(EXT):	test5_delay.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test6_renice$(EXT):	test6_renice.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 test7_suspend$(EXT):	test7_suspend.o $(LIBS)
+	cc $(LDFLAGS) $^ -o $@
 
 clean:
 	$(RM) $(OBJS)
