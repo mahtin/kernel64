@@ -6,53 +6,53 @@
 #	Windows x86_64
 #
 
-UNAME_M := $(shell uname -m)
+UNAME_M=$(shell uname -m)
 
 ifeq ($(OS),Windows_NT)
-UNAME_S := Windows
+UNAME_S=Windows
 else
-UNAME_S := $(shell uname -s)
+UNAME_S=$(shell uname -s)
 endif
 
 # decide which CPU and which swich_to_stack code to use ...
 ifeq ($(UNAME_M),arm64)
-K64_SWITCH_OBJ:=k64_switch_to_stack_arm64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),aarch64)
-K64_SWITCH_OBJ:=k64_switch_to_stack_arm64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_arm64.o
 endif
 ifeq ($(UNAME_M),armv7l)
-K64_SWITCH_OBJ:=k64_switch_to_stack_armv7l.o
+K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
 ifeq ($(UNAME_M),armv6l)
-K64_SWITCH_OBJ:=k64_switch_to_stack_armv7l.o
+K64_SWITCH_OBJ=k64_switch_to_stack_armv7l.o
 endif
 ifeq ($(UNAME_M),riscv64)
-K64_SWITCH_OBJ:=k64_switch_to_stack_riscv.o
+K64_SWITCH_OBJ=k64_switch_to_stack_riscv.o
 endif
 ifeq ($(UNAME_M),riscv32)
-K64_SWITCH_OBJ:=k64_switch_to_stack_riscv.o
+K64_SWITCH_OBJ=k64_switch_to_stack_riscv.o
 endif
 ifeq ($(UNAME_M),x86_64)
 ifeq ($(M32),-m32)
 # cross compile from x86_64 machine to i386 target...
-K64_SWITCH_OBJ:=k64_switch_to_stack_i386.o
-TARGET_ARCH:=	-m32
-TARGET_MACH:=	-m32
+K64_SWITCH_OBJ=k64_switch_to_stack_i386.o
+TARGET_ARCH=	-m32
+TARGET_MACH=	-m32
 else
 ifeq ($(UNAME_S),Windows)
-K64_SWITCH_OBJ:=k64_switch_to_stack_win64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_win64.o
 else
-K64_SWITCH_OBJ:=k64_switch_to_stack_x86_64.o
+K64_SWITCH_OBJ=k64_switch_to_stack_x86_64.o
 endif
 endif
 endif
 
 # filename extension for executable
 ifeq ($(UNAME_S),Windows)
-EXT:=.exe
+EXT=.exe
 else
-EXT:=
+EXT=
 endif
 
 # save this for later ...
@@ -60,17 +60,17 @@ endif
 
 # this is mainly because of different gcc versions...
 ifeq ($(UNAME_S),Darwin)
-STACK_SIZE:=	-Wl,-stack_size,0x80000		# .5 MB
+STACK_SIZE=	-Wl,-stack_size,0x80000		# .5 MB
 endif
 ifeq ($(OS_NAME), Linux)
-STACK_SIZE:=	-Wl,-z,stack_size=0x80000	# .5 MB
+STACK_SIZE=	-Wl,-z,stack_size=0x80000	# .5 MB
 endif
 ifeq ($(UNAME_S),Windows)
-STACK_SIZE:=	-Wl,--stack,0x100000:0x80000	# 1 MB with .5 MB reserve (causes an error)
-STACK_SIZE:=	-Wl,--stack,0x100000		# 1 MB
+STACK_SIZE=	-Wl,--stack,0x100000:0x80000	# 1 MB with .5 MB reserve (causes an error)
+STACK_SIZE=	-Wl,--stack,0x100000		# 1 MB
 endif
 
-WARNINGS:=	-Wno-comment \
+WARNINGS=	-Wno-comment \
 		-Wno-deprecated-non-prototype \
 		-Wno-extra-tokens \
 		-Wno-implicit-function-declaration \
@@ -79,23 +79,23 @@ WARNINGS:=	-Wno-comment \
 		-Wno-incompatible-pointer-types-discards-qualifiers \
 		-Wno-macro-redefined \
 		-Wno-null-dereference
-WARNINGS:=
+WARNINGS=
 
-DEBUG:=		-3 -O1 -Oi
-DEBUG:=		-g
+DEBUG=		-3 -O1 -Oi
+DEBUG=		-g
 
-CPPFLAGS:=
-INCLUDES:=
+CPPFLAGS=
+INCLUDES=
 CFLAGS=		$(DEBUG) $(INCLUDES) $(WARNINGS)
 ASFLAGS=	$(DEBUG)
-ARFLAGS:=	-crv
+ARFLAGS=	-crv
 LDFLAGS=	$(DEBUG) $(STACK_SIZE)
 
 LIBKERNEL64=	kernel64.o kernel64util.o kernel64ps.o kernel64timer.o $(K64_SWITCH_OBJ)
 
 OBJS=		test1_idle.o test2_kernel.o test3_nothing.o test4_pause.o test5_delay.o test6_renice.o test7_suspend.o $(LIBKERNEL64)
 
-LIBS:=		libkernel64.a
+LIBS=		libkernel64.a
 
 CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT) test5_delay$(EXT) test6_renice$(EXT) test7_suspend$(EXT)
 
