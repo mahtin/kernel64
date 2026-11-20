@@ -9,6 +9,7 @@
 
 static void do_delay(const void *arg)
 {
+	(void)arg;
 	printf("TESTING: k64nice() ...\n");
 	/* test nice for the heck of it */
 	k64nice(100);

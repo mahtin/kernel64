@@ -12,6 +12,7 @@ static void test_destroy_idle_processs(const void *arg)
 {
 	int ii;
 
+	(void)arg;
 	printf("TESTING: destroy_idle_processs starting...\n");
 	fflush(stdout);
 	for (ii=0;ii<3;ii++) {

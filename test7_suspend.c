@@ -16,6 +16,7 @@ static void do_suspend(const void *arg)
 	int ii;
 	const void *no_event = 0;
 
+	(void)arg;
 	printf("TESTING: do_suspend() started ...\n");
 	fflush(stdout);
 
@@ -46,6 +47,7 @@ static void do_resume(const void *arg)
 {
 	int ii;
 
+	(void)arg;
 	printf("TESTING: do_resume() started ...\n");
 	fflush(stdout);
 

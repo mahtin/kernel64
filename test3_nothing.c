@@ -51,6 +51,7 @@ static void do_nothing(const void *arg)
 {
 	int count;
 
+	(void)arg;
 	printf("TESTING: do_nothing() starting...\n");
 	fflush(stdout);
 	k64print_ps();
