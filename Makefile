@@ -105,25 +105,25 @@ CMDS=		test1_idle$(EXT) test2_kernel$(EXT) test3_nothing$(EXT) test4_pause$(EXT)
 ALL:		$(CMDS)
 
 test1_idle$(EXT):	test1_idle.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test2_kernel$(EXT):	test2_kernel.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test3_nothing$(EXT):	test3_nothing.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test4_pause$(EXT):	test4_pause.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test5_delay$(EXT):	test5_delay.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test6_renice$(EXT):	test6_renice.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 test7_suspend$(EXT):	test7_suspend.o $(LIBS)
-	cc $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ -o $@
 
 clean:
 	$(RM) $(OBJS)
