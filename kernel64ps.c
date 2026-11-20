@@ -32,9 +32,9 @@ static char *format_msec_elapsed(size_t msec_elapsed)
 
 static char **k64ps(void)
 {
-	const static char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
-	const static char *format_entry1 = "%6u %1c     %c %10s %3u %10s %6zu %6zu %16p %16p";
-	const static char *format_entry2 = "%6u %1c     %c %10s %3s %10s %6s %6s %16p %16p";
+	static const char *format_header = "%6s %1s %5s %10s %3s %10s %6s %6s %16s %16s";
+	static const char *format_entry1 = "%6u %1c     %c %10s %3u %10s %6zu %6zu %16p %16p";
+	static const char *format_entry2 = "%6u %1c     %c %10s %3s %10s %6s %6s %16p %16p";
 	struct proc64 *p;
 	char **r;
 	char *buf;
